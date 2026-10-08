@@ -1,7 +1,4 @@
-import {
-  ArrowRight,
-  Mic,
-} from "lucide-react";
+import { ArrowRight, Mic } from "lucide-react";
 import Image from "next/image";
 import { DashboardKpiCards } from "./_components/DashboardKpiCards";
 import { TaskOverviewCard } from "./_components/TaskOverviewCard";
