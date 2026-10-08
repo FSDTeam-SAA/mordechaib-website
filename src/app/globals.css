@@ -1,0 +1,92 @@
+@import "react-quill-new/dist/quill.snow.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: clip;
+  scrollbar-gutter: stable;
+}
+
+/* modal open hole body te jate extra padding/shift na hoi */
+body[data-scroll-locked] {
+  padding-right: 0px !important;
+  margin-right: 0px !important;
+}
+
+/* scrollbar thakar jonno layout shift bondho korte */
+html {
+  scrollbar-gutter: stable;
+}
+
+.support-quill .ql-toolbar.ql-snow {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  border: 0;
+  border-bottom: 1px solid #f5f7ff;
+  background: #ffffff;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.support-quill .ql-toolbar.ql-snow .ql-formats {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  margin-right: 4px;
+}
+
+.support-quill .ql-container.ql-snow {
+  min-height: 100px;
+  border: 0;
+  background: #f5f7ff;
+  color: #0e1224;
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.support-quill .ql-editor {
+  min-height: 100px;
+  padding: 12px 16px;
+  line-height: 1.5;
+}
+
+.support-quill .ql-editor.ql-blank::before {
+  left: 16px;
+  right: 16px;
+  color: #8b93b8;
+  font-style: normal;
+}
+
+.support-quill .ql-snow .ql-stroke {
+  stroke: #8b93b8;
+}
+
+.support-quill .ql-snow .ql-fill {
+  fill: #8b93b8;
+}
+
+.support-quill .ql-snow .ql-picker {
+  color: #8b93b8;
+}
+
+.support-quill .ql-snow button:hover .ql-stroke,
+.support-quill .ql-snow button.ql-active .ql-stroke {
+  stroke: #5b7ff0;
+}
+
+.support-quill .ql-snow button:hover .ql-fill,
+.support-quill .ql-snow button.ql-active .ql-fill {
+  fill: #5b7ff0;
+}
