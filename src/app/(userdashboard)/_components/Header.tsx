@@ -3,10 +3,14 @@
 import Image from "next/image";
 import { Bell, ChevronDown } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import NotificationPanel from "./NotificationPanel";
 
 export default function Header() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const isTaskPage = pathname.startsWith("/dashboard/tasks");
   const isAddTaskPage = pathname === "/dashboard/tasks/add-task";
   const isRoiPage = pathname.startsWith("/dashboard/roll-dashboard");
@@ -120,12 +124,18 @@ export default function Header() {
       <div className="flex shrink-0 items-center gap-4">
         <button
           aria-label="Notifications"
+          aria-controls="notifications-panel"
+          aria-expanded={isNotificationsOpen}
           className="relative flex size-11 items-center justify-center rounded-lg bg-[#F5F7FF] text-[#0E1224]"
+          onClick={() => setIsNotificationsOpen((isOpen) => !isOpen)}
+          type="button"
         >
           <Bell className="size-6" strokeWidth={1.6} />
-          <span className="absolute right-[9px] top-[7px] flex size-3 items-center justify-center rounded-full bg-[#EF4444] text-[8px] text-white">
-            3
-          </span>
+          {unreadNotificationCount > 0 && (
+            <span className="absolute right-[9px] top-[7px] flex size-3 min-w-3 items-center justify-center rounded-full bg-[#EF4444] px-0.5 text-[8px] text-white">
+              {unreadNotificationCount > 9 ? "9+" : unreadNotificationCount}
+            </span>
+          )}
         </button>
         <button className="flex h-11 items-center gap-2 rounded-lg bg-[#F5F7FF] px-2 text-left">
           <Image
@@ -142,6 +152,11 @@ export default function Header() {
           <ChevronDown className="size-4 text-[#8B93B8]" />
         </button>
       </div>
+      <NotificationPanel
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+        onUnreadCountChange={setUnreadNotificationCount}
+      />
     </header>
   );
 }
