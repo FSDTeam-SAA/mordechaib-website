@@ -11,7 +11,7 @@ type VoiceNote = {
   kind: string;
   occurredAt: string;
   reviewStatus: string;
-  agent: string | null;
+  agent: string | { id?: string; name?: string; type?: string } | null;
   taskCount: number;
   meetingCount: number;
 };
@@ -50,6 +50,15 @@ function formatStatus(status: string) {
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
+}
+
+function formatAgent(agent: VoiceNote["agent"], fallbackStatus: string) {
+  if (typeof agent === "string" && agent.trim()) return agent;
+  if (agent && typeof agent === "object") {
+    if (agent.name) return agent.name;
+    if (agent.type) return formatStatus(agent.type);
+  }
+  return formatStatus(fallbackStatus);
 }
 
 function RecentVoiceNotesSkeleton() {
@@ -187,7 +196,7 @@ export function RecentVoiceNotesCard() {
               </p>
               <p className="mt-2 text-xs text-[#8B93B8]">
                 {formatRelativeTime(voiceNote.occurredAt)} ·{" "}
-                {voiceNote.agent || formatStatus(voiceNote.reviewStatus)} ·{" "}
+                {formatAgent(voiceNote.agent, voiceNote.reviewStatus)} ·{" "}
                 {voiceNote.taskCount} tasks
               </p>
             </div>

@@ -88,7 +88,7 @@ type ApiTask = {
   id: string;
   title: string;
   description?: string;
-  assignedToUserId?: string;
+  assignedToUserId?: string | { id?: string; name?: string; type?: string };
   department?: string;
   priority?: string;
   status: string;
@@ -192,8 +192,10 @@ function mapTask(task: ApiTask): Task {
     ? `${task.proposedByAgent.name}${task.proposedByAgent.type ? ` (${formatLabel(task.proposedByAgent.type)})` : ""}`
     : task.department
       ? formatLabel(task.department)
-      : task.assignedToUserId
-        ? `User ${task.assignedToUserId.slice(-6)}`
+      : typeof task.assignedToUserId === "object" && task.assignedToUserId?.name
+        ? `${task.assignedToUserId.name}${task.assignedToUserId.type ? ` (${formatLabel(task.assignedToUserId.type)})` : ""}`
+        : typeof task.assignedToUserId === "string"
+          ? `User ${task.assignedToUserId.slice(-6)}`
         : "Unassigned";
 
   return {
