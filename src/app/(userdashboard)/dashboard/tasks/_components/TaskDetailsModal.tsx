@@ -31,11 +31,17 @@ type ChecklistItem = {
   dueDate?: string;
 };
 
+type TaskAssignee = {
+  id?: string;
+  name?: string;
+  type?: string;
+};
+
 export type TaskDetailsData = {
   id: string;
   title: string;
   description?: string;
-  assignedToUserId?: string;
+  assignedToUserId?: string | TaskAssignee;
   department?: string;
   priority?: string;
   status: string;
@@ -93,6 +99,17 @@ function formatLabel(value?: string) {
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
+}
+
+function formatAssignee(assignee?: string | TaskAssignee) {
+  if (!assignee) return "Unassigned";
+  if (typeof assignee === "string") return assignee;
+
+  if (assignee.name) {
+    return `${assignee.name}${assignee.type ? ` · ${formatLabel(assignee.type)}` : ""}`;
+  }
+
+  return assignee.id ?? "Unassigned";
 }
 
 function formatDate(value?: string, includeTime = false) {
@@ -316,7 +333,7 @@ export function TaskDetailsModal({
               <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <InfoCard icon={<CalendarDays className="size-4" />} label="Due date" value={formatDate(task.dueDate, true)} />
                 <InfoCard icon={<Clock3 className="size-4" />} label="Estimated duration" value={task.estimatedDurationMinutes ? `${task.estimatedDurationMinutes} minutes` : "Not specified"} />
-                <InfoCard icon={<UserRound className="size-4" />} label="Assigned to" value={task.assignedToUserId ?? "Unassigned"} />
+                <InfoCard icon={<UserRound className="size-4" />} label="Assigned to" value={formatAssignee(task.assignedToUserId)} />
                 <InfoCard icon={<FileText className="size-4" />} label="Department" value={formatLabel(task.department)} />
                 <InfoCard icon={<Bot className="size-4" />} label="Proposed by" value={task.proposedByAgent?.name ? `${task.proposedByAgent.name}${task.proposedByAgent.type ? ` · ${formatLabel(task.proposedByAgent.type)}` : ""}` : "Not specified"} />
                 <InfoCard icon={<CheckCircle2 className="size-4" />} label="Reminder" value={task.reminder?.enabled ? `${task.reminder.minutesBeforeDue ?? 0} minutes before` : "Disabled"} />
