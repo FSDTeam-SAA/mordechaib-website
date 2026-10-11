@@ -108,7 +108,10 @@ function ExecutiveBriefingState({
 
   return (
     <article className="rounded-2xl bg-white p-6">
-      <DashboardSectionHeader action="View Full Briefing">
+      <DashboardSectionHeader
+        action="View Full Briefing"
+        href="/dashboard/chief-of-staff?tab=executive"
+      >
         Today&apos;s Executive Briefing
       </DashboardSectionHeader>
       <div className="flex min-h-[232px] flex-col items-center justify-center text-center">
@@ -204,7 +207,10 @@ export function ExecutiveBriefingCard() {
 
   return (
     <article className="rounded-2xl bg-white p-6">
-      <DashboardSectionHeader action="View Full Briefing">
+      <DashboardSectionHeader
+        action="View Full Briefing"
+        href="/dashboard/chief-of-staff?tab=executive"
+      >
         Today&apos;s Executive Briefing
       </DashboardSectionHeader>
       <div className="mt-4 space-y-5">
