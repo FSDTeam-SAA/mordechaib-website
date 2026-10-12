@@ -187,6 +187,10 @@ export default function CalendarPage() {
     <section className="grid grid-cols-12 items-start gap-4"><div className="col-span-12 xl:col-span-9"><CalendarBoard meetings={providerMeetings} filters={filters} provider={calendarProvider} onProviderChange={(provider) => { if (!defaultCalendarMutation.isPending && provider !== calendarProvider) defaultCalendarMutation.mutate(provider); }} onFiltersChange={(value) => { setFilters(value); setSelectedRangeDate(null); }} onDateSelect={(date) => { setFilters((current) => ({ ...current, date })); setSelectedRangeDate(date); }} /></div><div className="col-span-12 xl:col-span-3"><CalendarSidebar meetings={providerMeetings} upcoming={dashboard.upcoming.filter((meeting) => providerMeetings.some((item) => item.id === meeting.id))} selectedDate={filters.date} timezone={dashboard.timezone} onRefresh={() => syncMutation.mutate()} isRefreshing={syncMutation.isPending || dashboardQuery.isFetching} /></div></section>
     <ConflictIntegration conflicts={dashboard.conflicts} taskAndCalls={dashboard.taskAndCalls} timezone={dashboard.timezone} />
     <PriorityAutomation priority={dashboard.priority} automation={dashboard.automation} />
-    <MeetingsTable meetings={providerMeetings} timezone={dashboard.timezone} />
+    <MeetingsTable
+      meetings={providerMeetings}
+      timezone={dashboard.timezone}
+      onMeetingUpdated={() => dashboardQuery.refetch()}
+    />
   </div>;
 }
