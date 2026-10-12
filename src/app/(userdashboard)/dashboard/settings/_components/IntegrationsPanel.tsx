@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { LoaderCircle, Unplug } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { IntegrationCard } from "./IntegrationCard";
 import { TwilioNumberModal } from "./TwilioNumberModal";
 import {
@@ -38,6 +45,11 @@ type IntegrationsResponse = {
   data?: {
     items?: IntegrationItem[];
   };
+};
+
+type DisconnectResponse = {
+  success?: boolean;
+  message?: string | string[];
 };
 
 const providerByName: Record<string, string> = {
@@ -118,12 +130,24 @@ const integrations = [
 export function IntegrationsPanel() {
   const { data: session } = useSession();
   const [isOutlookConnecting, setIsOutlookConnecting] = useState(false);
+  const [isOutlookDisconnectModalOpen, setIsOutlookDisconnectModalOpen] =
+    useState(false);
+  const [isOutlookDisconnecting, setIsOutlookDisconnecting] = useState(false);
   const [isGoogleConnecting, setIsGoogleConnecting] = useState(false);
+  const [isGoogleDisconnectModalOpen, setIsGoogleDisconnectModalOpen] =
+    useState(false);
+  const [isGoogleDisconnecting, setIsGoogleDisconnecting] = useState(false);
   const [isTwilioModalOpen, setIsTwilioModalOpen] = useState(false);
   const [isTwilioDetailsOpen, setIsTwilioDetailsOpen] = useState(false);
   const [twilioDetails, setTwilioDetails] =
     useState<TwilioIntegrationDetails | null>(null);
   const [connectingCrmProvider, setConnectingCrmProvider] = useState<
+    "HUBSPOT" | "SALESFORCE" | null
+  >(null);
+  const [crmProviderToDisconnect, setCrmProviderToDisconnect] = useState<
+    "HUBSPOT" | "SALESFORCE" | null
+  >(null);
+  const [disconnectingCrmProvider, setDisconnectingCrmProvider] = useState<
     "HUBSPOT" | "SALESFORCE" | null
   >(null);
   const [isCheckingIntegrations, setIsCheckingIntegrations] = useState(true);
@@ -294,6 +318,100 @@ export function IntegrationsPanel() {
     }
   };
 
+  const disconnectOutlookCalendar = async () => {
+    if (isOutlookDisconnecting) return;
+
+    const accessToken = session?.user.accessToken;
+    if (!accessToken) {
+      toast.error("Your session is missing. Please sign in again.");
+      return;
+    }
+
+    setIsOutlookDisconnecting(true);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/calendar/outlook/oauth/connection`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      const result = (await response
+        .json()
+        .catch(() => ({}))) as DisconnectResponse;
+      const message = Array.isArray(result.message)
+        ? result.message.join(", ")
+        : result.message;
+
+      if (!response.ok || result.success === false) {
+        throw new Error(message || "Unable to disconnect Outlook Calendar.");
+      }
+
+      setConnectedProviders((providers) => ({
+        ...providers,
+        OUTLOOK_CALENDAR: false,
+      }));
+      setIsOutlookDisconnectModalOpen(false);
+      toast.success(message || "Outlook Calendar disconnected successfully.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Unable to disconnect Outlook Calendar.",
+      );
+    } finally {
+      setIsOutlookDisconnecting(false);
+    }
+  };
+
+  const disconnectGoogleCalendar = async () => {
+    if (isGoogleDisconnecting) return;
+
+    const accessToken = session?.user.accessToken;
+    if (!accessToken) {
+      toast.error("Your session is missing. Please sign in again.");
+      return;
+    }
+
+    setIsGoogleDisconnecting(true);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/google-meetings/oauth/connection`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      const result = (await response
+        .json()
+        .catch(() => ({}))) as DisconnectResponse;
+      const message = Array.isArray(result.message)
+        ? result.message.join(", ")
+        : result.message;
+
+      if (!response.ok || result.success === false) {
+        throw new Error(message || "Unable to disconnect Google Account.");
+      }
+
+      setConnectedProviders((providers) => ({
+        ...providers,
+        GOOGLE_CALENDAR: false,
+      }));
+      setIsGoogleDisconnectModalOpen(false);
+      toast.success(message || "Google Account disconnected successfully.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Unable to disconnect Google Account.",
+      );
+    } finally {
+      setIsGoogleDisconnecting(false);
+    }
+  };
+
   const connectCrm = async (provider: "HUBSPOT" | "SALESFORCE") => {
     if (connectingCrmProvider) return;
 
@@ -342,8 +460,56 @@ export function IntegrationsPanel() {
     }
   };
 
+  const disconnectCrm = async (provider: "HUBSPOT" | "SALESFORCE") => {
+    if (disconnectingCrmProvider) return;
+
+    const providerName = provider === "HUBSPOT" ? "HubSpot CRM" : "Salesforce";
+    const accessToken = session?.user.accessToken;
+    if (!accessToken) {
+      toast.error("Your session is missing. Please sign in again.");
+      return;
+    }
+
+    setDisconnectingCrmProvider(provider);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/crm/connections/${encodeURIComponent(provider)}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      const result = (await response
+        .json()
+        .catch(() => ({}))) as DisconnectResponse;
+      const message = Array.isArray(result.message)
+        ? result.message.join(", ")
+        : result.message;
+
+      if (!response.ok || result.success === false) {
+        throw new Error(message || `Unable to disconnect ${providerName}.`);
+      }
+
+      setConnectedProviders((providers) => ({
+        ...providers,
+        [provider]: false,
+      }));
+      setCrmProviderToDisconnect(null);
+      toast.success(message || `${providerName} disconnected successfully.`);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : `Unable to disconnect ${providerName}.`,
+      );
+    } finally {
+      setDisconnectingCrmProvider(null);
+    }
+  };
+
   return (
-    <section className="overflow-hidden rounded-lg bg-white">
+    <section className="overflow-hidden rounded-[10px] bg-white">
       <header className="border-b border-[#E4EAF8] p-4">
         <h2 className="text-xl font-medium text-[#0E1224]">Integrations</h2>
       </header>
@@ -367,9 +533,14 @@ export function IntegrationsPanel() {
               connected={isConnected}
               isLoading={
                 (isOutlookCalendar && isOutlookConnecting) ||
+                (isOutlookCalendar && isOutlookDisconnecting) ||
                 (isGoogleCalendar && isGoogleConnecting) ||
+                (isGoogleCalendar && isGoogleDisconnecting) ||
                 (isHubSpot && connectingCrmProvider === "HUBSPOT") ||
                 (isSalesforce && connectingCrmProvider === "SALESFORCE") ||
+                (isHubSpot && disconnectingCrmProvider === "HUBSPOT") ||
+                (isSalesforce &&
+                  disconnectingCrmProvider === "SALESFORCE") ||
                 isCheckingIntegrations
               }
               onConnect={
@@ -388,6 +559,17 @@ export function IntegrationsPanel() {
               onView={
                 isTwilio && isConnected
                   ? () => setIsTwilioDetailsOpen(true)
+                  : undefined
+              }
+              onDisconnect={
+                isOutlookCalendar && isConnected
+                  ? () => setIsOutlookDisconnectModalOpen(true)
+                  : isGoogleCalendar && isConnected
+                  ? () => setIsGoogleDisconnectModalOpen(true)
+                  : isHubSpot && isConnected
+                  ? () => setCrmProviderToDisconnect("HUBSPOT")
+                  : isSalesforce && isConnected
+                  ? () => setCrmProviderToDisconnect("SALESFORCE")
                   : undefined
               }
             />
@@ -428,6 +610,144 @@ export function IntegrationsPanel() {
         onOpenChange={setIsTwilioDetailsOpen}
         details={twilioDetails}
       />
+      <Dialog
+        open={isOutlookDisconnectModalOpen}
+        onOpenChange={(open) => {
+          if (!isOutlookDisconnecting) setIsOutlookDisconnectModalOpen(open);
+        }}
+      >
+        <DialogContent
+          overlayClassName="bg-[#0E1224]/40 backdrop-blur-[4px]"
+          className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-6 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
+        >
+          <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#EF4444]/10 text-[#EF4444]">
+            <Unplug className="size-5" />
+          </span>
+          <DialogTitle className="mt-4 text-xl font-semibold text-[#0E1224]">
+            Disconnect Outlook Calendar?
+          </DialogTitle>
+          <DialogDescription className="mt-2 text-sm leading-6 text-[#73809B]">
+            Outlook Calendar meetings will no longer sync with your account.
+            Are you sure you want to disconnect it?
+          </DialogDescription>
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setIsOutlookDisconnectModalOpen(false)}
+              disabled={isOutlookDisconnecting}
+              className="h-11 rounded-[10px] border border-[#DCE1EA] text-sm font-medium text-[#596079] disabled:opacity-60"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => void disconnectOutlookCalendar()}
+              disabled={isOutlookDisconnecting}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] bg-[#EF4444] text-sm font-medium text-white transition-colors hover:bg-[#DC2626] disabled:opacity-60"
+            >
+              {isOutlookDisconnecting && (
+                <LoaderCircle className="size-4 animate-spin" />
+              )}
+              {isOutlookDisconnecting ? "Disconnecting..." : "Disconnect"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={isGoogleDisconnectModalOpen}
+        onOpenChange={(open) => {
+          if (!isGoogleDisconnecting) setIsGoogleDisconnectModalOpen(open);
+        }}
+      >
+        <DialogContent
+          overlayClassName="bg-[#0E1224]/40 backdrop-blur-[4px]"
+          className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-6 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
+        >
+          <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#EF4444]/10 text-[#EF4444]">
+            <Unplug className="size-5" />
+          </span>
+          <DialogTitle className="mt-4 text-xl font-semibold text-[#0E1224]">
+            Disconnect Google Account?
+          </DialogTitle>
+          <DialogDescription className="mt-2 text-sm leading-6 text-[#73809B]">
+            Google Calendar meetings will no longer sync with your account. Are
+            you sure you want to disconnect it?
+          </DialogDescription>
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setIsGoogleDisconnectModalOpen(false)}
+              disabled={isGoogleDisconnecting}
+              className="h-11 rounded-[10px] border border-[#DCE1EA] text-sm font-medium text-[#596079] disabled:opacity-60"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => void disconnectGoogleCalendar()}
+              disabled={isGoogleDisconnecting}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] bg-[#EF4444] text-sm font-medium text-white transition-colors hover:bg-[#DC2626] disabled:opacity-60"
+            >
+              {isGoogleDisconnecting && (
+                <LoaderCircle className="size-4 animate-spin" />
+              )}
+              {isGoogleDisconnecting ? "Disconnecting..." : "Disconnect"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={Boolean(crmProviderToDisconnect)}
+        onOpenChange={(open) => {
+          if (!open && !disconnectingCrmProvider) {
+            setCrmProviderToDisconnect(null);
+          }
+        }}
+      >
+        <DialogContent
+          overlayClassName="bg-[#0E1224]/40 backdrop-blur-[4px]"
+          className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-6 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
+        >
+          <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#EF4444]/10 text-[#EF4444]">
+            <Unplug className="size-5" />
+          </span>
+          <DialogTitle className="mt-4 text-xl font-semibold text-[#0E1224]">
+            Disconnect {crmProviderToDisconnect === "HUBSPOT"
+              ? "HubSpot CRM"
+              : "Salesforce"}
+            ?
+          </DialogTitle>
+          <DialogDescription className="mt-2 text-sm leading-6 text-[#73809B]">
+            This integration will stop syncing with your account. Are you sure
+            you want to disconnect it?
+          </DialogDescription>
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setCrmProviderToDisconnect(null)}
+              disabled={Boolean(disconnectingCrmProvider)}
+              className="h-11 rounded-[10px] border border-[#DCE1EA] text-sm font-medium text-[#596079] disabled:opacity-60"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (crmProviderToDisconnect) {
+                  void disconnectCrm(crmProviderToDisconnect);
+                }
+              }}
+              disabled={Boolean(disconnectingCrmProvider)}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] bg-[#EF4444] text-sm font-medium text-white transition-colors hover:bg-[#DC2626] disabled:opacity-60"
+            >
+              {disconnectingCrmProvider && (
+                <LoaderCircle className="size-4 animate-spin" />
+              )}
+              {disconnectingCrmProvider ? "Disconnecting..." : "Disconnect"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
