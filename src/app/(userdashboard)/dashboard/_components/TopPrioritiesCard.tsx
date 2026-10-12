@@ -53,7 +53,7 @@ function TopPrioritiesSkeleton() {
     <article
       aria-busy="true"
       aria-label="Loading top priorities"
-      className="rounded-2xl bg-white p-6"
+      className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6"
     >
       <div className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
         <div className="h-7 w-32 animate-pulse rounded bg-[#F5F7FF]" />
@@ -85,25 +85,27 @@ function TopPrioritiesState({
   const Icon = isError ? AlertCircle : ListTodo;
 
   return (
-    <article className="rounded-2xl bg-white p-6">
-      <DashboardSectionHeader>Top Priorities</DashboardSectionHeader>
-      <div className="flex min-h-[214px] flex-col items-center justify-center text-center">
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
+      <DashboardSectionHeader href="/dashboard/call-intelligence">
+        Top Priorities
+      </DashboardSectionHeader>
+      <div className="flex min-h-[214px] w-full flex-col items-center justify-center px-1 text-center">
         <Icon
           className={`size-8 ${isError ? "text-[#EF4444]" : "text-[#8B93B8]"}`}
         />
-        <p className="mt-2 text-sm font-medium text-[#0E1224]">
+        <p className="mt-2 max-w-full break-words text-sm font-medium text-[#0E1224]">
           {isError
             ? "Top priorities could not be loaded"
             : "No top priorities found"}
         </p>
-        <p className="mt-1 text-sm text-[#8B93B8]">
+        <p className="mt-1 max-w-full break-words text-sm text-[#8B93B8]">
           {error || "Your highest-priority tasks will appear here."}
         </p>
         {onRetry && (
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 flex h-9 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
+            className="mt-4 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -169,19 +171,21 @@ export function TopPrioritiesCard() {
   }
 
   return (
-    <article className="rounded-2xl bg-white p-6">
-      <DashboardSectionHeader>Top Priorities</DashboardSectionHeader>
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
+      <DashboardSectionHeader href="/dashboard/call-intelligence">
+        Top Priorities
+      </DashboardSectionHeader>
       <div className="mt-4 space-y-4">
         {priorities.map((task) => {
           const isCompleted = task.status === "COMPLETED";
           const isHighPriority = task.priority === "HIGH";
 
           return (
-            <div key={task.id} className="flex gap-2">
+            <div key={task.id} className="flex min-w-0 gap-2">
               <span
                 className={`size-5 shrink-0 rounded-full border-2 ${isCompleted ? "border-[#10B981] bg-[#10B981]/10" : "border-[#8B93B8]"}`}
               />
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p
                   className={
                     isCompleted
@@ -191,7 +195,7 @@ export function TopPrioritiesCard() {
                 >
                   {task.title}
                 </p>
-                <p className="mt-2 flex items-center gap-2 text-xs text-[#8B93B8]">
+                <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 text-[#8B93B8]">
                   <span
                     className={`size-1.5 rounded ${isHighPriority ? "bg-[#EF4444]" : "bg-[#8B93B8]"}`}
                   />

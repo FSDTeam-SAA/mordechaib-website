@@ -54,15 +54,15 @@ function TaskOverviewSkeleton() {
     <article
       aria-busy="true"
       aria-label="Loading task overview"
-      className="rounded-2xl bg-white p-6"
+      className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6"
     >
       <div className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
         <div className="h-7 w-36 animate-pulse rounded bg-[#F5F7FF]" />
         <div className="h-5 w-16 animate-pulse rounded bg-[#F5F7FF]" />
       </div>
-      <div className="mt-4 flex flex-col items-center justify-center gap-7 sm:flex-row sm:justify-between">
-        <div className="size-[170px] animate-pulse rounded-full bg-[#F5F7FF]" />
-        <div className="w-full max-w-[126px] space-y-4">
+      <div className="mt-4 flex items-center justify-between gap-3 sm:gap-7">
+        <div className="size-32 shrink-0 animate-pulse rounded-full bg-[#F5F7FF] sm:size-[170px]" />
+        <div className="w-full max-w-[145px] space-y-3 sm:max-w-[126px] sm:space-y-4">
           {Array.from({ length: 4 }, (_, index) => (
             <div
               key={index}
@@ -86,32 +86,34 @@ function TaskOverviewState({
   const Icon = isError ? AlertCircle : ClipboardList;
 
   return (
-    <article className="rounded-2xl bg-white p-6">
-      <header className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
-        <h2 className="text-xl font-medium text-[#0E1224]">Task Overview</h2>
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
+      <header className="flex items-center justify-between gap-3 border-b border-[#E4EAF8] pb-3 sm:pb-4">
+        <h2 className="text-base font-medium leading-6 text-[#0E1224] sm:text-xl sm:leading-7">
+          Task Overview
+        </h2>
         <Link
           href="/dashboard/tasks"
-          className="flex items-center gap-2 text-sm font-medium text-[#5B7FF0]"
+            className="-mr-2 flex min-h-11 shrink-0 items-center gap-1.5 px-2 text-sm font-medium text-[#5B7FF0]"
         >
           View All
           <ArrowRight className="size-4" />
         </Link>
       </header>
-      <div className="flex min-h-[200px] flex-col items-center justify-center text-center">
+      <div className="flex min-h-[200px] w-full flex-col items-center justify-center px-1 text-center">
         <Icon
           className={`size-8 ${isError ? "text-[#EF4444]" : "text-[#8B93B8]"}`}
         />
-        <p className="mt-2 text-sm font-medium text-[#0E1224]">
+        <p className="mt-2 max-w-full break-words text-sm font-medium text-[#0E1224]">
           {isError ? "Task overview could not be loaded" : "No tasks found"}
         </p>
-        <p className="mt-1 text-sm text-[#8B93B8]">
+        <p className="mt-1 max-w-full break-words text-sm text-[#8B93B8]">
           {error || "Your task overview will appear here."}
         </p>
         {onRetry && (
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 flex h-9 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
+            className="mt-4 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -177,30 +179,32 @@ export function TaskOverviewCard() {
   }
 
   return (
-    <article className="rounded-2xl bg-white p-6">
-      <header className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
-        <h2 className="text-xl font-medium text-[#0E1224]">Task Overview</h2>
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
+      <header className="flex items-center justify-between gap-3 border-b border-[#E4EAF8] pb-3 sm:pb-4">
+        <h2 className="text-base font-medium leading-6 text-[#0E1224] sm:text-xl sm:leading-7">
+          Task Overview
+        </h2>
         <Link
           href="/dashboard/tasks"
-          className="flex items-center gap-2 text-sm font-medium text-[#5B7FF0]"
+          className="-mr-2 flex min-h-11 shrink-0 items-center gap-1.5 px-2 text-sm font-medium text-[#5B7FF0]"
         >
           View All
           <ArrowRight className="size-4" />
         </Link>
       </header>
-      <div className="mt-4 flex flex-col items-center justify-center gap-7 sm:flex-row sm:justify-between">
+      <div className="mt-4 flex items-center justify-between gap-3 sm:gap-7">
         <div
-          className="relative flex size-[170px] shrink-0 items-center justify-center rounded-full"
+          className="relative flex size-32 shrink-0 items-center justify-center rounded-full sm:size-[170px]"
           style={{ background: donutBackground(counts) }}
         >
-          <div className="flex size-[110px] flex-col items-center justify-center rounded-full bg-white text-center">
+          <div className="flex size-[84px] flex-col items-center justify-center rounded-full bg-white text-center sm:size-[110px]">
             <strong className="text-xl font-medium text-[#0E1224]">
               {counts.total}
             </strong>
             <span className="text-xs text-[#0E1224]">Total tasks</span>
           </div>
         </div>
-        <div className="w-full max-w-[126px] space-y-4 text-sm text-[#0E1224]">
+        <div className="w-full max-w-[145px] space-y-3 text-sm text-[#0E1224] sm:max-w-[126px] sm:space-y-4">
           {taskSegments.map((segment) => (
             <p
               key={segment.key}
