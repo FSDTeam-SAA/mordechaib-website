@@ -131,12 +131,12 @@ function DashboardKpiCardsSkeleton() {
     <section
       aria-busy="true"
       aria-label="Loading dashboard summary"
-      className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+      className="grid gap-3 sm:gap-4 lg:grid-cols-2 2xl:grid-cols-4"
     >
       {cardStyles.map((card) => (
         <article
           key={card.label}
-          className="relative min-h-[156px] overflow-hidden rounded-lg bg-white p-4"
+          className="relative min-w-0 min-h-[148px] overflow-hidden rounded-xl bg-white p-4 sm:min-h-[156px]"
         >
           <div className="animate-pulse">
             <span className={`flex size-10 rounded-xl ${card.tint}`} />
@@ -164,24 +164,24 @@ function DashboardKpiCardsState({
   const Icon = isError ? AlertCircle : BarChart3;
 
   return (
-    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <article className="col-span-full flex min-h-[156px] flex-col items-center justify-center rounded-lg bg-white p-6 text-center">
+    <section className="grid gap-3 sm:gap-4 lg:grid-cols-2 2xl:grid-cols-4">
+      <article className="col-span-full flex min-h-[148px] min-w-0 w-full flex-col items-center justify-center overflow-hidden rounded-xl bg-white p-4 text-center sm:min-h-[156px] sm:p-6">
         <Icon
           className={`size-8 ${isError ? "text-[#EF4444]" : "text-[#8B93B8]"}`}
         />
-        <p className="mt-2 text-sm font-medium text-[#0E1224]">
+        <p className="mt-2 max-w-full break-words text-sm font-medium text-[#0E1224]">
           {isError
             ? "Dashboard summary could not be loaded"
             : "No dashboard summary found"}
         </p>
-        <p className="mt-1 text-sm text-[#8B93B8]">
+        <p className="mt-1 max-w-full break-words text-sm text-[#8B93B8]">
           {error || "There is no KPI data available for this workspace yet."}
         </p>
         {onRetry && (
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 flex h-9 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
+            className="mt-4 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -290,11 +290,11 @@ export function DashboardKpiCards() {
   ];
 
   return (
-    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <section className="grid gap-3 sm:gap-4 lg:grid-cols-2 2xl:grid-cols-4">
       {cards.map((card) => (
         <article
           key={card.label}
-          className="relative min-h-[156px] overflow-hidden rounded-lg bg-white p-4"
+          className="relative min-w-0 min-h-[148px] overflow-hidden rounded-xl bg-white p-4 sm:min-h-[156px]"
         >
           <span
             className={`flex size-10 items-center justify-center rounded-xl ${card.tint}`}
@@ -308,7 +308,7 @@ export function DashboardKpiCards() {
               className="size-5"
             />
           </span>
-          <div className="relative z-10 mt-2 max-w-[155px]">
+          <div className="relative z-10 mt-2 max-w-[calc(100%-116px)] sm:max-w-[155px]">
             <p className="text-2xl font-bold leading-normal text-[#0E1224]">
               {card.value}
             </p>

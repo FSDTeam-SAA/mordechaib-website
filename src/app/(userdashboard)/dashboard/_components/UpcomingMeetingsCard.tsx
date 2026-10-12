@@ -60,7 +60,7 @@ function UpcomingMeetingsSkeleton() {
     <article
       aria-busy="true"
       aria-label="Loading upcoming meetings"
-      className="rounded-2xl bg-white p-6"
+      className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6"
     >
       <div className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
         <div className="h-7 w-44 animate-pulse rounded bg-[#F5F7FF]" />
@@ -77,7 +77,7 @@ function UpcomingMeetingsSkeleton() {
           </div>
         ))}
       </div>
-      <div className="mt-4 h-[52px] w-full animate-pulse rounded-lg bg-[#F5F7FF]" />
+      <div className="mt-4 h-12 w-full animate-pulse rounded-lg bg-[#F5F7FF] sm:h-[52px]" />
     </article>
   );
 }
@@ -93,34 +93,34 @@ function UpcomingMeetingsState({
   const Icon = isError ? AlertCircle : CalendarX2;
 
   return (
-    <article className="rounded-2xl bg-white p-6">
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
       <DashboardSectionHeader action="View Calendar" href="/dashboard/calendar">
         Upcoming Meetings
       </DashboardSectionHeader>
-      <div className="flex min-h-[166px] flex-col items-center justify-center text-center">
+      <div className="flex min-h-[166px] w-full flex-col items-center justify-center px-1 text-center">
         <Icon
           className={`size-8 ${isError ? "text-[#EF4444]" : "text-[#8B93B8]"}`}
         />
-        <p className="mt-2 text-sm font-medium text-[#0E1224]">
+        <p className="mt-2 max-w-full break-words text-sm font-medium text-[#0E1224]">
           {isError
             ? "Upcoming meetings could not be loaded"
             : "No upcoming meetings"}
         </p>
-        <p className="mt-1 text-sm text-[#8B93B8]">
+        <p className="mt-1 max-w-full break-words text-sm text-[#8B93B8]">
           {error || "There are no upcoming meetings scheduled yet."}
         </p>
         {onRetry && (
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 flex h-9 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
+            className="mt-4 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
           >
             <RefreshCw className="size-4" />
             Try again
           </button>
         )}
       </div>
-      <button className="mt-4 h-[52px] w-full rounded-lg bg-[#5B7FF0] text-sm font-medium text-white">
+      <button className="mt-4 min-h-12 w-full rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white sm:min-h-[52px]">
         Schedule Meeting
       </button>
     </article>
@@ -182,21 +182,21 @@ export function UpcomingMeetingsCard() {
   }
 
   return (
-    <article className="rounded-2xl bg-white p-6">
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
       <DashboardSectionHeader action="View Calendar" href="/dashboard/calendar">
         Upcoming Meetings
       </DashboardSectionHeader>
       <div className="mt-4 space-y-2">
         {meetings.map((meeting, index) => (
-          <div key={meeting.id} className="flex gap-2 py-1">
+          <div key={meeting.id} className="flex min-w-0 gap-2 py-1">
             <span
               className={`w-1.5 rounded-full ${meetingAccents[index % meetingAccents.length]}`}
             />
-            <div>
-              <p className="text-sm font-medium text-[#0E1224]">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-[#0E1224]">
                 {meeting.title}
               </p>
-              <p className="mt-1 text-sm text-[#8B93B8]">
+              <p className="mt-1 text-sm leading-5 text-[#8B93B8]">
                 {formatMeetingTime(meeting.startsAt, meeting.timezone)}
                 <span className="mx-3">•</span>
                 {formatDuration(meeting.durationMinutes)}
@@ -205,7 +205,7 @@ export function UpcomingMeetingsCard() {
           </div>
         ))}
       </div>
-      <button className="mt-4 h-[52px] w-full rounded-lg bg-[#5B7FF0] text-sm font-medium text-white">
+      <button className="mt-4 min-h-12 w-full rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white sm:min-h-[52px]">
         Schedule Meeting
       </button>
     </article>

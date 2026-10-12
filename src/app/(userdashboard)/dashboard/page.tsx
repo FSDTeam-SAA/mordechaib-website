@@ -8,16 +8,16 @@ import { UpcomingMeetingsCard } from "./_components/UpcomingMeetingsCard";
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-4 p-4 pb-10">
+    <div className="w-full min-w-0 space-y-3 p-3 pb-8 sm:space-y-4 sm:p-4 sm:pb-10 lg:p-6">
       <DashboardKpiCards />
       <AiWorkforceCard />
 
-      <section className="grid gap-4 xl:grid-cols-2">
+      <section className="grid gap-3 sm:gap-4 lg:grid-cols-2">
         <UpcomingMeetingsCard />
         <ExecutiveBriefingCard />
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-3">
+      <section className="grid gap-3 sm:gap-4 xl:grid-cols-3">
         <RecentVoiceNotesCard />
         <TaskOverviewCard />
         <TopPrioritiesCard />
