@@ -6,6 +6,7 @@ import { Suspense, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   CalendarCheck2,
@@ -19,6 +20,7 @@ import {
   AlertCircle,
   RefreshCw,
   Eye,
+  Loader2,
 } from "lucide-react";
 import { CallDetailsSkeleton } from "../_components/CallDetailsSkeleton";
 import { PriorityTaskDetailsModal } from "../_components/PriorityTaskDetailsModal";
@@ -49,6 +51,7 @@ function CallDetailsContent() {
   );
   const accessToken = session?.user.accessToken;
   const [playing, setPlaying] = useState(false);
+  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState("All");
   const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
@@ -109,6 +112,53 @@ function CallDetailsContent() {
     [query, tab, transcript],
   );
 
+  const downloadReport = async () => {
+    const reportSourceId = details?.source.id;
+    if (!reportSourceId || !sourceType || !accessToken || isDownloadingReport) {
+      if (!accessToken) toast.error("Your session is missing. Please sign in again.");
+      else if (!reportSourceId) toast.error("Report source ID is missing.");
+      else if (!sourceType) toast.error("Report source type is missing.");
+      return;
+    }
+
+    setIsDownloadingReport(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/call-intelligence/${encodeURIComponent(reportSourceId)}/report?${new URLSearchParams({ sourceType })}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+
+      if (!response.ok) {
+        const result = (await response.json().catch(() => ({}))) as { message?: string | string[] };
+        const message = Array.isArray(result.message) ? result.message.join(", ") : result.message;
+        throw new Error(message || "Unable to download the report.");
+      }
+
+      const report = await response.blob();
+      if (!report.size) throw new Error("The downloaded report is empty.");
+
+      const disposition = response.headers.get("content-disposition");
+      const encodedFilename = disposition?.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
+      const plainFilename = disposition?.match(/filename="?([^";]+)"?/i)?.[1];
+      const filename = encodedFilename
+        ? decodeURIComponent(encodedFilename)
+        : plainFilename || `call-report-${reportSourceId}.pdf`;
+      const downloadUrl = URL.createObjectURL(report);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(downloadUrl);
+      toast.success("Report downloaded successfully.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to download the report.");
+    } finally {
+      setIsDownloadingReport(false);
+    }
+  };
+
   if (sessionStatus === "loading" || (Boolean(sourceType) && detailsQuery.isPending)) return <CallDetailsSkeleton />;
   if (!sourceType || detailsQuery.isError || !details) return <main className="min-h-[calc(100vh-83px)] p-4"><div className="flex min-h-[360px] flex-col items-center justify-center rounded-xl bg-white p-6 text-center"><AlertCircle className="size-10 text-[#EF4444]"/><h2 className="mt-3 text-lg font-semibold">Call details could not be loaded</h2><p className="mt-1 text-sm text-[#8B93B8]">{!sourceType ? "sourceType is missing from the URL." : detailsQuery.error instanceof Error ? detailsQuery.error.message : "Please try again."}</p>{sourceType && <button onClick={() => void detailsQuery.refetch()} className="mt-5 flex h-10 items-center gap-2 rounded-lg bg-[#5B7FF0] px-5 text-sm text-white"><RefreshCw className="size-4"/>Try again</button>}</div></main>;
 
@@ -129,9 +179,14 @@ function CallDetailsContent() {
             <Mail className="size-5" />
             Send Email
           </button>
-          <button className="inline-flex h-10 items-center gap-2 rounded-[10px] bg-[#5B7FF0] px-4 text-sm font-medium text-white">
-            <Download className="size-5" />
-            Download Report
+          <button
+            type="button"
+            onClick={() => void downloadReport()}
+            disabled={isDownloadingReport}
+            className="inline-flex h-10 items-center gap-2 rounded-[10px] bg-[#5B7FF0] px-4 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isDownloadingReport ? <Loader2 className="size-5 animate-spin" /> : <Download className="size-5" />}
+            {isDownloadingReport ? "Downloading..." : "Download Report"}
           </button>
         </div>
       </div>

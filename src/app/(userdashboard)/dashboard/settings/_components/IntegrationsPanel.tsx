@@ -137,6 +137,11 @@ export function IntegrationsPanel() {
   const [isGoogleDisconnectModalOpen, setIsGoogleDisconnectModalOpen] =
     useState(false);
   const [isGoogleDisconnecting, setIsGoogleDisconnecting] = useState(false);
+  const [isMetaConnecting, setIsMetaConnecting] = useState(false);
+  const [metaProviderToDisconnect, setMetaProviderToDisconnect] = useState<
+    "Facebook" | "Instagram" | null
+  >(null);
+  const [isMetaDisconnecting, setIsMetaDisconnecting] = useState(false);
   const [isTwilioModalOpen, setIsTwilioModalOpen] = useState(false);
   const [isTwilioDetailsOpen, setIsTwilioDetailsOpen] = useState(false);
   const [twilioDetails, setTwilioDetails] =
@@ -318,6 +323,62 @@ export function IntegrationsPanel() {
     }
   };
 
+  const connectMeta = async () => {
+    if (isMetaConnecting) return;
+
+    const accessToken = session?.user.accessToken;
+    if (!accessToken) {
+      toast.error("Your session is missing. Please sign in again.");
+      return;
+    }
+
+    const oauthWindow = window.open("about:blank", "_blank");
+    if (!oauthWindow) {
+      toast.error("Please allow pop-ups to connect Facebook and Instagram.");
+      return;
+    }
+
+    oauthWindow.document.title = "Connecting Meta...";
+    setIsMetaConnecting(true);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/meta/connect`,
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+      const result = (await response
+        .json()
+        .catch(() => ({}))) as OAuthConnectResponse;
+      const authorizationUrl =
+        result.data?.authorizationUrl ??
+        result.data?.url ??
+        result.data?.link ??
+        result.data?.redirectUrl ??
+        result.data?.authUrl ??
+        result.url ??
+        result.link ??
+        result.redirectUrl ??
+        result.authUrl;
+
+      if (!response.ok || result.success === false || !authorizationUrl) {
+        throw new Error(
+          result.message || "Unable to connect Facebook and Instagram.",
+        );
+      }
+
+      oauthWindow.location.href = authorizationUrl;
+    } catch (error) {
+      oauthWindow.close();
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Unable to connect Facebook and Instagram.",
+      );
+    } finally {
+      setIsMetaConnecting(false);
+    }
+  };
+
   const disconnectOutlookCalendar = async () => {
     if (isOutlookDisconnecting) return;
 
@@ -409,6 +470,54 @@ export function IntegrationsPanel() {
       );
     } finally {
       setIsGoogleDisconnecting(false);
+    }
+  };
+
+  const disconnectMeta = async () => {
+    if (isMetaDisconnecting) return;
+
+    const accessToken = session?.user.accessToken;
+    if (!accessToken) {
+      toast.error("Your session is missing. Please sign in again.");
+      return;
+    }
+
+    setIsMetaDisconnecting(true);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/meta/connection`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      const result = (await response
+        .json()
+        .catch(() => ({}))) as DisconnectResponse;
+      const message = Array.isArray(result.message)
+        ? result.message.join(", ")
+        : result.message;
+
+      if (!response.ok || result.success === false) {
+        throw new Error(message || "Unable to disconnect Meta account.");
+      }
+
+      setConnectedProviders((providers) => ({
+        ...providers,
+        FACEBOOK: false,
+        INSTAGRAM: false,
+      }));
+      setMetaProviderToDisconnect(null);
+      toast.success(message || "Meta account disconnected successfully.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Unable to disconnect Meta account.",
+      );
+    } finally {
+      setIsMetaDisconnecting(false);
     }
   };
 
@@ -515,6 +624,8 @@ export function IntegrationsPanel() {
       </header>
       <div className="grid gap-4 p-4 md:grid-cols-2">
         {integrations.map(([name, description, icon, connected]) => {
+          const isFacebook = name === "Facebook";
+          const isInstagram = name === "Instagram";
           const isOutlookCalendar = name === "Outlook Calendar";
           const isGoogleCalendar = name === "Google Account";
           const isHubSpot = name === "HubSpot CRM";
@@ -532,6 +643,8 @@ export function IntegrationsPanel() {
               initiallyConnected={connected}
               connected={isConnected}
               isLoading={
+                ((isFacebook || isInstagram) &&
+                  (isMetaConnecting || isMetaDisconnecting)) ||
                 (isOutlookCalendar && isOutlookConnecting) ||
                 (isOutlookCalendar && isOutlookDisconnecting) ||
                 (isGoogleCalendar && isGoogleConnecting) ||
@@ -544,7 +657,9 @@ export function IntegrationsPanel() {
                 isCheckingIntegrations
               }
               onConnect={
-                isOutlookCalendar && !isConnected
+                (isFacebook || isInstagram) && !isConnected
+                  ? () => void connectMeta()
+                  : isOutlookCalendar && !isConnected
                   ? () => void connectOutlookCalendar()
                   : isGoogleCalendar && !isConnected
                   ? () => void connectGoogleCalendar()
@@ -562,7 +677,11 @@ export function IntegrationsPanel() {
                   : undefined
               }
               onDisconnect={
-                isOutlookCalendar && isConnected
+                isFacebook && isConnected
+                  ? () => setMetaProviderToDisconnect("Facebook")
+                  : isInstagram && isConnected
+                  ? () => setMetaProviderToDisconnect("Instagram")
+                  : isOutlookCalendar && isConnected
                   ? () => setIsOutlookDisconnectModalOpen(true)
                   : isGoogleCalendar && isConnected
                   ? () => setIsGoogleDisconnectModalOpen(true)
@@ -610,6 +729,49 @@ export function IntegrationsPanel() {
         onOpenChange={setIsTwilioDetailsOpen}
         details={twilioDetails}
       />
+      <Dialog
+        open={Boolean(metaProviderToDisconnect)}
+        onOpenChange={(open) => {
+          if (!open && !isMetaDisconnecting) setMetaProviderToDisconnect(null);
+        }}
+      >
+        <DialogContent
+          overlayClassName="bg-[#0E1224]/40 backdrop-blur-[4px]"
+          className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-6 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
+        >
+          <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#EF4444]/10 text-[#EF4444]">
+            <Unplug className="size-5" />
+          </span>
+          <DialogTitle className="mt-4 text-xl font-semibold text-[#0E1224]">
+            Disconnect {metaProviderToDisconnect}?
+          </DialogTitle>
+          <DialogDescription className="mt-2 text-sm leading-6 text-[#73809B]">
+            This will disconnect your Meta connection, including Facebook and
+            Instagram. Are you sure you want to continue?
+          </DialogDescription>
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setMetaProviderToDisconnect(null)}
+              disabled={isMetaDisconnecting}
+              className="h-11 rounded-[10px] border border-[#DCE1EA] text-sm font-medium text-[#596079] disabled:opacity-60"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => void disconnectMeta()}
+              disabled={isMetaDisconnecting}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] bg-[#EF4444] text-sm font-medium text-white transition-colors hover:bg-[#DC2626] disabled:opacity-60"
+            >
+              {isMetaDisconnecting && (
+                <LoaderCircle className="size-4 animate-spin" />
+              )}
+              {isMetaDisconnecting ? "Disconnecting..." : "Disconnect"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
       <Dialog
         open={isOutlookDisconnectModalOpen}
         onOpenChange={(open) => {
