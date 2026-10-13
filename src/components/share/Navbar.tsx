@@ -102,12 +102,14 @@ const Navbar = () => {
               <button type="button" role="menuitem" onClick={() => void logout()} className="flex h-10 w-full items-center gap-2 rounded-lg px-3 text-left text-sm text-[#E5484D] hover:bg-red-50"><LogOut className="size-4" />Log out</button>
             </div>}
           </div> : <Link href="/login" className="rounded-[12px] border border-[#5B7FF0] font-medium text-[#5B7FF0] transition-colors hover:bg-[#5B7FF0] hover:text-white lg:px-4 lg:py-2 lg:text-sm xl:px-8 xl:py-3 xl:text-base">Sign In</Link>}
-          <Link
-            href="#trial"
-            className="rounded-[12px] bg-[#5B7FF0] font-semibold text-white shadow-sm transition-colors hover:bg-[#5B7FF0]/90 lg:px-4 lg:py-2 lg:text-sm xl:px-6 xl:py-3 xl:text-base"
-          >
-            Start Free Trial
-          </Link>
+          {status === "unauthenticated" && (
+            <Link
+              href="#trial"
+              className="rounded-[12px] bg-[#5B7FF0] font-semibold text-white shadow-sm transition-colors hover:bg-[#5B7FF0]/90 lg:px-4 lg:py-2 lg:text-sm xl:px-6 xl:py-3 xl:text-base"
+            >
+              Start Free Trial
+            </Link>
+          )}
         </div>
 
         <Sheet>
@@ -159,15 +161,17 @@ const Navbar = () => {
                   <SheetClose asChild><Link href="/dashboard" className="inline-flex h-12 items-center justify-center gap-2 rounded-[12px] border border-[#5B7FF0] text-sm font-semibold text-[#5B7FF0]"><LayoutDashboard className="size-4" />Dashboard</Link></SheetClose>
                   <button type="button" onClick={() => void logout()} className="inline-flex h-12 items-center justify-center gap-2 rounded-[12px] border border-red-200 text-sm font-semibold text-[#E5484D]"><LogOut className="size-4" />Log out</button>
                 </> : <SheetClose asChild><Link href="/login" className="inline-flex h-12 items-center justify-center rounded-[12px] border border-[#5B7FF0] text-sm font-semibold text-[#5B7FF0]">Sign In</Link></SheetClose>}
-                <SheetClose asChild>
-                  <Link
-                    href="#trial"
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-[12px] bg-[#5B7FF0] text-sm font-semibold text-white shadow-sm"
-                  >
-                    Start Free Trial
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </SheetClose>
+                {status === "unauthenticated" && (
+                  <SheetClose asChild>
+                    <Link
+                      href="#trial"
+                      className="inline-flex h-12 items-center justify-center gap-2 rounded-[12px] bg-[#5B7FF0] text-sm font-semibold text-white shadow-sm"
+                    >
+                      Start Free Trial
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </SheetClose>
+                )}
               </div>
             </div>
           </SheetContent>
