@@ -13,7 +13,9 @@ function layout({ children }: { children: React.ReactNode }) {
       <Suspense fallback={<HeaderFallback />}>
         <Header />
       </Suspense>
-      <main className="min-h-screen pt-[83px] md:ml-[260px]">{children}</main>
+      <main className="min-h-screen min-w-0 overflow-x-clip pt-[83px] md:ml-[260px]">
+        {children}
+      </main>
     </div>
   );
 }

@@ -53,16 +53,16 @@ function AiWorkforceCardSkeleton() {
     <section
       aria-busy="true"
       aria-label="Loading AI workforce"
-      className="rounded-2xl bg-white p-6"
+      className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6"
     >
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-3">
         <div>
           <div className="h-7 w-32 animate-pulse rounded bg-[#F5F7FF]" />
           <div className="mt-2 h-4 w-52 animate-pulse rounded bg-[#F5F7FF]" />
         </div>
         <div className="h-5 w-24 animate-pulse rounded bg-[#F5F7FF]" />
       </div>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
         {Array.from({ length: 6 }, (_, index) => (
           <div key={index} className="flex animate-pulse items-center gap-2">
             <div className="size-[60px] shrink-0 rounded-[12px] bg-[#F5F7FF]" />
@@ -89,37 +89,37 @@ function AiWorkforceCardState({
   const Icon = isError ? AlertCircle : UsersRound;
 
   return (
-    <section className="rounded-2xl bg-white p-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-xl font-medium text-[#0E1224]">Ai Workforce</h2>
+    <section className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-base font-medium text-[#0E1224] sm:text-xl">Ai Workforce</h2>
           <p className="mt-1 text-sm text-[#8B93B8]">
             Your specialist AI agents working.
           </p>
         </div>
         <Link
           href="/dashboard/agents"
-          className="flex items-center gap-2 text-sm font-medium text-[#5B7FF0]"
+          className="-mr-2 flex min-h-11 shrink-0 items-center gap-1.5 px-2 text-sm font-medium text-[#5B7FF0]"
         >
           View all agents
           <ArrowRight className="size-4" />
         </Link>
       </div>
-      <div className="flex min-h-[104px] flex-col items-center justify-center text-center">
+      <div className="flex min-h-[104px] w-full flex-col items-center justify-center px-1 text-center">
         <Icon
           className={`size-8 ${isError ? "text-[#EF4444]" : "text-[#8B93B8]"}`}
         />
-        <p className="mt-2 text-sm font-medium text-[#0E1224]">
+        <p className="mt-2 max-w-full break-words text-sm font-medium text-[#0E1224]">
           {isError ? "AI workforce could not be loaded" : "No AI agents found"}
         </p>
-        <p className="mt-1 text-sm text-[#8B93B8]">
+        <p className="mt-1 max-w-full break-words text-sm text-[#8B93B8]">
           {error || "There are no AI agents available for this workspace yet."}
         </p>
         {onRetry && (
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 flex h-9 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
+            className="mt-4 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -190,40 +190,40 @@ export function AiWorkforceCard() {
   }
 
   return (
-    <section className="rounded-2xl bg-white p-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-xl font-medium text-[#0E1224]">Ai Workforce</h2>
+    <section className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-base font-medium text-[#0E1224] sm:text-xl">Ai Workforce</h2>
           <p className="mt-1 text-sm text-[#8B93B8]">
             Your specialist AI agents working.
           </p>
         </div>
         <Link
           href="/dashboard/agents"
-          className="flex items-center gap-2 text-sm font-medium text-[#5B7FF0]"
+          className="-mr-2 flex min-h-11 shrink-0 items-center gap-1.5 px-2 text-sm font-medium text-[#5B7FF0]"
         >
           View all agents
           <ArrowRight className="size-4" />
         </Link>
       </div>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {agents?.slice(0,6)?.map((agent) => {
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
+        {agents?.slice(0, 6)?.map((agent) => {
           const isActive =
             agent.runtimeStatus === "ACTIVE" ||
             agent.runtimeStatus === "WORKING";
 
           return (
-            <div key={agent.id} className="flex items-center gap-2">
+            <div key={agent.id} className="flex min-w-0 items-center gap-2">
               <Image
                 src={agent?.imageUrl || "/images/no-user.jpeg"}
                 alt={`${agent.name} profile`}
                 width={60}
                 height={60}
                 unoptimized
-                className="size-[60px] shrink-0 rounded-[12px] object-cover"
+                className="size-[60px] shrink-0 rounded-[12px] object-contain border"
               />
-              <div className="min-w-0">
-                <p className="font-medium text-[#0E1224]">{agent.name}</p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium text-[#0E1224]">{agent.name}</p>
                 <p className="truncate text-xs text-[#8B93B8]">
                   {roleLabel(agent.type)}
                 </p>

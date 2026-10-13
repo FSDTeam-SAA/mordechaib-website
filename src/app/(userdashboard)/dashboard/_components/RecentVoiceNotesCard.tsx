@@ -66,7 +66,7 @@ function RecentVoiceNotesSkeleton() {
     <article
       aria-busy="true"
       aria-label="Loading recent voice notes"
-      className="rounded-2xl bg-white p-6"
+      className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6"
     >
       <div className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
         <div className="h-7 w-40 animate-pulse rounded bg-[#F5F7FF]" />
@@ -98,25 +98,27 @@ function RecentVoiceNotesState({
   const Icon = isError ? AlertCircle : MicOff;
 
   return (
-    <article className="rounded-2xl bg-white p-6">
-      <DashboardSectionHeader>Recent Voice Notes</DashboardSectionHeader>
-      <div className="flex min-h-[214px] flex-col items-center justify-center text-center">
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
+      <DashboardSectionHeader href="/dashboard/call-intelligence">
+        Recent Voice Notes
+      </DashboardSectionHeader>
+      <div className="flex min-h-[214px] w-full flex-col items-center justify-center px-1 text-center">
         <Icon
           className={`size-8 ${isError ? "text-[#EF4444]" : "text-[#8B93B8]"}`}
         />
-        <p className="mt-2 text-sm font-medium text-[#0E1224]">
+        <p className="mt-2 max-w-full break-words text-sm font-medium text-[#0E1224]">
           {isError
             ? "Recent voice notes could not be loaded"
             : "No recent voice notes"}
         </p>
-        <p className="mt-1 text-sm text-[#8B93B8]">
+        <p className="mt-1 max-w-full break-words text-sm text-[#8B93B8]">
           {error || "Your recent voice notes will appear here."}
         </p>
         {onRetry && (
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 flex h-9 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
+            className="mt-4 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -182,19 +184,21 @@ export function RecentVoiceNotesCard() {
   }
 
   return (
-    <article className="rounded-2xl bg-white p-6">
-      <DashboardSectionHeader>Recent Voice Notes</DashboardSectionHeader>
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
+      <DashboardSectionHeader href="/dashboard/call-intelligence">
+        Recent Voice Notes
+      </DashboardSectionHeader>
       <div className="mt-4 space-y-5">
         {voiceNotes.map((voiceNote) => (
-          <div key={voiceNote.sourceId} className="flex gap-2">
+          <div key={voiceNote.sourceId} className="flex min-w-0 gap-2">
             <span className="flex size-6 shrink-0 items-center justify-center rounded bg-[#5B7FF0]/10 text-[#5B7FF0]">
               <Mic className="size-4" />
             </span>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-[#0E1224]">
                 {voiceNote.title}
               </p>
-              <p className="mt-2 text-xs text-[#8B93B8]">
+              <p className="mt-1.5 text-xs leading-5 text-[#8B93B8]">
                 {formatRelativeTime(voiceNote.occurredAt)} ·{" "}
                 {formatAgent(voiceNote.agent, voiceNote.reviewStatus)} ·{" "}
                 {voiceNote.taskCount} tasks
