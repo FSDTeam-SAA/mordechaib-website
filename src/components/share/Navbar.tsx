@@ -102,14 +102,14 @@ const Navbar = () => {
               <button type="button" role="menuitem" onClick={() => void logout()} className="flex h-10 w-full items-center gap-2 rounded-lg px-3 text-left text-sm text-[#E5484D] hover:bg-red-50"><LogOut className="size-4" />Log out</button>
             </div>}
           </div> : <Link href="/login" className="rounded-[12px] border border-[#5B7FF0] font-medium text-[#5B7FF0] transition-colors hover:bg-[#5B7FF0] hover:text-white lg:px-4 lg:py-2 lg:text-sm xl:px-8 xl:py-3 xl:text-base">Sign In</Link>}
-          {status === "unauthenticated" && (
+          {/* {status === "unauthenticated" && (
             <Link
               href="#trial"
               className="rounded-[12px] bg-[#5B7FF0] font-semibold text-white shadow-sm transition-colors hover:bg-[#5B7FF0]/90 lg:px-4 lg:py-2 lg:text-sm xl:px-6 xl:py-3 xl:text-base"
             >
               Start Free Trial
             </Link>
-          )}
+          )} */}
         </div>
 
         <Sheet>
