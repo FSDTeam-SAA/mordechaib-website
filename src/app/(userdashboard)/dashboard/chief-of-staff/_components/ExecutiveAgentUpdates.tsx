@@ -1,5 +1,13 @@
 import Image from "next/image";
-import { agents } from "../../agents/_components/agentData";
+
+const agents = [
+  { id: "steve", name: "Steve", role: "Sales Agent", image: "/profile.png", color: "#5B9CD5" },
+  { id: "cassie", name: "Cassie", role: "Support Agent", image: "/cassie.png", color: "#06B6D4" },
+  { id: "vizzy", name: "Vizzy", role: "Operations Agent", image: "/vizzy.png", color: "#D24FC7" },
+  { id: "dexter", name: "Dexter", role: "Strategy Agent", image: "/dexter.png", color: "#5B7FF0" },
+  { id: "havi", name: "Havi", role: "Design Agent", image: "/havi.png", color: "#F59E0B" },
+  { id: "soshie", name: "Soshie", role: "Marketing Agent", image: "/shshie.png", color: "#10B981" },
+] as const;
 
 const updates = [
   ["New enterprise lead", "Contract updated", "Proposal shared"],

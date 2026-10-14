@@ -1,4 +1,5 @@
 import { Check, Play } from "lucide-react";
+import { formatDuration, formatMetric, type AgentDashboardData } from "./agentDashboardTypes";
 const rows = (items: readonly (readonly [string, string])[]) => (
   <div className="mt-4 space-y-2">
     {items.map(([label, value]) => (
@@ -12,7 +13,11 @@ const rows = (items: readonly (readonly [string, string])[]) => (
     ))}
   </div>
 );
-export function AgentMetricsPanels() {
+export function AgentMetricsPanels({ data }: { data: AgentDashboardData }) {
+  const { capacity } = data.summary;
+  const jobs = data.items.reduce((totals, agent) => ({ succeeded: totals.succeeded + agent.performance.succeededJobs, failed: totals.failed + agent.performance.failedJobs, retries: totals.retries + agent.performance.retryAttempts, processingMs: totals.processingMs + (agent.performance.averageProcessingTimeMs ?? 0), timed: totals.timed + (agent.performance.averageProcessingTimeMs === null ? 0 : 1) }), { succeeded: 0, failed: 0, retries: 0, processingMs: 0, timed: 0 });
+  const compliance = data.items.find((agent) => agent.compliance.availability === "AVAILABLE")?.compliance;
+  const revenue = data.items.find((agent) => agent.revenueAttribution.availability === "AVAILABLE")?.revenueAttribution;
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <section className="rounded-2xl bg-white p-6">
@@ -23,21 +28,20 @@ export function AgentMetricsPanels() {
           <div
             className="flex size-[160px] shrink-0 items-center justify-center rounded-full"
             style={{
-              background:
-                "conic-gradient(#10B981 0 78%,#F59E0B 78% 93%,#EF4444 93% 98%,#8B93B8 98%)",
+              background: `conic-gradient(#10B981 0 ${capacity.utilizationPercent ?? 0}%,#E4EAF8 ${capacity.utilizationPercent ?? 0}% 100%)`,
             }}
           >
             <div className="flex size-[134px] flex-col items-center justify-center rounded-full bg-white">
-              <strong className="text-2xl">80%</strong>
-              <span className="text-xs">Overall Capacity</span>
+              <strong className="text-2xl">{capacity.utilizationPercent === null ? "—" : `${capacity.utilizationPercent}%`}</strong>
+              <span className="text-xs">Utilization</span>
             </div>
           </div>
           <div className="w-full space-y-3 text-sm">
             {[
-              ["Normal Load", "78%", "#10B981"],
-              ["High Load", "15%", "#F59E0B"],
-              ["Overloaded", "5%", "#EF4444"],
-              ["Idle", "2%", "#8B93B8"],
+              ["Configured Agents", String(capacity.configuredAgents), "#10B981"],
+              ["Running Jobs", String(capacity.runningJobs), "#5B7FF0"],
+              ["Queued Jobs", formatMetric(capacity.queuedJobs), "#F59E0B"],
+              ["Retrying Jobs", formatMetric(capacity.retryingJobs), "#EF4444"],
             ].map(([label, value, color]) => (
               <div key={label} className="flex items-center gap-2">
                 <i
@@ -57,10 +61,10 @@ export function AgentMetricsPanels() {
         </h2>
         <div className="mt-4 space-y-2">
           {[
-            ["Actions Logged", "100%"],
-            ["Approval Workflows", "92%"],
-            ["Compliance Score", "95%"],
-            ["Risk Alerts", "1"],
+            ["Compliance Score", compliance ? formatMetric(compliance) : "Unavailable"],
+            ["Approval Required", String(data.items.filter((agent) => agent.organizationSettings.approvalRequired).length)],
+            ["Enabled Agents", String(data.summary.enabledAgents)],
+            ["Working Agents", String(data.summary.workingAgents)],
           ].map(([label, value], i) => (
             <div
               key={label}
@@ -68,7 +72,7 @@ export function AgentMetricsPanels() {
             >
               <span className="flex-1 text-sm text-[#8B93B8]">{label}</span>
               <strong className="text-sm">{value}</strong>
-              {i < 3 && (
+              {i > 0 && (
                 <Check className="size-5 rounded border border-[#10B981] text-[#10B981]" />
               )}
             </div>
@@ -80,10 +84,10 @@ export function AgentMetricsPanels() {
           Revenue Attribution
         </h2>
         {rows([
-          ["Revenue Influenced", "$48,760"],
-          ["Deals Touched", "27"],
-          ["Upsell Contribution", "$12,430"],
-          ["Renewal Support Impact", "$6,230"],
+          ["Revenue Attribution", revenue ? formatMetric(revenue) : "Unavailable"],
+          ["Proposals", String(data.items.reduce((sum, agent) => sum + agent.performance.proposals.total, 0))],
+          ["Approved", String(data.items.reduce((sum, agent) => sum + agent.performance.proposals.approved, 0))],
+          ["Executed", String(data.items.reduce((sum, agent) => sum + agent.performance.proposals.executed, 0))],
         ])}
       </section>
       <section className="rounded-2xl bg-white p-6">
@@ -91,20 +95,20 @@ export function AgentMetricsPanels() {
           Agent Health &amp; Diagnostics
         </h2>
         {rows([
-          ["System Health", "98%"],
-          ["Error Rate", "2.1%"],
-          ["AVG. Response Time", "1.2s"],
-          ["Reliability Score", "96%"],
+          ["Succeeded Jobs", String(jobs.succeeded)],
+          ["Failed Jobs", String(jobs.failed)],
+          ["Retry Attempts", String(jobs.retries)],
+          ["AVG. Processing Time", jobs.timed ? formatDuration(jobs.processingMs / jobs.timed) : "—"],
         ])}
       </section>
     </div>
   );
 }
-export function ActiveBadge() {
+export function ActiveBadge({ active = true }: { active?: boolean }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-lg bg-[#10B981]/10 px-2 py-1 text-sm text-[#10B981]">
+    <span className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm ${active ? "bg-[#10B981]/10 text-[#10B981]" : "bg-[#ADAAAA]/15 text-[#8B93B8]"}`}>
       <Play className="size-4" />
-      Active
+      {active ? "Active" : "Inactive"}
     </span>
   );
 }
