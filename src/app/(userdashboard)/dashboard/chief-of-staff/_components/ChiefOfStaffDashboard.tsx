@@ -10,7 +10,7 @@ import { ExecutiveBriefings } from "./ExecutiveBriefings";
 import { LauraConversation } from "./LauraConversation";
 
 type ApiEnvelope<T> = { success?: boolean; data?: T; message?: string | string[] };
-type ConversationList = { items: ChiefConversation[] };
+type ConversationList = { items: ChiefConversation[]; pagination: { page: number; pages: number } };
 type MessagePreviewPayload = { items: Array<{ content?: string | null }> };
 
 function apiError(result: ApiEnvelope<unknown>, fallback: string) {
@@ -28,12 +28,16 @@ export function ChiefOfStaffDashboard() {
   const [conversations, setConversations] = useState<ChiefConversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
+  const [isLoadingMoreConversations, setIsLoadingMoreConversations] = useState(false);
+  const [conversationPage, setConversationPage] = useState(1);
+  const [hasMoreConversations, setHasMoreConversations] = useState(false);
   const [conversationError, setConversationError] = useState<string | null>(null);
   const accessToken = session?.user.accessToken;
 
-  const loadConversations = useCallback(async () => {
+  const loadConversations = useCallback(async (page = 1, append = false) => {
     if (!accessToken) return;
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/messages/conversations?page=1&limit=30`, { headers: { Authorization: `Bearer ${accessToken}` } });
+    if (append) setIsLoadingMoreConversations(true);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/messages/conversations?page=${page}&limit=5`, { headers: { Authorization: `Bearer ${accessToken}` } });
     const result = (await response.json().catch(() => ({}))) as ApiEnvelope<ConversationList>;
     if (!response.ok || !result.success || !result.data) throw new Error(apiError(result, "Unable to load your conversations."));
     const conversationsWithPreviews = await Promise.all(result.data.items.map(async (conversation) => {
@@ -47,7 +51,13 @@ export function ChiefOfStaffDashboard() {
         return conversation;
       }
     }));
-    setConversations(conversationsWithPreviews);
+    setConversations((current) => append
+      ? [...current, ...conversationsWithPreviews.filter((conversation) => !current.some((item) => item._id === conversation._id))]
+      : conversationsWithPreviews,
+    );
+    setConversationPage(result.data.pagination.page);
+    setHasMoreConversations(result.data.pagination.page < result.data.pagination.pages);
+    if (append) setIsLoadingMoreConversations(false);
   }, [accessToken]);
 
   useEffect(() => {
@@ -65,10 +75,10 @@ export function ChiefOfStaffDashboard() {
     );
   }
 
-  async function createNewChat() {
+  async function createNewChat(): Promise<string | null> {
     if (!accessToken) {
       setConversationError("Your session is missing. Please sign in again.");
-      return;
+      return null;
     }
     setIsCreatingConversation(true);
     setConversationError(null);
@@ -80,10 +90,13 @@ export function ChiefOfStaffDashboard() {
       });
       const result = (await response.json().catch(() => ({}))) as ApiEnvelope<ChiefConversation>;
       if (!response.ok || !result.success || !result.data?._id) throw new Error(apiError(result, "Unable to create a new chat."));
-      setConversations((current) => [result.data!, ...current.filter((conversation) => conversation._id !== result.data!._id)]);
+      setConversations((current) => [result.data!, ...current.filter((conversation) => conversation._id !== result.data!._id)].slice(0, 5));
       setActiveConversationId(result.data._id);
+      void loadConversations();
+      return result.data._id;
     } catch (error) {
       setConversationError(error instanceof Error ? error.message : "Unable to create a new chat.");
+      return null;
     } finally {
       setIsCreatingConversation(false);
     }
@@ -101,15 +114,23 @@ export function ChiefOfStaffDashboard() {
     if (moveToTop) void loadConversations();
   }, [loadConversations]);
 
+  const loadMoreConversations = useCallback(() => {
+    if (isLoadingMoreConversations || !hasMoreConversations) return;
+    void loadConversations(conversationPage + 1, true).catch((error) => {
+      setConversationError(error instanceof Error ? error.message : "Unable to load more conversations.");
+      setIsLoadingMoreConversations(false);
+    });
+  }, [conversationPage, hasMoreConversations, isLoadingMoreConversations, loadConversations]);
+
   return (
     <main className="min-h-[calc(100vh-83px)] bg-[#F5F7FF] p-3 text-[#0E1224] sm:p-4">
       <ChiefNavigation activeTab={activeTab} onTabChange={changeTab} />
       {activeTab === "ask" ? (
         <>
           <AgentStatusBar />
-          <div className="grid items-start lg:grid-cols-[348px_minmax(0,1fr)]">
-            <ChiefSidebar conversations={conversations} activeConversationId={activeConversationId} isCreatingConversation={isCreatingConversation} error={conversationError} onNewChat={() => void createNewChat()} onSelectConversation={setActiveConversationId} />
-            <LauraConversation conversationId={activeConversationId} accessToken={accessToken} sessionStatus={sessionStatus} onConversationUpdated={handleConversationUpdated} />
+          <div className="mt-3 grid items-start gap-3 lg:grid-cols-[348px_minmax(0,1fr)]">
+            <ChiefSidebar conversations={conversations} activeConversationId={activeConversationId} isCreatingConversation={isCreatingConversation} isLoadingMore={isLoadingMoreConversations} hasMore={hasMoreConversations} error={conversationError} onNewChat={() => void createNewChat()} onSelectConversation={setActiveConversationId} onLoadMore={loadMoreConversations} />
+            <LauraConversation conversationId={activeConversationId} accessToken={accessToken} sessionStatus={sessionStatus} onConversationUpdated={handleConversationUpdated} onStartConversation={createNewChat} />
           </div>
         </>
       ) : (
