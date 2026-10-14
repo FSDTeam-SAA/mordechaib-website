@@ -75,10 +75,10 @@ export function ChiefOfStaffDashboard() {
     );
   }
 
-  async function createNewChat() {
+  async function createNewChat(): Promise<string | null> {
     if (!accessToken) {
       setConversationError("Your session is missing. Please sign in again.");
-      return;
+      return null;
     }
     setIsCreatingConversation(true);
     setConversationError(null);
@@ -93,8 +93,10 @@ export function ChiefOfStaffDashboard() {
       setConversations((current) => [result.data!, ...current.filter((conversation) => conversation._id !== result.data!._id)].slice(0, 5));
       setActiveConversationId(result.data._id);
       void loadConversations();
+      return result.data._id;
     } catch (error) {
       setConversationError(error instanceof Error ? error.message : "Unable to create a new chat.");
+      return null;
     } finally {
       setIsCreatingConversation(false);
     }
@@ -126,9 +128,9 @@ export function ChiefOfStaffDashboard() {
       {activeTab === "ask" ? (
         <>
           <AgentStatusBar />
-          <div className="grid items-start lg:grid-cols-[348px_minmax(0,1fr)]">
+          <div className="mt-3 grid items-start gap-3 lg:grid-cols-[348px_minmax(0,1fr)]">
             <ChiefSidebar conversations={conversations} activeConversationId={activeConversationId} isCreatingConversation={isCreatingConversation} isLoadingMore={isLoadingMoreConversations} hasMore={hasMoreConversations} error={conversationError} onNewChat={() => void createNewChat()} onSelectConversation={setActiveConversationId} onLoadMore={loadMoreConversations} />
-            <LauraConversation conversationId={activeConversationId} accessToken={accessToken} sessionStatus={sessionStatus} onConversationUpdated={handleConversationUpdated} />
+            <LauraConversation conversationId={activeConversationId} accessToken={accessToken} sessionStatus={sessionStatus} onConversationUpdated={handleConversationUpdated} onStartConversation={createNewChat} />
           </div>
         </>
       ) : (

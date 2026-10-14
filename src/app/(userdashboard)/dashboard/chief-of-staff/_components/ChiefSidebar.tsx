@@ -67,7 +67,7 @@ export function ChiefSidebar({ conversations, activeConversationId, isCreatingCo
   }
 
   return (
-    <aside className="space-y-4 py-4 lg:pr-4">
+    <aside className="space-y-3">
       <section className="overflow-hidden rounded-lg bg-white p-3">
         <div className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
           <h2 className="text-base font-medium">Recent</h2>
