@@ -1,13 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { agents } from "./agentData";
-
-const inactiveAgentIds = new Set(["steve", "cassie"]);
+import { agentColor, roleLabel, type AgentDashboardItem } from "./agentDashboardTypes";
 
 export function AgentQuickActions({
   activeAgentId,
+  agents,
 }: {
   activeAgentId: string;
+  agents: AgentDashboardItem[];
 }) {
   return (
     <aside className="rounded-2xl bg-white p-3">
@@ -15,9 +15,9 @@ export function AgentQuickActions({
         Quick Actions
       </h2>
       <div className="mt-4 space-y-4">
-        {agents.map((agent) => {
+        {agents.map((agent, index) => {
           const active = agent.id === activeAgentId;
-          const inactive = inactiveAgentIds.has(agent.id);
+          const enabled = agent.organizationSettings.enabled;
           return (
             <Link
               href={`/dashboard/agents/${agent.id}`}
@@ -25,7 +25,7 @@ export function AgentQuickActions({
               className={`relative flex min-h-[60px] items-center overflow-hidden rounded-sm ${active ? "gap-3 bg-[#F5F7FF] py-1 pl-4 pr-3 before:absolute before:left-0 before:h-6 before:w-1 before:rounded-r-full before:bg-[#5B7FF0]" : "gap-4 pr-2"}`}
             >
               <Image
-                src={agent.image}
+                src={agent.imageUrl}
                 alt={agent.name}
                 width={60}
                 height={60}
@@ -37,13 +37,13 @@ export function AgentQuickActions({
                 </strong>
                 <span
                   className="mt-2 block text-xs"
-                  style={{ color: agent.color }}
+                  style={{ color: agentColor(index) }}
                 >
-                  {agent.role}
+                  {roleLabel(agent.type)}
                 </span>
               </span>
               <span className="flex shrink-0 flex-col items-end gap-2">
-                {inactive ? (
+                {!enabled ? (
                   <span className="rounded-xl bg-[#ADAAAA]/15 px-2 py-1 text-xs text-[#8B93B8]">
                     Deactivate
                   </span>
@@ -52,7 +52,7 @@ export function AgentQuickActions({
                     Active
                   </span>
                 )}
-                <span className="text-xs text-[#8B93B8]">99% Success</span>
+                <span className="text-xs text-[#8B93B8]">{agent.performance.successRatePercent === null ? "No job data" : `${agent.performance.successRatePercent}% Success`}</span>
               </span>
             </Link>
           );
