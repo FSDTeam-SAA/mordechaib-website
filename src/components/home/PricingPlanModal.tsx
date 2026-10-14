@@ -104,7 +104,7 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
                 : "text-[#5B7FF0] hover:bg-[#EEF3FF]"
             }`}
           >
-            Start Free Trial
+            Choose a Plan
           </button>
         </DialogTrigger>
       )}
