@@ -6,7 +6,11 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import NotificationPanel from "./NotificationPanel";
 
-export default function Header() {
+type HeaderProps = {
+  sidebarCollapsed: boolean;
+};
+
+export default function Header({ sidebarCollapsed }: HeaderProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -17,6 +21,7 @@ export default function Header() {
   const isCalendarPage = pathname.startsWith("/dashboard/calendar");
   const isCrmPage = pathname.startsWith("/dashboard/crm");
   const isAgentsPage = pathname.startsWith("/dashboard/agents");
+  const isOperationalDiagnosticPage = pathname.startsWith("/dashboard/operational-diagnostic");
   const isChiefOfStaffPage = pathname.startsWith("/dashboard/chief-of-staff");
   const isCrmDetailsPage = /^\/dashboard\/crm\/[^/]+$/.test(pathname);
   const isCallIntelligencePage = pathname.startsWith(
@@ -47,6 +52,8 @@ export default function Header() {
       ? "Meeting Calendar"
       : isRoiPage
         ? "ROI Dashboard"
+        : isOperationalDiagnosticPage
+          ? "Operational Diagnostic"
         : isSettingsPage
           ? "Settings"
           : isTaskPage
@@ -58,7 +65,7 @@ export default function Header() {
                 : "Dashboard";
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-30 flex h-[83px] items-center justify-between bg-white px-4 md:left-[260px] md:px-6">
+    <header className={`fixed left-0 right-0 top-0 z-30 flex h-[83px] items-center justify-between bg-white px-4 transition-[left] duration-300 md:px-6 ${sidebarCollapsed ? "md:left-[88px]" : "md:left-[280px]"}`}>
       <div className="ml-12 min-w-0 md:ml-0">
         <h1 className="text-xl font-medium leading-normal text-[#0E1224] sm:text-2xl">
           {title}
@@ -69,6 +76,7 @@ export default function Header() {
         isTaskPage ||
         isCrmPage ||
         isAgentsPage ||
+        isOperationalDiagnosticPage ||
         isChiefOfStaffPage ? (
           <p className="hidden items-center text-sm font-medium text-[#8B93B8] sm:flex">
             Dashboard <span className="mx-2 text-[#5B7FF0]">›</span>
@@ -102,6 +110,8 @@ export default function Header() {
                     ? "ROI Dashboard"
                     : isAgentsPage
                       ? "AI Agents"
+                      : isOperationalDiagnosticPage
+                        ? "Operational Diagnostic"
                       : isCrmDetailsPage
                         ? "View Details"
                         : isCrmPage
