@@ -11,6 +11,7 @@ import {
   Bot,
   CalendarDays,
   CheckSquare,
+  ClipboardCheck,
   ChevronLeft,
   ChevronRight,
   Crown,
@@ -57,10 +58,16 @@ const navigation = [
   { name: "ROI Dashboard", href: "/dashboard/roll-dashboard", icon: BarChart3 },
   { name: "Task", href: "/dashboard/tasks", icon: CheckSquare },
   { name: "Calendar", href: "/dashboard/calendar", icon: CalendarDays },
+  { name: "Operational Diagnostic", href: "/dashboard/operational-diagnostic", icon: ClipboardCheck },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+type SidebarProps = {
+  collapsed: boolean;
+  onCollapsedChange: (collapsed: boolean) => void;
+};
+
+export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
   const pathname = usePathname();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -96,12 +103,13 @@ export function Sidebar() {
       )}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-[260px] flex-col gap-4 overflow-hidden bg-white p-4 transition-transform duration-300 md:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col gap-4 overflow-hidden bg-white p-4 transition-[transform,width] duration-300 md:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full",
+          collapsed && "md:w-[88px]",
         )}
       >
-        <div className="flex h-8 items-center justify-between border-b border-[#F5F7FF] pb-4 box-content">
-          <Link href="/" aria-label="Go to Noltra.ai home page">
+        <div className={cn("flex h-8 items-center justify-between border-b border-[#F5F7FF] pb-4 box-content", collapsed && "md:justify-center")}>
+          <Link href="/" aria-label="Go to Noltra.ai home page" className={cn(collapsed && "md:hidden")}>
             <Image
               src="/logo2.png"
               alt="Noltra.ai"
@@ -112,12 +120,20 @@ export function Sidebar() {
           </Link>
           <button
             type="button"
-            onClick={() => setOpen(false)}
-            aria-label="Collapse navigation"
-            className="flex size-8 items-center justify-center rounded-lg bg-[#F5F7FF]/50 text-[#C6CCE2]"
+            onClick={() => onCollapsedChange(!collapsed)}
+            aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
+            aria-expanded={!collapsed}
+            className="hidden size-8 items-center justify-center rounded-lg bg-[#F5F7FF]/50 text-[#C6CCE2] md:flex"
           >
-            <ChevronLeft className="hidden size-5 md:block" />
-            <X className="size-5 md:hidden" />
+            {collapsed ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label="Close navigation"
+            className="flex size-8 items-center justify-center rounded-lg bg-[#F5F7FF]/50 text-[#C6CCE2] md:hidden"
+          >
+            <X className="size-5" />
           </button>
         </div>
         {/* <label className="flex h-10 items-center gap-2 rounded-lg border border-[#8B93B8]/10 px-[13px] text-[#8B93B8]">
@@ -131,7 +147,7 @@ export function Sidebar() {
             ⌘K
           </kbd>
         </label> */}
-        <nav className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <nav className={cn("flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", collapsed && "md:items-center")}>
           <div className="flex flex-col gap-2 border-b border-[#E4EAF8] pb-2">
             {navigation.map((item) => {
               const active =
@@ -143,37 +159,44 @@ export function Sidebar() {
                   key={item.name}
                   href={item.href}
                   onClick={() => setOpen(false)}
+                  aria-label={collapsed ? item.name : undefined}
+                  title={collapsed ? item.name : undefined}
                   className={cn(
-                    "flex h-12 items-center gap-2 rounded-[8px] px-4 text-base font-medium transition-colors",
+                    "flex h-12 items-center gap-2 rounded-[8px] text-base font-medium transition-colors",
+                    collapsed ? "px-4 md:w-12 md:justify-center md:px-0" : "px-4",
                     active
                       ? "border-l-2 border-[#5B7FF0] bg-[#5B7FF0]/10 text-[#5B7FF0]"
                       : "text-[#6B6B6B] hover:bg-[#F5F7FF] hover:text-[#5B7FF0]",
                   )}
                 >
                   <item.icon className="size-6 shrink-0" strokeWidth={1.6} />
-                  {item.name}
+                  <span className={cn("whitespace-nowrap", collapsed && "md:hidden")}>{item.name}</span>
                 </Link>
               );
             })}
           </div>
           <Link
             href="/dashboard/support"
-            className={cn("flex h-12 items-center gap-2 rounded-lg px-4 text-base font-medium hover:bg-[#F5F7FF]", pathname.startsWith("/dashboard/support") ? "border-l-2 border-[#5B7FF0] bg-[#5B7FF0]/10 text-[#5B7FF0]" : "text-[#6B6B6B]")}
+            aria-label={collapsed ? "Help & Support" : undefined}
+            title={collapsed ? "Help & Support" : undefined}
+            className={cn("flex h-12 items-center gap-2 rounded-lg text-base font-medium hover:bg-[#F5F7FF]", collapsed ? "px-4 md:w-12 md:justify-center md:px-0" : "px-4", pathname.startsWith("/dashboard/support") ? "border-l-2 border-[#5B7FF0] bg-[#5B7FF0]/10 text-[#5B7FF0]" : "text-[#6B6B6B]")}
           >
             <Headphones className="size-6" strokeWidth={1.6} />
-            Help &amp; Support
+            <span className={cn("whitespace-nowrap", collapsed && "md:hidden")}>Help &amp; Support</span>
           </Link>
           <button
             type="button"
             onClick={() => setIsLogoutModalOpen(true)}
             disabled={isSigningOut}
-            className="flex h-12 items-center gap-2 rounded-lg px-4 text-base font-medium text-[#6B6B6B] hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-60"
+            aria-label={collapsed ? "Log out" : undefined}
+            title={collapsed ? "Log out" : undefined}
+            className={cn("flex h-12 items-center gap-2 rounded-lg text-base font-medium text-[#6B6B6B] hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-60", collapsed ? "px-4 md:w-12 md:justify-center md:px-0" : "px-4")}
           >
             <LogOut className="size-6" strokeWidth={1.6} />
-            {isSigningOut ? "Logging out..." : "Log out"}
+            <span className={cn("whitespace-nowrap", collapsed && "md:hidden")}>{isSigningOut ? "Logging out..." : "Log out"}</span>
           </button>
         </nav>
-        <div className="rounded-[12px] bg-[linear-gradient(100deg,#5F08FA_34%,#D946EF_148%)] px-4 py-2 text-white">
+        <div className={cn("rounded-[12px] bg-[linear-gradient(100deg,#5F08FA_34%,#D946EF_148%)] px-4 py-2 text-white", collapsed && "md:hidden")}>
           <div className="flex items-center gap-2">
             <Crown className="size-5 fill-white" />
             <span className="text-base">Upgrade Plan</span>
