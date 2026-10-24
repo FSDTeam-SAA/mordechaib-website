@@ -11,6 +11,10 @@ import StatsCounter from "@/components/home/StatsCounter";
 import TrustedLeaders from "@/components/home/TrustedLeaders";
 import HomeAnimations from "@/components/home/HomeAnimations";
 
+// Keep the public homepage fresh for social-link crawlers. This prevents an
+// older Open Graph response from being held by an intermediate cache for a year.
+export const revalidate = 3600;
+
 function page() {
   return (
     <main data-home-page>
