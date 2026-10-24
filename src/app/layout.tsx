@@ -11,6 +11,7 @@ const siteUrl = "https://www.noltra.ai";
 const siteTitle = "Noltra.ai | AI Business Operating System";
 const siteDescription =
   "The AI-powered business operating system for modern enterprises.";
+const socialImage = `${siteUrl}/noltra-social-preview.png`;
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -43,19 +44,19 @@ export const metadata: Metadata = {
     description: siteDescription,
     images: [
       {
-        url: "/noltra-social-logo.png",
-        width: 600,
-        height: 600,
+        url: socialImage,
+        width: 1200,
+        height: 630,
         alt: "Noltra.ai logo",
         type: "image/png",
       },
     ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: siteTitle,
     description: siteDescription,
-    images: ["/noltra-social-logo.png"],
+    images: [socialImage],
   },
 };
 export default function RootLayout({
