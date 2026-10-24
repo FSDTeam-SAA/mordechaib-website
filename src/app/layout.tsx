@@ -7,7 +7,7 @@ import AuthProvider from "@/provider/AuthProvider";
 import { Toaster } from "sonner";
 import SmoothScrollProvider from "@/provider/SmoothScrollprovider";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.noltra.ai";
+const siteUrl = "https://www.noltra.ai";
 const siteTitle = "Noltra.ai | AI Business Operating System";
 const siteDescription =
   "The AI-powered business operating system for modern enterprises.";
