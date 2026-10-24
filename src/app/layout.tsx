@@ -17,8 +17,16 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Mordechaibai | AI Business Operating System",
   description: "The AI-powered business operating system for modern enterprises",
+  icons: {
+    icon: [
+      {
+        url: "/fav.png",
+        sizes: "32x32",
+        type: "image/png",
+      },
+    ],
+  },
 };
-
 export default function RootLayout({
   children,
 }: {
