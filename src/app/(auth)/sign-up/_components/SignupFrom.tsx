@@ -117,7 +117,7 @@ const SignupFrom = () => {
                 Create your account
               </h1>
               <p className="mt-3 text-sm text-[#4f5363]">
-                14 days on every plan no credit card.
+                {/* 14 days on every plan no credit card. */}
               </p>
             </div>
 
