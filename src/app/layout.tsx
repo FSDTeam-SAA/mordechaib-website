@@ -7,6 +7,11 @@ import AuthProvider from "@/provider/AuthProvider";
 import { Toaster } from "sonner";
 import SmoothScrollProvider from "@/provider/SmoothScrollprovider";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.noltra.ai";
+const siteTitle = "Noltra.ai | AI Business Operating System";
+const siteDescription =
+  "The AI-powered business operating system for modern enterprises.";
+
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space-grotesk",
@@ -15,8 +20,12 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Mordechaibai | AI Business Operating System",
-  description: "The AI-powered business operating system for modern enterprises",
+  metadataBase: new URL(siteUrl),
+  title: siteTitle,
+  description: siteDescription,
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: [
       {
@@ -25,6 +34,28 @@ export const metadata: Metadata = {
         type: "image/png",
       },
     ],
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Noltra.ai",
+    title: siteTitle,
+    description: siteDescription,
+    images: [
+      {
+        url: "/noltra-social-logo.png",
+        width: 600,
+        height: 600,
+        alt: "Noltra.ai logo",
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: siteTitle,
+    description: siteDescription,
+    images: ["/noltra-social-logo.png"],
   },
 };
 export default function RootLayout({
