@@ -27,7 +27,6 @@ export function ChiefOfStaffDashboard() {
   );
   const [conversations, setConversations] = useState<ChiefConversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
-  const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const [isLoadingMoreConversations, setIsLoadingMoreConversations] = useState(false);
   const [conversationPage, setConversationPage] = useState(1);
   const [hasMoreConversations, setHasMoreConversations] = useState(false);
@@ -75,32 +74,21 @@ export function ChiefOfStaffDashboard() {
     );
   }
 
-  async function createNewChat(): Promise<string | null> {
-    if (!accessToken) {
-      setConversationError("Your session is missing. Please sign in again.");
-      return null;
-    }
-    setIsCreatingConversation(true);
+  function startNewChat() {
     setConversationError(null);
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/messages/conversations`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ title: "New Chat" }),
-      });
-      const result = (await response.json().catch(() => ({}))) as ApiEnvelope<ChiefConversation>;
-      if (!response.ok || !result.success || !result.data?._id) throw new Error(apiError(result, "Unable to create a new chat."));
-      setConversations((current) => [result.data!, ...current.filter((conversation) => conversation._id !== result.data!._id)].slice(0, 5));
-      setActiveConversationId(result.data._id);
-      void loadConversations();
-      return result.data._id;
-    } catch (error) {
-      setConversationError(error instanceof Error ? error.message : "Unable to create a new chat.");
-      return null;
-    } finally {
-      setIsCreatingConversation(false);
-    }
+    // A chat is now created by the first POST /messages request. Keeping the
+    // active id empty puts the composer into its new-conversation mode.
+    setActiveConversationId(null);
   }
+
+  const handleConversationStarted = useCallback((conversationId: string, preview: string) => {
+    setActiveConversationId(conversationId);
+    setConversations((current) => [
+      { _id: conversationId, title: "New Chat", preview },
+      ...current.filter((conversation) => conversation._id !== conversationId),
+    ]);
+    void loadConversations();
+  }, [loadConversations]);
 
   const handleConversationUpdated = useCallback((conversationId: string, preview: string, moveToTop = false) => {
     setConversations((current) => {
@@ -129,8 +117,8 @@ export function ChiefOfStaffDashboard() {
         <>
           <AgentStatusBar />
           <div className="mt-3 grid items-start gap-3 lg:grid-cols-[348px_minmax(0,1fr)]">
-            <ChiefSidebar conversations={conversations} activeConversationId={activeConversationId} isCreatingConversation={isCreatingConversation} isLoadingMore={isLoadingMoreConversations} hasMore={hasMoreConversations} error={conversationError} onNewChat={() => void createNewChat()} onSelectConversation={setActiveConversationId} onLoadMore={loadMoreConversations} />
-            <LauraConversation conversationId={activeConversationId} accessToken={accessToken} sessionStatus={sessionStatus} onConversationUpdated={handleConversationUpdated} onStartConversation={createNewChat} />
+            <ChiefSidebar conversations={conversations} activeConversationId={activeConversationId} isCreatingConversation={false} isLoadingMore={isLoadingMoreConversations} hasMore={hasMoreConversations} error={conversationError} onNewChat={startNewChat} onSelectConversation={setActiveConversationId} onLoadMore={loadMoreConversations} />
+            <LauraConversation conversationId={activeConversationId} accessToken={accessToken} sessionStatus={sessionStatus} onConversationUpdated={handleConversationUpdated} onConversationStarted={handleConversationStarted} />
           </div>
         </>
       ) : (

@@ -9,39 +9,55 @@ type MessageAttachment = { id: string; originalName: string; mimeType?: string; 
 type AttachmentDownload = { downloadUrl: string };
 type ChatMessage = { id: string; conversationId: string; content?: string | null; senderType: string; agentName?: string | null; sourceMessageId?: string | null; attachments?: MessageAttachment[]; createdAt: string };
 type MessagesPayload = { items: ChatMessage[]; pagination?: { page: number; pages: number } };
-type ClarificationQuestion = { id?: string; question: string; inputType?: string; required?: boolean };
 type Proposal = {
   id: string;
   actionType?: string;
   status?: string;
   revision?: number;
   title?: string;
+  agenda?: string;
+  platform?: string;
+  timezone?: string;
+  invitees?: string[];
   description?: string;
   priority?: string;
   department?: string;
   tags?: string[];
+  source?: { id?: string };
   startsAt?: string;
   durationMinutes?: number;
-  payload?: { title?: string; startsAt?: string; durationMinutes?: number; timezone?: string; platform?: string; agenda?: string; invitees?: string[] };
-  clarificationQuestions?: ClarificationQuestion[];
-  clarificationAnswers?: Record<string, string>;
+  payload?: { title?: string; description?: string; priority?: string; department?: string; tags?: string[]; startsAt?: string; durationMinutes?: number; timezone?: string; platform?: string; agenda?: string; invitees?: string[] };
 };
-type IntelligenceDetails = { analysis?: { summary?: string | null } | null; actions?: { priorityTasks?: Proposal[]; meetingSchedules?: Proposal[] } };
-type ClarificationHistoryItem = { messageId: string; proposalId: string; questionId: string; question: string; answer: string };
+type ProposalActionResponse = { proposal?: Proposal; target?: { type?: string; id?: string } };
+type IntelligenceDetails = { actions?: { priorityTasks?: Proposal[]; meetingSchedules?: Proposal[] } };
 type MeetingEditDraft = { title: string; startsAt: string; durationMinutes: string; timezone: string; invitees: string; platform: string };
+type TaskEditDraft = { title: string; description: string; priority: string; department: string; tags: string };
 
 const INTELLIGENCE_POLL_INTERVAL_MS = 2_000;
 const INTELLIGENCE_POLL_MAX_ATTEMPTS = 150;
 const PREVIEW_DELAYED_ERROR = "meeting-preview-delayed";
 const MAX_ATTACHMENTS = 10;
 const ATTACHMENT_ACCEPT = "image/*,audio/*,video/*,.pdf,.txt,.csv,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.rtf";
+// Keep this list aligned with the backend TaskDepartment enum. A proposal can
+// outlive a backend enum change, so an old/free-text value must never be sent
+// back in a PATCH request.
+const TASK_DEPARTMENTS = ["SALES", "FINANCE", "OPERATIONS", "STRATEGY", "SUPPORT", "DESIGN", "MARKETING", "OTHER"] as const;
+const TASK_PRIORITIES = ["LOW", "MEDIUM", "HIGH"] as const;
+
+function isTaskDepartment(value: string): value is (typeof TASK_DEPARTMENTS)[number] {
+  return TASK_DEPARTMENTS.includes(value as (typeof TASK_DEPARTMENTS)[number]);
+}
+
+function isTaskPriority(value: string): value is (typeof TASK_PRIORITIES)[number] {
+  return TASK_PRIORITIES.includes(value as (typeof TASK_PRIORITIES)[number]);
+}
 
 type LauraConversationProps = {
   conversationId: string | null;
   accessToken?: string;
   sessionStatus: "authenticated" | "loading" | "unauthenticated";
   onConversationUpdated: (conversationId: string, preview: string, moveToTop?: boolean) => void;
-  onStartConversation: () => Promise<string | null>;
+  onConversationStarted: (conversationId: string, preview: string) => void;
 };
 
 function apiError(result: ApiEnvelope<unknown>, fallback: string) {
@@ -49,7 +65,7 @@ function apiError(result: ApiEnvelope<unknown>, fallback: string) {
   return message || fallback;
 }
 
-async function fetchMessageIntelligence(accessToken: string, messageId: string, status?: "NEEDS_CLARIFICATION") {
+async function fetchMessageIntelligence(accessToken: string, messageId: string, status?: "PENDING") {
   const query = new URLSearchParams({ sourceType: "USER_MESSAGE", taskLimit: "4", meetingLimit: "4", includeTranscript: "false" });
   if (status) query.set("status", status);
   const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/call-intelligence/${encodeURIComponent(messageId)}/details?${query}`, { headers: { Authorization: `Bearer ${accessToken}` } });
@@ -76,6 +92,27 @@ function UserMessage({ children }: { children: React.ReactNode }) {
 
 function LauraThinking({ label }: { label: string }) {
   return <div className="flex w-full max-w-[520px] items-start gap-3 self-start" aria-live="polite"><LauraAvatar /><div className="rounded-bl-2xl rounded-br-2xl rounded-tr-2xl border border-[#F5F7FF] bg-[#F5F7FF] px-4 py-3"><div className="flex items-center gap-2 text-sm text-[#667085]"><span>{label}</span><span className="flex items-center gap-1" aria-label="Loading"><i className="size-1.5 animate-bounce rounded-full bg-[#5B7FF0] [animation-delay:-0.3s]" /><i className="size-1.5 animate-bounce rounded-full bg-[#5B7FF0] [animation-delay:-0.15s]" /><i className="size-1.5 animate-bounce rounded-full bg-[#5B7FF0]" /></span></div></div></div>;
+}
+
+function HistoricalProposalPreview({ proposal, onOpen }: { proposal: Proposal; onOpen: (proposal: Proposal) => void }) {
+  const isMeeting = proposal.actionType === "SCHEDULE_MEETING";
+  const status = proposal.status?.toUpperCase() || "PENDING";
+  const isExecuted = status === "EXECUTED";
+  const isPending = status === "PENDING";
+  const dateTime = formatMeetingDateTime(proposal.payload?.startsAt || proposal.startsAt);
+  const title = proposal.payload?.title || proposal.title || (isMeeting ? "New meeting" : "New task");
+
+  return <LauraMessage>
+    <div className="flex items-center justify-between gap-3">
+      <p className="text-sm font-medium text-[#252B48]">{isExecuted ? (isMeeting ? "Meeting scheduled" : "Task created") : isPending ? (isMeeting ? "Meeting proposal ready" : "Task proposal ready") : isMeeting ? "Meeting is being processed" : "Task is being processed"}</p>
+      <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] font-medium ${isExecuted ? "bg-[#ECFDF3] text-[#039855]" : "bg-[#EEF2FF] text-[#5B7FF0]"}`}>{isExecuted ? "Completed" : status.replace(/_/g, " ")}</span>
+    </div>
+    <div className="mt-2 rounded-xl border border-[#E3E9FA] bg-white p-3 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.06)]">
+      <h3 className="flex items-center gap-2 text-sm font-semibold text-[#5B7FF0]">{isMeeting ? <CalendarDays className="size-4" /> : <CheckSquare className="size-4" />}{isMeeting ? "Meeting Preview" : "Task Preview"}</h3>
+      {isMeeting ? <dl className="mt-3 grid grid-cols-[72px_1fr] gap-y-2 text-[#555577]"><dt className="text-[#8B93B8]">Title</dt><dd className="font-medium text-[#252B48]">{title}</dd><dt className="text-[#8B93B8]">When</dt><dd>{dateTime.date} · {dateTime.time}</dd><dt className="text-[#8B93B8]">Platform</dt><dd>{formatMeetingPlatform(meetingPlatformFromProposal(proposal))}</dd></dl> : <dl className="mt-3 grid grid-cols-[72px_1fr] gap-y-2 text-[#555577]"><dt className="text-[#8B93B8]">Title</dt><dd className="font-medium text-[#252B48]">{title}</dd><dt className="text-[#8B93B8]">Priority</dt><dd>{formatMeetingPlatform(proposal.payload?.priority || proposal.priority || "MEDIUM")}</dd><dt className="text-[#8B93B8]">Department</dt><dd>{formatMeetingPlatform(proposal.payload?.department || proposal.department || "Not specified")}</dd></dl>}
+      {isPending ? <button type="button" onClick={() => onOpen(proposal)} className="mt-3 w-full rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm font-medium text-[#5B7FF0] transition-colors hover:bg-[#F5F7FF]">Review &amp; edit draft</button> : null}
+    </div>
+  </LauraMessage>;
 }
 
 function isMessageImage(attachment: MessageAttachment) {
@@ -112,39 +149,6 @@ function allProposals(details: IntelligenceDetails | null) {
   return [...(details?.actions?.meetingSchedules || []), ...(details?.actions?.priorityTasks || [])];
 }
 
-function clarificationQuestionLabel(questionId: string) {
-  if (questionId === "meeting-platform") return "Which meeting platform would you prefer?";
-  if (questionId === "meeting-start-time") return "What date and time should the meeting start?";
-  if (questionId === "meeting-duration") return "How long should the meeting be?";
-  const inviteeMatch = questionId.match(/^invitee-email-(.+)$/);
-  if (inviteeMatch) return `What email address should be used to invite ${inviteeMatch[1].replace(/-/g, " ")}?`;
-  return `Please provide ${questionId.replace(/-/g, " ")}.`;
-}
-
-function answeredClarifications(messageId: string, details: IntelligenceDetails | null): ClarificationHistoryItem[] {
-  return allProposals(details).flatMap((proposal) => {
-    const questions = new Map((proposal.clarificationQuestions || [])
-      .filter((question): question is ClarificationQuestion & { id: string } => Boolean(question.id))
-      .map((question) => [question.id, question.question]));
-    return Object.entries(proposal.clarificationAnswers || {}).flatMap(([questionId, answer]) => {
-      if (!answer?.trim()) return [];
-      return [{
-        messageId,
-        proposalId: proposal.id,
-        questionId,
-        question: questions.get(questionId) || clarificationQuestionLabel(questionId),
-        answer,
-      }];
-    });
-  });
-}
-
-function mergeClarificationHistory(current: ClarificationHistoryItem[], additions: ClarificationHistoryItem[]) {
-  const byId = new Map(current.map((item) => [`${item.messageId}:${item.proposalId}:${item.questionId}`, item]));
-  additions.forEach((item) => byId.set(`${item.messageId}:${item.proposalId}:${item.questionId}`, item));
-  return Array.from(byId.values());
-}
-
 function formatMeetingDateTime(startsAt?: string) {
   if (!startsAt) return { date: "Not specified", time: "Not specified" };
   const value = new Date(startsAt);
@@ -161,7 +165,7 @@ function formatMeetingPlatform(platform?: string) {
 }
 
 function meetingPlatformFromProposal(proposal: Proposal) {
-  return proposal.payload?.platform || proposal.clarificationAnswers?.["meeting-platform"] || "";
+  return proposal.payload?.platform || proposal.platform || "";
 }
 
 function meetingPlatformForPayload(platform?: string) {
@@ -173,9 +177,8 @@ function meetingPlatformForPayload(platform?: string) {
 
 function meetingInviteesFromProposal(proposal: Proposal) {
   if (proposal.payload?.invitees?.length) return proposal.payload.invitees;
-  return Object.entries(proposal.clarificationAnswers || {})
-    .filter(([questionId]) => /(?:invitee|attendee).*email|email.*(?:invitee|attendee)/i.test(questionId))
-    .flatMap(([, answer]) => inviteesFromText(answer));
+  if (proposal.invitees?.length) return proposal.invitees;
+  return [];
 }
 
 function toDateTimeLocalValue(startsAt?: string, timezone?: string) {
@@ -196,12 +199,33 @@ function createMeetingEditDraft(proposal: Proposal): MeetingEditDraft {
   const payload = proposal.payload || {};
   return {
     title: payload.title || proposal.title || "",
-    startsAt: toDateTimeLocalValue(payload.startsAt || proposal.startsAt, payload.timezone),
+    startsAt: toDateTimeLocalValue(payload.startsAt || proposal.startsAt, payload.timezone || proposal.timezone),
     durationMinutes: String(payload.durationMinutes || proposal.durationMinutes || 30),
-    timezone: payload.timezone || "Asia/Dhaka",
+    timezone: payload.timezone || proposal.timezone || "Asia/Dhaka",
     invitees: meetingInviteesFromProposal(proposal).join(", "),
     platform: meetingPlatformForPayload(meetingPlatformFromProposal(proposal)),
   };
+}
+
+function createTaskEditDraft(proposal: Proposal): TaskEditDraft {
+  const payload = proposal.payload || {};
+  const priority = String(payload.priority || proposal.priority || "MEDIUM").trim().toUpperCase();
+  const department = String(payload.department || proposal.department || "OTHER").trim().toUpperCase();
+  return {
+    title: payload.title || proposal.title || "",
+    description: payload.description || proposal.description || "",
+    priority: isTaskPriority(priority) ? priority : "MEDIUM",
+    // "OTHER" intentionally replaces an old invalid value (such as FSD).
+    // PATCH merges the payload server-side, therefore omitting the field would
+    // leave the old invalid value in place and validation would still fail.
+    department: isTaskDepartment(department) ? department : "OTHER",
+    tags: (payload.tags || proposal.tags || []).join(", "),
+  };
+}
+
+function proposalFromActionResponse(data?: Proposal | ProposalActionResponse): Proposal | undefined {
+  if (!data) return undefined;
+  return "proposal" in data ? data.proposal : data as Proposal;
 }
 
 function dateTimeInTimeZoneToIso(value: string, timezone: string) {
@@ -248,32 +272,32 @@ function isImageAttachment(file: File) {
   return file.type.startsWith("image/") || ["jpg", "jpeg", "png", "gif", "webp", "heic"].includes(file.name.split(".").pop()?.toLowerCase() || "");
 }
 
-export function LauraConversation({ conversationId, accessToken, sessionStatus, onConversationUpdated, onStartConversation }: LauraConversationProps) {
+export function LauraConversation({ conversationId, accessToken, sessionStatus, onConversationUpdated, onConversationStarted }: LauraConversationProps) {
   const [message, setMessage] = useState("");
   const [attachments, setAttachments] = useState<File[]>([]);
   const [attachmentPreviewUrls, setAttachmentPreviewUrls] = useState<Record<string, string>>({});
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [aiSummaries, setAiSummaries] = useState<Record<string, string>>({});
-  const [clarificationHistory, setClarificationHistory] = useState<ClarificationHistoryItem[]>([]);
   const [details, setDetails] = useState<IntelligenceDetails | null>(null);
+  const [proposalCache, setProposalCache] = useState<Record<string, Proposal>>({});
   const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
-  const [clarificationAnswer, setClarificationAnswer] = useState("");
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isWaitingForAi, setIsWaitingForAi] = useState(false);
-  const [isSubmittingClarification, setIsSubmittingClarification] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
   const [isEditingMeeting, setIsEditingMeeting] = useState(false);
   const [meetingEditDraft, setMeetingEditDraft] = useState<MeetingEditDraft | null>(null);
   const [isSavingMeetingEdit, setIsSavingMeetingEdit] = useState(false);
   const [meetingEditError, setMeetingEditError] = useState<string | null>(null);
+  const [isEditingTask, setIsEditingTask] = useState(false);
+  const [taskEditDraft, setTaskEditDraft] = useState<TaskEditDraft | null>(null);
+  const [isSavingTaskEdit, setIsSavingTaskEdit] = useState(false);
+  const [taskEditError, setTaskEditError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [, setSuccessMessage] = useState<string | null>(null);
   const pollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastPreview = useRef("");
-  const requestedSummaryIds = useRef(new Set<string>());
   const chatScrollRef = useRef<HTMLDivElement>(null);
 
   const clearPolling = useCallback(() => {
@@ -281,6 +305,24 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
       clearTimeout(pollTimeout.current);
       pollTimeout.current = null;
     }
+  }, []);
+
+  const cacheProposals = useCallback((nextDetails: IntelligenceDetails | null) => {
+    if (!nextDetails) return;
+    setProposalCache((current) => {
+      const updated = { ...current };
+      allProposals(nextDetails).forEach((proposal) => {
+        updated[proposal.id] = { ...updated[proposal.id], ...proposal, payload: proposal.payload || updated[proposal.id]?.payload };
+      });
+      return updated;
+    });
+  }, []);
+
+  const cacheProposal = useCallback((proposal: Proposal) => {
+    setProposalCache((current) => ({
+      ...current,
+      [proposal.id]: { ...current[proposal.id], ...proposal, payload: proposal.payload || current[proposal.id]?.payload },
+    }));
   }, []);
 
   useEffect(() => {
@@ -291,14 +333,14 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
     return () => previews.forEach(({ url }) => URL.revokeObjectURL(url));
   }, [attachments]);
 
-  const loadMessages = useCallback(async () => {
-    if (!conversationId || !accessToken) return [];
+  const loadMessages = useCallback(async (requestedConversationId = conversationId) => {
+    if (!requestedConversationId || !accessToken) return [];
     const messagePages: ChatMessage[] = [];
     let page = 1;
     let totalPages = 1;
 
     do {
-      const query = new URLSearchParams({ conversationId, page: String(page), limit: "100" });
+      const query = new URLSearchParams({ conversationId: requestedConversationId, page: String(page), limit: "100" });
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/messages?${query}`, { headers: { Authorization: `Bearer ${accessToken}` } });
       const result = (await response.json().catch(() => ({}))) as ApiEnvelope<MessagesPayload>;
       if (!response.ok || !result.success || !result.data) throw new Error(apiError(result, "Unable to load messages."));
@@ -315,41 +357,35 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
     const preview = latestMessage?.content?.replace(/\s+/g, " ").trim();
     if (preview && preview !== lastPreview.current) {
       lastPreview.current = preview;
-      onConversationUpdated(conversationId, preview);
+      onConversationUpdated(requestedConversationId, preview);
     }
     return chronologicalMessages;
   }, [accessToken, conversationId, onConversationUpdated]);
 
-  const loadIntelligence = useCallback(async (messageId: string, status?: "NEEDS_CLARIFICATION") => {
+  const loadIntelligence = useCallback(async (messageId: string, status?: "PENDING") => {
     if (!accessToken) return null;
     const result = await fetchMessageIntelligence(accessToken, messageId, status);
     setDetails(result);
-    if (result.analysis?.summary) setAiSummaries((current) => ({ ...current, [messageId]: result.analysis!.summary! }));
-    const answered = answeredClarifications(messageId, result);
-    if (answered.length) setClarificationHistory((current) => mergeClarificationHistory(current, answered));
+    cacheProposals(result);
     return result;
-  }, [accessToken]);
+  }, [accessToken, cacheProposals]);
 
-  const loadHistoricalSummaries = useCallback(async (chatMessages: ChatMessage[]) => {
+  const loadSavedProposals = useCallback(async (chatMessages: ChatMessage[]) => {
     if (!accessToken) return;
-    const ids = chatMessages.filter((item) => item.senderType.toUpperCase() === "USER" && !requestedSummaryIds.current.has(item.id)).map((item) => item.id);
-    ids.forEach((id) => requestedSummaryIds.current.add(id));
-    const summaries = await Promise.all(ids.map(async (id) => {
+    const userMessageIds = chatMessages
+      .filter((item) => item.senderType.toUpperCase() === "USER")
+      .map((item) => item.id);
+    const savedDetails = await Promise.all(userMessageIds.map(async (messageId) => {
       try {
-        const result = await fetchMessageIntelligence(accessToken, id);
-        return { id, summary: result.analysis?.summary, answered: answeredClarifications(id, result) };
+        return await fetchMessageIntelligence(accessToken, messageId);
       } catch {
-        requestedSummaryIds.current.delete(id);
         return null;
       }
     }));
-    const availableSummaries = summaries.filter((result): result is { id: string; summary: string; answered: ClarificationHistoryItem[] } => Boolean(result?.summary));
-    if (availableSummaries.length) setAiSummaries((current) => ({ ...current, ...Object.fromEntries(availableSummaries.map((result) => [result.id, result.summary])) }));
-    const answered = summaries.flatMap((result) => result?.answered || []);
-    if (answered.length) setClarificationHistory((current) => mergeClarificationHistory(current, answered));
-  }, [accessToken]);
+    savedDetails.forEach(cacheProposals);
+  }, [accessToken, cacheProposals]);
 
-  const pollForIntelligence = useCallback(async (messageId: string, attempts = 0, needsClarificationFirst = false) => {
+  const pollForIntelligence = useCallback(async (messageId: string, attempts = 0, requestedConversationId = conversationId, includeAllProposalStatuses = false) => {
     if (attempts >= INTELLIGENCE_POLL_MAX_ATTEMPTS) {
       setIsWaitingForAi(false);
       setSuccessMessage(null);
@@ -357,71 +393,74 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
       return;
     }
     try {
-      const nextDetails = await loadIntelligence(messageId, needsClarificationFirst ? "NEEDS_CLARIFICATION" : undefined);
-      const proposals = allProposals(nextDetails);
-      // clarificationQuestions is the backend's source of truth. Keep asking until
-      // it is empty, even when it includes an answer from an earlier revision.
-      const hasQuestion = proposals.some((proposal) => proposal.status?.toUpperCase() === "NEEDS_CLARIFICATION" && (proposal.clarificationQuestions || []).some((question) => question.id));
-      const hasActionableProposal = proposals.some((proposal) => ["PENDING", "EXECUTED"].includes(proposal.status?.toUpperCase() || "") && (proposal.clarificationQuestions || []).length === 0);
-      const hasRefinementInProgress = proposals.some((proposal) => {
-        const status = proposal.status?.toUpperCase();
-        return status === "ANALYZING";
-      });
-      const loadedMessages = await loadMessages();
+      // The persisted AI reply is the chat source of truth. Load it on every
+      // pass so the UI works even while Call Intelligence is still processing.
+      const loadedMessages = await loadMessages(requestedConversationId);
       const hasAssistantReply = loadedMessages.some((item) => item.senderType.toUpperCase() === "AI" && item.sourceMessageId === messageId);
-      const hasCompletedAnalysis = Boolean(nextDetails?.analysis);
-      const isResolved = hasQuestion || hasActionableProposal || (!hasRefinementInProgress && (hasAssistantReply || hasCompletedAnalysis));
+      let nextDetails: IntelligenceDetails | null = null;
+      try {
+        // New turns look for a PENDING draft first. A reload must instead load
+        // every status so an already EXECUTED preview stays visible.
+        nextDetails = await loadIntelligence(messageId, includeAllProposalStatuses ? undefined : "PENDING");
+      } catch {
+        // Analysis can finish after the AI chat reply. Keep polling messages
+        // rather than showing a technical error to the user.
+      }
+      const proposals = allProposals(nextDetails);
+      // The AI chat reply is persisted separately from the proposal. Waiting
+      // for it prevents a draft from appearing without Laura's
+      // natural-language response in the conversation.
+      const isResolved = hasAssistantReply;
       if (proposals.some((proposal) => proposal.status?.toUpperCase() === "PENDING")) {
         setSuccessMessage(null);
       }
       setIsWaitingForAi(!isResolved);
       if (!isResolved) {
-        pollTimeout.current = setTimeout(() => void pollForIntelligence(messageId, attempts + 1, false), INTELLIGENCE_POLL_INTERVAL_MS);
+        pollTimeout.current = setTimeout(() => void pollForIntelligence(messageId, attempts + 1, requestedConversationId, includeAllProposalStatuses), INTELLIGENCE_POLL_INTERVAL_MS);
       }
     } catch (pollError) {
       if (attempts < INTELLIGENCE_POLL_MAX_ATTEMPTS - 1) {
-        pollTimeout.current = setTimeout(() => void pollForIntelligence(messageId, attempts + 1, false), INTELLIGENCE_POLL_INTERVAL_MS);
+        pollTimeout.current = setTimeout(() => void pollForIntelligence(messageId, attempts + 1, requestedConversationId, includeAllProposalStatuses), INTELLIGENCE_POLL_INTERVAL_MS);
       } else {
         setIsWaitingForAi(false);
         setSuccessMessage(null);
         setError(pollError instanceof Error ? pollError.message : "The AI response could not be loaded.");
       }
     }
-  }, [loadIntelligence, loadMessages]);
+  }, [conversationId, loadIntelligence, loadMessages]);
 
   useEffect(() => {
     clearPolling();
     setMessages([]);
     setAttachments([]);
-    setAiSummaries({});
-    setClarificationHistory([]);
     setDetails(null);
+    setProposalCache({});
     setActiveMessageId(null);
-    setClarificationAnswer("");
     setIsEditingMeeting(false);
     setMeetingEditDraft(null);
     setMeetingEditError(null);
+    setIsEditingTask(false);
+    setTaskEditDraft(null);
+    setTaskEditError(null);
     setIsWaitingForAi(false);
     lastPreview.current = "";
-    requestedSummaryIds.current.clear();
     setError(null);
     setSuccessMessage(null);
     if (!conversationId || !accessToken) return;
 
     setIsLoadingMessages(true);
     void loadMessages().then((loadedMessages) => {
-      void loadHistoricalSummaries(loadedMessages);
+      void loadSavedProposals(loadedMessages);
       const latestUserMessage = [...loadedMessages].reverse().find((item) => item.senderType.toUpperCase() === "USER");
       if (latestUserMessage) {
         setActiveMessageId(latestUserMessage.id);
         setIsWaitingForAi(true);
-        // On reload, request every proposal status. A NEEDS_CLARIFICATION-only
-        // response cannot contain the already-prepared PENDING meeting preview.
-        void pollForIntelligence(latestUserMessage.id);
+        // Keep a completed/cancelled proposal visible after a page reload.
+        void pollForIntelligence(latestUserMessage.id, 0, conversationId, true);
       }
     }).catch((loadError) => setError(loadError instanceof Error ? loadError.message : "Unable to load messages.")).finally(() => setIsLoadingMessages(false));
     return clearPolling;
-  }, [accessToken, clearPolling, conversationId, loadHistoricalSummaries, loadMessages, pollForIntelligence]);
+  }, [accessToken, clearPolling, conversationId, loadMessages, loadSavedProposals, pollForIntelligence]);
 
   async function submitMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -434,24 +473,27 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
     setDetails(null);
     setIsWaitingForAi(true);
     try {
-      const targetConversationId = conversationId || await onStartConversation();
-      if (!targetConversationId) throw new Error("Unable to start a new chat. Please try again.");
+      const isNewConversation = !conversationId;
       const body = new FormData();
+      body.append("startNewConversation", String(isNewConversation));
       body.append("clientMessageId", crypto.randomUUID());
-      body.append("conversationId", targetConversationId);
+      if (conversationId) body.append("conversationId", conversationId);
       if (content) body.append("content", content);
       attachments.forEach((file) => body.append("files", file));
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/messages`, { method: "POST", headers: { Authorization: `Bearer ${accessToken}` }, body });
       const result = (await response.json().catch(() => ({}))) as ApiEnvelope<ChatMessage>;
       if (!response.ok || !result.success || !result.data?.id) throw new Error(apiError(result, "Unable to send your message."));
+      const targetConversationId = result.data.conversationId;
+      if (!targetConversationId) throw new Error("The new chat was created without a conversation ID. Please try again.");
       setMessage("");
       setAttachments([]);
       if (fileInputRef.current) fileInputRef.current.value = "";
       setActiveMessageId(result.data.id);
       setMessages((current) => [...current, result.data!]);
+      if (isNewConversation) onConversationStarted(targetConversationId, content || attachments[0]?.name || "Attachment");
       onConversationUpdated(targetConversationId, content || attachments[0]?.name || "Attachment", true);
-      await loadMessages();
-      void pollForIntelligence(result.data.id, 0, true);
+      await loadMessages(targetConversationId);
+      void pollForIntelligence(result.data.id, 0, targetConversationId);
     } catch (sendError) {
       setIsWaitingForAi(false);
       setError(sendError instanceof Error ? sendError.message : "Unable to send your message.");
@@ -481,45 +523,18 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
-  const activeClarification = isWaitingForAi ? undefined : allProposals(details)
-    .filter((proposal) => proposal.status?.toUpperCase() === "NEEDS_CLARIFICATION")
-    .flatMap((proposal) => (proposal.clarificationQuestions || []).map((question) => ({ proposal, question })))
-    .find(({ question }) => question.id);
-  const readyMeeting = allProposals(details).find((proposal) => proposal.actionType === "SCHEDULE_MEETING" && ["PENDING", "APPROVED", "EXECUTING", "EXECUTED"].includes(proposal.status?.toUpperCase() || "") && (proposal.clarificationQuestions || []).length === 0);
-  const readyTask = allProposals(details).find((proposal) => proposal.actionType === "CREATE_TASK" && ["PENDING", "APPROVED", "EXECUTING", "EXECUTED"].includes(proposal.status?.toUpperCase() || "") && (proposal.clarificationQuestions || []).length === 0);
+  const readyMeeting = allProposals(details).find((proposal) => proposal.actionType === "SCHEDULE_MEETING" && ["PENDING", "APPROVED", "EXECUTING", "EXECUTED"].includes(proposal.status?.toUpperCase() || ""));
+  const readyTask = allProposals(details).find((proposal) => proposal.actionType === "CREATE_TASK" && ["PENDING", "APPROVED", "EXECUTING", "EXECUTED"].includes(proposal.status?.toUpperCase() || ""));
+  const cachedMeetings = Object.values(proposalCache).filter((proposal) => proposal.actionType === "SCHEDULE_MEETING" && ["PENDING", "APPROVED", "EXECUTING", "EXECUTED"].includes(proposal.status?.toUpperCase() || ""));
+  const cachedTasks = Object.values(proposalCache).filter((proposal) => proposal.actionType === "CREATE_TASK" && ["PENDING", "APPROVED", "EXECUTING", "EXECUTED"].includes(proposal.status?.toUpperCase() || ""));
+  const savedMeetings = cachedMeetings.filter((proposal) => proposal.id !== readyMeeting?.id);
+  const savedTasks = cachedTasks.filter((proposal) => proposal.id !== readyTask?.id);
+  // Persisted previews belong to the user turn that created them. Rendering
+  // them next to that turn prevents an old completed meeting from appearing
+  // underneath a brand-new request.
+  const historicalProposals = [...savedMeetings, ...savedTasks];
   const isMeetingPending = readyMeeting?.status?.toUpperCase() === "PENDING";
   const isTaskPending = readyTask?.status?.toUpperCase() === "PENDING";
-  const latestUserContent = [...messages].reverse().find((item) => item.senderType.toUpperCase() === "USER")?.content?.trim() || "";
-  const needsMeetingDetails = Boolean(details?.analysis && allProposals(details).length === 0 && /\b(meeting|schedule|calendar)\b/i.test(latestUserContent));
-
-  async function submitClarification(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!activeClarification?.proposal.id || !activeClarification.question.id || !clarificationAnswer.trim() || !accessToken) return;
-    clearPolling();
-    setIsSubmittingClarification(true);
-    setError(null);
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/call-intelligence/proposals/${encodeURIComponent(activeClarification.proposal.id)}/clarifications`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ questionId: activeClarification.question.id, answer: clarificationAnswer.trim() }),
-      });
-      const result = (await response.json().catch(() => ({}))) as ApiEnvelope<Proposal>;
-      if (!response.ok || !result.success) throw new Error(apiError(result, "Unable to submit your answer."));
-      if (activeMessageId) setClarificationHistory((current) => mergeClarificationHistory(current, [{ messageId: activeMessageId, proposalId: activeClarification.proposal.id, questionId: activeClarification.question.id!, question: activeClarification.question.question, answer: clarificationAnswer.trim() }]));
-      setClarificationAnswer("");
-      setSuccessMessage("Thanks — Laura is updating the meeting proposal.");
-      if (activeMessageId) {
-        setIsWaitingForAi(true);
-        void pollForIntelligence(activeMessageId);
-      }
-    } catch (clarificationError) {
-      setIsWaitingForAi(false);
-      setError(clarificationError instanceof Error ? clarificationError.message : "Unable to submit your answer.");
-    } finally {
-      setIsSubmittingClarification(false);
-    }
-  }
 
   async function approveMeeting() {
     if (!readyMeeting?.id || !isMeetingPending || !accessToken || isApproving) return;
@@ -531,20 +546,22 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
         headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
         body: JSON.stringify({ action: "APPROVE" }),
       });
-      const result = (await response.json().catch(() => ({}))) as ApiEnvelope<Proposal>;
+      const result = (await response.json().catch(() => ({}))) as ApiEnvelope<Proposal | ProposalActionResponse>;
       if (!response.ok || !result.success) throw new Error(apiError(result, "Unable to approve the meeting."));
+      const updatedProposal = proposalFromActionResponse(result.data);
+      if (!updatedProposal) throw new Error("The meeting was approved, but its updated status was not returned.");
+      cacheProposal(updatedProposal);
       setDetails((current) => current ? {
         ...current,
         actions: {
           ...current.actions,
-          meetingSchedules: (current.actions?.meetingSchedules || []).map((proposal) => proposal.id === readyMeeting.id ? { ...proposal, ...result.data, payload: result.data?.payload || proposal.payload } : proposal),
+          meetingSchedules: (current.actions?.meetingSchedules || []).map((proposal) => proposal.id === readyMeeting.id ? { ...proposal, ...updatedProposal, payload: updatedProposal.payload || proposal.payload } : proposal),
         },
       } : current);
       setSuccessMessage("Meeting approved. Laura is creating it now.");
-      if (activeMessageId) {
-        setIsWaitingForAi(true);
-        void pollForIntelligence(activeMessageId);
-      }
+      // The current action endpoint executes synchronously and returns the
+      // final proposal under data.proposal, so preserve that EXECUTED preview.
+      setIsWaitingForAi(false);
     } catch (approvalError) {
       setError(approvalError instanceof Error ? approvalError.message : "Unable to approve the meeting.");
     } finally {
@@ -564,6 +581,7 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
       });
       const result = (await response.json().catch(() => ({}))) as ApiEnvelope<Proposal>;
       if (!response.ok || !result.success) throw new Error(apiError(result, "Unable to cancel the meeting."));
+      cacheProposal({ ...readyMeeting, status: "REJECTED" });
       setDetails((current) => current ? {
         ...current,
         actions: {
@@ -589,19 +607,19 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
         headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
         body: JSON.stringify({ action: "APPROVE" }),
       });
-      const result = (await response.json().catch(() => ({}))) as ApiEnvelope<Proposal>;
+      const result = (await response.json().catch(() => ({}))) as ApiEnvelope<Proposal | ProposalActionResponse>;
       if (!response.ok || !result.success) throw new Error(apiError(result, "Unable to create the task."));
+      const updatedProposal = proposalFromActionResponse(result.data);
+      if (!updatedProposal) throw new Error("The task was approved, but its updated status was not returned.");
+      cacheProposal(updatedProposal);
       setDetails((current) => current ? {
         ...current,
         actions: {
           ...current.actions,
-          priorityTasks: (current.actions?.priorityTasks || []).map((proposal) => proposal.id === readyTask.id ? { ...proposal, ...result.data } : proposal),
+          priorityTasks: (current.actions?.priorityTasks || []).map((proposal) => proposal.id === readyTask.id ? { ...proposal, ...updatedProposal } : proposal),
         },
       } : current);
-      if (activeMessageId) {
-        setIsWaitingForAi(true);
-        void pollForIntelligence(activeMessageId);
-      }
+      setIsWaitingForAi(false);
     } catch (taskError) {
       setError(taskError instanceof Error ? taskError.message : "Unable to create the task.");
     } finally {
@@ -621,6 +639,7 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
       });
       const result = (await response.json().catch(() => ({}))) as ApiEnvelope<Proposal>;
       if (!response.ok || !result.success) throw new Error(apiError(result, "Unable to cancel the task."));
+      cacheProposal({ ...readyTask, status: "REJECTED" });
       setDetails((current) => current ? {
         ...current,
         actions: {
@@ -695,6 +714,7 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
         return;
       }
       if (!response.ok || !result.success || !result.data) throw new Error(apiError(result, "Unable to save your meeting changes."));
+      cacheProposal(result.data);
       setDetails((current) => current ? {
         ...current,
         actions: {
@@ -711,10 +731,76 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
     }
   }
 
-  const inputType = `${activeClarification?.question.inputType || ""} ${activeClarification?.question.question || ""}`.toLowerCase().includes("email") ? "email" : "text";
+  function openTaskEditor() {
+    if (!readyTask || !isTaskPending) {
+      setError("Only a pending task can be edited before approval.");
+      return;
+    }
+    setTaskEditDraft(createTaskEditDraft(readyTask));
+    setTaskEditError(null);
+    setIsEditingTask(true);
+  }
+
+  function cancelTaskEdit() {
+    setIsEditingTask(false);
+    setTaskEditDraft(null);
+    setTaskEditError(null);
+  }
+
+  async function saveTaskEdit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!readyTask || !taskEditDraft || !accessToken || isSavingTaskEdit) return;
+    const title = taskEditDraft.title.trim();
+    const priority = taskEditDraft.priority.trim().toUpperCase();
+    const department = taskEditDraft.department.trim().toUpperCase();
+    const tags = Array.from(new Set(taskEditDraft.tags.split(",").map((tag) => tag.trim().replace(/^#/, "")).filter(Boolean)));
+    if (!title || !isTaskPriority(priority) || !isTaskDepartment(department)) {
+      setTaskEditError("Add a task title, a valid priority, and a department before saving.");
+      return;
+    }
+
+    setIsSavingTaskEdit(true);
+    setTaskEditError(null);
+    try {
+      const payload = {
+        title,
+        description: taskEditDraft.description.trim() || undefined,
+        priority,
+        // Always replace legacy/free-text departments. The API merges PATCH
+        // payloads, so leaving it out would retain an invalid stored value.
+        department,
+        tags,
+      };
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/call-intelligence/proposals/${encodeURIComponent(readyTask.id)}`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ ...(Number.isInteger(readyTask.revision) ? { expectedRevision: readyTask.revision } : {}), payload }),
+      });
+      const result = (await response.json().catch(() => ({}))) as ApiEnvelope<Proposal>;
+      if (response.status === 409) {
+        setTaskEditError("This task was updated elsewhere. Please reload the conversation and review the latest version.");
+        return;
+      }
+      if (!response.ok || !result.success || !result.data) throw new Error(apiError(result, "Unable to save your task changes."));
+      cacheProposal(result.data);
+      setDetails((current) => current ? {
+        ...current,
+        actions: {
+          ...current.actions,
+          priorityTasks: (current.actions?.priorityTasks || []).map((proposal) => proposal.id === readyTask.id ? { ...proposal, ...result.data, payload: result.data?.payload || proposal.payload } : proposal),
+        },
+      } : current);
+      setIsEditingTask(false);
+      setTaskEditDraft(null);
+    } catch (taskError) {
+      setTaskEditError(taskError instanceof Error ? taskError.message : "We couldn't save those task changes. Please try again.");
+    } finally {
+      setIsSavingTaskEdit(false);
+    }
+  }
+
   const isReady = sessionStatus === "authenticated" && Boolean(accessToken);
-  const currentClarificationHistory = clarificationHistory.filter((item) => item.messageId === activeMessageId);
-  const thinkingLabel = currentClarificationHistory.length ? "Laura is updating your meeting details" : "Laura is thinking";
+  const thinkingLabel = "Laura is thinking";
   const meetingDateTime = formatMeetingDateTime(readyMeeting?.payload?.startsAt || readyMeeting?.startsAt);
   const isPreviewDelayed = error === PREVIEW_DELAYED_ERROR;
 
@@ -727,10 +813,19 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
     void pollForIntelligence(activeMessageId);
   }
 
+  function reviewSavedProposal(proposal: Proposal) {
+    setActiveMessageId(proposal.source?.id || null);
+    setDetails({
+      actions: proposal.actionType === "SCHEDULE_MEETING"
+        ? { meetingSchedules: [proposal], priorityTasks: [] }
+        : { meetingSchedules: [], priorityTasks: [proposal] },
+    });
+  }
+
   useEffect(() => {
     const chat = chatScrollRef.current;
     if (chat) chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
-  }, [activeClarification?.question.id, currentClarificationHistory.length, isWaitingForAi, messages.length, readyMeeting?.id]);
+  }, [historicalProposals.length, isWaitingForAi, messages.length, readyMeeting?.id, readyTask?.id]);
 
   function handleChatWheel(event: WheelEvent<HTMLDivElement>) {
     const chat = chatScrollRef.current;
@@ -748,18 +843,24 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
       {!conversationId ? <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-[#DCE3F5] p-8 text-center text-sm text-[#8B93B8]">Create a New Chat from the sidebar to start talking with Laura.</div> : isLoadingMessages ? <div className="flex flex-1 items-center justify-center text-sm text-[#8B93B8]"><Loader2 className="mr-2 size-4 animate-spin" /> Loading conversation...</div> : <>
         {messages.length === 0 ? <div className="flex flex-1 items-center justify-center text-center text-sm text-[#8B93B8]">This is a new chat. Tell Laura what you would like to do.</div> : messages.flatMap((item) => {
           const isUserMessage = item.senderType.toUpperCase() === "USER";
-          const hasSavedAiReply = isUserMessage && messages.some((candidate) => candidate.senderType.toUpperCase() === "AI" && candidate.sourceMessageId === item.id);
-          const summary = aiSummaries[item.id];
-          const shouldShowSummary = isUserMessage && summary && !hasSavedAiReply && !(needsMeetingDetails && item.id === activeMessageId);
-          return [
-            isUserMessage ? <UserMessage key={item.id}><div className="space-y-2">{item.content ? <p>{item.content}</p> : null}{item.attachments?.length ? <div className="space-y-2">{item.attachments.map((attachment) => <MessageAttachmentCard key={attachment.id} messageId={item.id} attachment={attachment} accessToken={accessToken} />)}</div> : null}{!item.content && !item.attachments?.length ? <p>Attachment sent</p> : null}</div></UserMessage> : <LauraMessage key={item.id}>{item.agentName ? <p className="mb-1 text-xs font-medium text-[#5B7FF0]">{item.agentName}</p> : null}<p>{item.content || "Laura is preparing a response..."}</p></LauraMessage>,
-            shouldShowSummary ? <LauraMessage key={`${item.id}-analysis`}><p>{summary}</p></LauraMessage> : null,
-          ];
+          const renderedMessage = isUserMessage
+            ? <UserMessage key={item.id}><div className="space-y-2">{item.content ? <p>{item.content}</p> : null}{item.attachments?.length ? <div className="space-y-2">{item.attachments.map((attachment) => <MessageAttachmentCard key={attachment.id} messageId={item.id} attachment={attachment} accessToken={accessToken} />)}</div> : null}{!item.content && !item.attachments?.length ? <p>Attachment sent</p> : null}</div></UserMessage>
+            : <LauraMessage key={item.id}>{item.agentName ? <p className="mb-1 text-xs font-medium text-[#5B7FF0]">{item.agentName}</p> : null}<p>{item.content || "Laura is preparing a response..."}</p></LauraMessage>;
+          // A draft is a result of a user message; place its persistent card
+          // after Laura's reply to that message, not at the bottom of chat.
+          const proposalsForReply = !isUserMessage && item.sourceMessageId
+            ? historicalProposals.filter((proposal) => proposal.source?.id === item.sourceMessageId)
+            : [];
+          return [renderedMessage, ...proposalsForReply.map((proposal) => <HistoricalProposalPreview key={`history-proposal-${proposal.id}`} proposal={proposal} onOpen={reviewSavedProposal} />)];
         })}
-        {needsMeetingDetails ? <LauraMessage><p>I can help schedule this meeting. Please confirm that you want me to schedule it and share the date, time, duration, meeting platform, and Tanvir&apos;s email address.</p></LauraMessage> : null}
-        {currentClarificationHistory.map((item) => <div key={`${item.proposalId}-${item.questionId}`} className="contents"><LauraMessage><p className="font-medium">{item.question}</p></LauraMessage><UserMessage>{item.answer}</UserMessage></div>)}
         {isWaitingForAi ? <LauraThinking label={thinkingLabel} /> : null}
-        {activeClarification ? <LauraMessage><p className="font-medium">{activeClarification.question.question}</p><form onSubmit={submitClarification} className="mt-3 flex gap-2"><input type={inputType} value={clarificationAnswer} onChange={(event) => setClarificationAnswer(event.target.value)} required={activeClarification.question.required !== false} placeholder="Enter your answer" className="min-w-0 flex-1 rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm outline-none focus:border-[#5B7FF0]" /><button type="submit" disabled={isSubmittingClarification || !clarificationAnswer.trim()} className="rounded-lg bg-[#5B7FF0] px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60">{isSubmittingClarification ? "Sending..." : "Reply"}</button></form></LauraMessage> : null}
+        {false ? <>
+        {savedMeetings.map((proposal) => {
+          const dateTime = formatMeetingDateTime(proposal.payload?.startsAt || proposal.startsAt);
+          return <LauraMessage key={`saved-meeting-${proposal.id}`}><p>This meeting preview is still available for review.</p><div className="mt-3 rounded-xl border border-[#E3E9FA] bg-white p-3 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.08)]"><div className="flex items-center justify-between gap-3"><h3 className="flex items-center gap-2 text-sm font-semibold text-[#5B7FF0]"><CalendarDays className="size-4" /> Meeting Preview</h3><span className="rounded-full bg-[#EEF2FF] px-2 py-1 font-medium text-[#5B7FF0]">{proposal.status?.toUpperCase() === "EXECUTED" ? "Executed" : proposal.status?.replace(/_/g, " ")}</span></div><dl className="mt-3 grid grid-cols-[82px_1fr] gap-y-2 text-[#555577]"><dt className="text-[#8B93B8]">Title</dt><dd className="font-medium text-[#252B48]">{proposal.payload?.title || proposal.title || "New meeting"}</dd><dt className="text-[#8B93B8]">Date</dt><dd>{dateTime.date}</dd><dt className="text-[#8B93B8]">Time</dt><dd>{dateTime.time}</dd><dt className="text-[#8B93B8]">Platform</dt><dd>{formatMeetingPlatform(meetingPlatformFromProposal(proposal))}</dd></dl><button type="button" onClick={() => reviewSavedProposal(proposal)} className="mt-3 w-full rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm font-medium text-[#5B7FF0] transition-colors hover:bg-[#F5F7FF]">Review {proposal.status?.toUpperCase() === "PENDING" ? "& edit" : "details"}</button></div></LauraMessage>;
+        })}
+        {savedTasks.map((proposal) => <LauraMessage key={`saved-task-${proposal.id}`}><p>This task preview is still available for review.</p><div className="mt-3 rounded-xl border border-[#E3E9FA] bg-white p-3 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.08)]"><div className="flex items-center justify-between gap-3"><h3 className="flex items-center gap-2 text-sm font-semibold text-[#5B7FF0]"><CheckSquare className="size-4" /> Task Preview</h3><span className="rounded-full bg-[#EEF2FF] px-2 py-1 font-medium text-[#5B7FF0]">{proposal.status?.toUpperCase() === "EXECUTED" ? "Executed" : proposal.status?.replace(/_/g, " ")}</span></div><dl className="mt-3 grid grid-cols-[82px_1fr] gap-y-2 text-[#555577]"><dt className="text-[#8B93B8]">Title</dt><dd className="font-medium text-[#252B48]">{proposal.payload?.title || proposal.title || "New task"}</dd><dt className="text-[#8B93B8]">Priority</dt><dd>{formatMeetingPlatform(proposal.payload?.priority || proposal.priority || "MEDIUM")}</dd><dt className="text-[#8B93B8]">Department</dt><dd>{formatMeetingPlatform(proposal.payload?.department || proposal.department || "Not specified")}</dd></dl><button type="button" onClick={() => reviewSavedProposal(proposal)} className="mt-3 w-full rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm font-medium text-[#5B7FF0] transition-colors hover:bg-[#F5F7FF]">Review {proposal.status?.toUpperCase() === "PENDING" ? "& edit" : "details"}</button></div></LauraMessage>)}
+        </> : null}
         {readyMeeting ? <LauraMessage>
           <p>{isMeetingPending ? "I’ve put the meeting details together. Please review the preview below, then confirm when you’re ready to add it to your calendar." : "This meeting has been processed. The preview remains available for your reference."}</p>
           <div className="mt-3 rounded-xl border border-[#E3E9FA] bg-white p-3 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.08)]">
@@ -790,9 +891,19 @@ export function LauraConversation({ conversationId, accessToken, sessionStatus, 
         {readyTask ? <LauraMessage>
           <p>{isTaskPending ? "I’ve prepared this task for your approval. Review the details below, then create it when you’re ready." : "This task has been processed. The preview remains available for your reference."}</p>
           <div className="mt-3 rounded-xl border border-[#E3E9FA] bg-white p-3 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.08)]">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-[#5B7FF0]"><CheckSquare className="size-4" /> Task Preview</h3>
-            <dl className="mt-3 grid grid-cols-[82px_1fr] gap-y-2.5 text-[#555577]"><dt className="text-[#8B93B8]">Title</dt><dd className="font-medium text-[#252B48]">{readyTask.title || "New task"}</dd><dt className="text-[#8B93B8]">Details</dt><dd className="break-words">{readyTask.description || "No additional details provided"}</dd><dt className="text-[#8B93B8]">Priority</dt><dd>{formatMeetingPlatform(readyTask.priority || "MEDIUM")}</dd><dt className="text-[#8B93B8]">Department</dt><dd>{formatMeetingPlatform(readyTask.department || "Not specified")}</dd><dt className="text-[#8B93B8]">Tags</dt><dd className="flex flex-wrap gap-1.5">{readyTask.tags?.length ? readyTask.tags.map((tag) => <span key={tag} className="rounded-full bg-[#EEF2FF] px-2 py-0.5 text-[#5B7FF0]">#{tag}</span>) : "No tags"}</dd></dl>
-            {isTaskPending ? <div className="mt-4 flex gap-2"><button type="button" onClick={() => void rejectTask()} disabled={isRejecting || isApproving} className="rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm text-[#65719B] transition-colors hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-60">{isRejecting ? "Cancelling..." : "Cancel"}</button><button type="button" onClick={() => void approveTask()} disabled={isApproving || isRejecting} className="flex-1 rounded-lg bg-[#5B7FF0] px-3 py-2 text-sm text-white transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60">{isApproving ? "Creating task..." : "Confirm & Create task"}</button></div> : <div className="mt-4 rounded-lg bg-[#EEF2FF] px-3 py-2 text-center text-sm font-medium text-[#5B7FF0]">{readyTask.status?.toUpperCase() === "EXECUTED" ? "Executed" : readyTask.status?.replace(/_/g, " ")}</div>}
+            <div className="flex items-center justify-between gap-3"><h3 className="flex items-center gap-2 text-sm font-semibold text-[#5B7FF0]"><CheckSquare className="size-4" /> Task Preview</h3><button type="button" onClick={openTaskEditor} disabled={!isTaskPending || isEditingTask || isApproving || isRejecting} aria-label="Edit task details" title={isTaskPending ? "Edit task details" : "Executed tasks can no longer be edited"} className="flex size-8 items-center justify-center rounded-full bg-[#EEF2FF] text-[#5B7FF0] transition-colors hover:bg-[#DEE6FF] disabled:cursor-not-allowed disabled:opacity-40"><Pencil className="size-4" /></button></div>
+            {isEditingTask && taskEditDraft ? <form onSubmit={saveTaskEdit} className="mt-3 space-y-3 rounded-lg bg-[#F7F9FF] p-3">
+              <p className="text-xs font-medium text-[#454E76]">Update the task details, then save before confirming.</p>
+              <label className="block text-xs font-medium text-[#667085]">Task title<input value={taskEditDraft.title} onChange={(event) => setTaskEditDraft((current) => current ? { ...current, title: event.target.value } : current)} required className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]" /></label>
+              <label className="block text-xs font-medium text-[#667085]">Details<textarea value={taskEditDraft.description} onChange={(event) => setTaskEditDraft((current) => current ? { ...current, description: event.target.value } : current)} rows={3} className="mt-1.5 w-full resize-y rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]" /></label>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="block text-xs font-medium text-[#667085]">Priority<select value={taskEditDraft.priority} onChange={(event) => setTaskEditDraft((current) => current ? { ...current, priority: event.target.value } : current)} className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"><option value="LOW">Low</option><option value="MEDIUM">Medium</option><option value="HIGH">High</option></select></label>
+                <label className="block text-xs font-medium text-[#667085]">Department<select value={taskEditDraft.department} onChange={(event) => setTaskEditDraft((current) => current ? { ...current, department: event.target.value } : current)} className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]">{TASK_DEPARTMENTS.map((department) => <option key={department} value={department}>{formatMeetingPlatform(department)}</option>)}</select><span className="mt-1 block text-[11px] font-normal text-[#8B93B8]">Choose a valid task department.</span></label>
+              </div>
+              <label className="block text-xs font-medium text-[#667085]">Tags<span className="ml-1 font-normal text-[#8B93B8]">(separate with commas)</span><input value={taskEditDraft.tags} onChange={(event) => setTaskEditDraft((current) => current ? { ...current, tags: event.target.value } : current)} placeholder="proposal, client" className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]" /></label>
+              {taskEditError ? <p className="rounded-md border border-[#F6D9A9] bg-[#FFF9EE] px-2.5 py-2 text-xs text-[#93601A]" role="alert">{taskEditError}</p> : null}
+              <div className="flex gap-2 pt-1"><button type="button" onClick={cancelTaskEdit} disabled={isSavingTaskEdit} className="rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm text-[#65719B] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60">Cancel</button><button type="submit" disabled={isSavingTaskEdit} className="flex-1 rounded-lg bg-[#5B7FF0] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60">{isSavingTaskEdit ? "Saving changes..." : "Save changes"}</button></div>
+            </form> : <><dl className="mt-3 grid grid-cols-[82px_1fr] gap-y-2.5 text-[#555577]"><dt className="text-[#8B93B8]">Title</dt><dd className="font-medium text-[#252B48]">{readyTask.payload?.title || readyTask.title || "New task"}</dd><dt className="text-[#8B93B8]">Details</dt><dd className="break-words">{readyTask.payload?.description || readyTask.description || "No additional details provided"}</dd><dt className="text-[#8B93B8]">Priority</dt><dd>{formatMeetingPlatform(readyTask.payload?.priority || readyTask.priority || "MEDIUM")}</dd><dt className="text-[#8B93B8]">Department</dt><dd>{formatMeetingPlatform(readyTask.payload?.department || readyTask.department || "Not specified")}</dd><dt className="text-[#8B93B8]">Tags</dt><dd className="flex flex-wrap gap-1.5">{(readyTask.payload?.tags || readyTask.tags)?.length ? (readyTask.payload?.tags || readyTask.tags || []).map((tag) => <span key={tag} className="rounded-full bg-[#EEF2FF] px-2 py-0.5 text-[#5B7FF0]">#{tag}</span>) : "No tags"}</dd></dl>{isTaskPending ? <div className="mt-4 flex gap-2"><button type="button" onClick={() => void rejectTask()} disabled={isRejecting || isApproving} className="rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm text-[#65719B] transition-colors hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-60">{isRejecting ? "Cancelling..." : "Cancel"}</button><button type="button" onClick={() => void approveTask()} disabled={isApproving || isRejecting} className="flex-1 rounded-lg bg-[#5B7FF0] px-3 py-2 text-sm text-white transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60">{isApproving ? "Creating task..." : "Confirm & Create task"}</button></div> : <div className="mt-4 rounded-lg bg-[#EEF2FF] px-3 py-2 text-center text-sm font-medium text-[#5B7FF0]">{readyTask.status?.toUpperCase() === "EXECUTED" ? "Executed" : readyTask.status?.replace(/_/g, " ")}</div>}</>}
           </div>
         </LauraMessage> : null}
       </>}
