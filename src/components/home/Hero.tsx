@@ -1,8 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { ArrowRight, CalendarDays, CircleCheck, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const Hero = () => {
+  const { status } = useSession();
   const points = [
     { lead: "conversation", text: "becomes action." },
     { lead: "action", text: "becomes progress." },
@@ -52,13 +57,15 @@ const Hero = () => {
           </div>
 
           <div className="relative mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap lg:justify-start lg:gap-4">
-            <Link
-              href="#trial"
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-[12px] bg-[#5B7FF0] px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-[#486EE2] sm:w-auto sm:text-base"
-            >
-              Start Free Trial
-              <ArrowRight size={15} />
-            </Link>
+            {status === "unauthenticated" && (
+              <Link
+                href="/sign-up"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-[12px] bg-[#5B7FF0] px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-[#486EE2] sm:w-auto sm:text-base"
+              >
+                Start
+                <ArrowRight size={15} />
+              </Link>
+            )}
             <Link
               href="#meeting"
               className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-[12px] px-1 text-sm font-medium text-[#5B7FF0] sm:w-auto sm:text-base"
@@ -74,7 +81,10 @@ const Hero = () => {
               width={1000}
               height={1000}
               priority
-              className="absolute bottom-[-42px] left-[280px] hidden h-[50px] w-[212px] object-cover lg:block"
+              className={cn(
+                "absolute bottom-[-42px] hidden h-[50px] w-[212px] object-cover transition-[left] lg:block",
+                status === "unauthenticated" ? "left-[180px]" : "left-10",
+              )}
             />
           </div>
         </div>
