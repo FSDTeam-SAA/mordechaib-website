@@ -31,6 +31,7 @@ export function ChiefOfStaffDashboard() {
   const [conversationPage, setConversationPage] = useState(1);
   const [hasMoreConversations, setHasMoreConversations] = useState(false);
   const [conversationError, setConversationError] = useState<string | null>(null);
+  const [composerDraft, setComposerDraft] = useState<{ id: number; text: string } | null>(null);
   const accessToken = session?.user.accessToken;
 
   const loadConversations = useCallback(async (page = 1, append = false) => {
@@ -110,6 +111,11 @@ export function ChiefOfStaffDashboard() {
     });
   }, [conversationPage, hasMoreConversations, isLoadingMoreConversations, loadConversations]);
 
+  function useQuickAction(action: string) {
+    // A changing id lets the same action be selected again after editing it.
+    setComposerDraft({ id: Date.now(), text: action });
+  }
+
   return (
     <main className="min-h-[calc(100vh-83px)] bg-[#F5F7FF] p-3 text-[#0E1224] sm:p-4">
       <ChiefNavigation activeTab={activeTab} onTabChange={changeTab} />
@@ -117,8 +123,8 @@ export function ChiefOfStaffDashboard() {
         <>
           <AgentStatusBar />
           <div className="mt-3 grid items-start gap-3 lg:grid-cols-[348px_minmax(0,1fr)]">
-            <ChiefSidebar conversations={conversations} activeConversationId={activeConversationId} isCreatingConversation={false} isLoadingMore={isLoadingMoreConversations} hasMore={hasMoreConversations} error={conversationError} onNewChat={startNewChat} onSelectConversation={setActiveConversationId} onLoadMore={loadMoreConversations} />
-            <LauraConversation conversationId={activeConversationId} accessToken={accessToken} sessionStatus={sessionStatus} onConversationUpdated={handleConversationUpdated} onConversationStarted={handleConversationStarted} />
+            <ChiefSidebar conversations={conversations} activeConversationId={activeConversationId} isCreatingConversation={false} isLoadingMore={isLoadingMoreConversations} hasMore={hasMoreConversations} error={conversationError} onNewChat={startNewChat} onSelectConversation={setActiveConversationId} onLoadMore={loadMoreConversations} onQuickAction={useQuickAction} />
+            <LauraConversation conversationId={activeConversationId} accessToken={accessToken} sessionStatus={sessionStatus} onConversationUpdated={handleConversationUpdated} onConversationStarted={handleConversationStarted} composerDraft={composerDraft} />
           </div>
         </>
       ) : (
