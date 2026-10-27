@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ type PricingPlanModalProps = {
 const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanModalProps) => {
   const custom = plan.isInquiryOnly || plan.planType === "CUSTOM";
   const price = billingCycle === "year" ? plan.annualPriceUsd : plan.priceUsd;
+  const isPayAsYouGo = price === 0;
   const trialDays = plan.trialDays ?? 0;
   const planIsCheckoutable = !custom && price != null;
   const [open, setOpen] = useState(false);
@@ -82,7 +84,18 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      {custom ? (
+      {isPayAsYouGo ? (
+        <Link
+          href="/dashboard"
+          className={`mt-5 flex h-12 items-center justify-center rounded-[8px] border border-[#5B7FF0] text-sm font-semibold transition-colors ${
+            popular
+              ? "bg-[#5B7FF0] text-white hover:bg-[#4D70DC]"
+              : "text-[#5B7FF0] hover:bg-[#EEF3FF]"
+          }`}
+        >
+          Start with Pay as You Go
+        </Link>
+      ) : custom ? (
         <button
           type="button"
           onClick={handleContactSales}

@@ -127,7 +127,10 @@ const PricingSection = () => {
             const Icon = appearance.icon;
             const custom = plan.isInquiryOnly || plan.planType === "CUSTOM";
             const price = billingCycle === "year" ? plan.annualPriceUsd : plan.priceUsd;
-            const groups = planGroups(plan);
+            const isFreePlan = price === 0;
+            const groups = planGroups(plan).filter(
+              (group) => !isFreePlan || group.title !== "Included Monthly Usage",
+            );
             return (
               <article key={plan._id} className={`relative flex flex-col rounded-xl border-2 ${appearance.color} bg-white p-5 shadow-sm`}>
                 {plan.isMostPopular && (
@@ -149,6 +152,12 @@ const PricingSection = () => {
                   {!custom && price != null && <span className="ml-1 text-sm text-[#7A7A7A]">/{billingCycle === "year" ? "yr" : "mo"}</span>}
                 </div>
                 <div className="mt-6 space-y-5">
+                  {isFreePlan && (
+                    <p className="border-b border-[#E5E8F2] pb-5 text-sm leading-relaxed text-[#0E1224]">
+                      Then <span className="font-semibold">$0.04</span> per AI action ·{" "}
+                      <span className="font-semibold">$0.20</span> per call minute
+                    </p>
+                  )}
                   {groups.map((group) => (
                     <div key={group.title}>
                       <h4 className="text-[10px] font-bold uppercase tracking-wide text-[#7A849D]">{group.title}</h4>
