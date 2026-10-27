@@ -14,7 +14,7 @@ const privacySections: PrivacySection[] = [
     id: "section-1",
     title: "Introduction",
     content: [
-      "At Noltra, we are committed to protecting your privacy and ensuring the security of your personal and business information. This Privacy Policy explains how we collect, use, store, and protect your data when you use our AI-powered business operating system.",
+      "Noltra.ai provides an AI-powered business platform at noltra.ai. This Privacy Policy explains what information we collect, how we use, share and keep it, and how you can control it.",
     ],
   },
   {
@@ -22,13 +22,14 @@ const privacySections: PrivacySection[] = [
     title: "Information We Collect",
     content: [
       {
-        text: "We collect information that helps us provide and improve our services. This may include:",
+        text: "We collect the following categories of information:",
         bullets: [
-          "Personal information such as your name, email address, and contact details.",
-          "Organization and workspace information.",
-          "CRM records, contacts, and uploaded documents.",
-          "Voice recordings, meeting transcripts, and AI conversations.",
-          "Usage data, device information, and platform activity.",
+          "Account information: your name, email address and contact details.",
+          "Workspace information: your organization and workspace details.",
+          "Business data you provide or connect: CRM records, contacts and uploaded documents.",
+          "Meeting data: meeting details, transcripts, recordings and AI conversations for meetings you connect to Noltra.",
+          "Connected accounts: when you connect Zoom, Google Calendar, Outlook, HubSpot or Salesforce, we receive the data described in section 4.",
+          "Usage data: device information and activity on the platform.",
         ],
       },
     ],
@@ -38,51 +39,93 @@ const privacySections: PrivacySection[] = [
     title: "How We Use Your Information",
     content: [
       {
-        text: "Your Information is used to deliver and enhance the Noltra.ai experience. We use your data to:",
+        text: "We use your information:",
         bullets: [
-          "Provide AI-powered features and automation.",
-          "Manage your account and organization workspace.",
-          "Improve platform performance and user experience.",
-          "Send important service updates and notifications.",
-          "Maintain platform security and prevent misuse.",
+          "To provide the platform, including AI features and automation.",
+          "To manage your account and workspace.",
+          "To improve performance and user experience.",
+          "To send important service updates.",
+          "To keep the platform secure and prevent misuse.",
         ],
       },
+      "We do not use your Zoom data or your meeting content to train AI models, and we do not use it for advertising.",
     ],
   },
   {
     id: "section-4",
-    title: "Data Security",
+    title: "Zoom and Other Connected Accounts",
     content: [
-      "We take appropriate technical and organizational measures to protect your information from unauthorized access, disclosure, or misuse. While we strive to maintain a secure environment, no online service can guarantee absolute security.",
+      "When you connect your Zoom account, we receive and store a Zoom access token, your Zoom account ID, your name and email, and details of meetings created through Noltra (meeting ID, topic, time and join link). We use these only to create and show your meetings and to let our meeting assistant join meetings you schedule. We never receive or store your Zoom password. The same purpose limit applies to the Google Calendar, Outlook, HubSpot and Salesforce accounts you choose to connect: we access only the data needed for the features you use.",
     ],
   },
   {
     id: "section-5",
-    title: "Data Sharing",
+    title: "Meeting Recordings, Transcripts and AI",
     content: [
-      {
-        text: "We do not sell your personal or business information. Your data may only be shared when necessary to:",
-        bullets: [
-          "Deliver integrated services with trusted third-party providers.",
-          "Comply with legal obligations or regulatory requirements.",
-          "Protect the rights, security, and integrity of Noltra.ai and its users.",
-        ],
-      },
+      "Our meeting assistant can join meetings you schedule through Noltra to capture the transcript. Participants are told that the meeting is being recorded through the notice shown by the meeting platform. Our AI service reads transcripts and suggests actions such as follow-up tasks and follow-up meetings. [A Zoom meeting is created only after you approve it in Noltra.] [We use (AI provider) to process this content on our behalf under terms that protect your data.]",
     ],
   },
   {
     id: "section-6",
-    title: "Your Privacy Rights",
+    title: "Data Sharing",
     content: [
       {
-        text: "You have control over your personal information. Depending on applicable laws, you may have the right to:",
+        text: "We do not sell your personal or business information. We share data only when necessary with:",
         bullets: [
-          "Access your personal data.",
-          "Update or correct inaccurate information.",
-          "Request deletion of your account or data.",
-          "Manage communication and notification preferences.",
+          "The calendar and CRM services you choose to connect (for example Google, Microsoft, HubSpot and Salesforce).",
+          "Our meeting assistant provider, which captures meeting audio and transcripts on our behalf.",
+          "[Our AI provider, which processes content on our behalf].",
+          "Our cloud hosting providers.",
+          "Authorities, when required by law or to protect the rights, security and integrity of Noltra and its users.",
         ],
       },
+      "These providers may use the data only to provide services to us and must protect it.",
+    ],
+  },
+  {
+    id: "section-7",
+    title: "Data Security",
+    content: [
+      "All data in transit is protected with HTTPS (TLS). [Zoom access tokens and other stored credentials are encrypted at rest.] Access to data is limited to people who need it. No online service can guarantee absolute security.",
+    ],
+  },
+  {
+    id: "section-8",
+    title: "Data Retention and Deletion",
+    content: [
+      "When you disconnect Zoom, or delete your Noltra account, we delete your Zoom tokens and Zoom data.",
+      "We keep a minimal audit record (your name, email, account ID and activity) for [period] to show how the service was used.",
+      "Meeting recordings and transcripts are kept for [period] unless you delete them sooner.",
+    ],
+  },
+  {
+    id: "section-9",
+    title: "Your Privacy Rights and How to Use Them",
+    content: [
+      "Depending on the law that applies to you, you may access, correct or delete your personal data, and manage your communication preferences. To make a request, email legal@noltra.ai. We respond within [number] days. You can also disconnect Zoom from the integrations page in Noltra, or remove the app in Zoom under Manage, then Added Apps.",
+    ],
+  },
+  {
+    id: "section-10",
+    title: "Children",
+    content: [
+      "Noltra is not intended for people under 16, and we do not knowingly collect their data.",
+    ],
+  },
+  {
+    id: "section-11",
+    title: "Changes to This Policy",
+    content: [
+      "We may update this policy. We will change the “Last updated” date and notify you of important changes.",
+    ],
+  },
+  {
+    id: "section-12",
+    title: "Contact",
+    content: [
+      "Noltra.ai",
+      // Add Noltra.ai's registered business address here before publishing it.
+      "legal@noltra.ai",
     ],
   },
 ];
@@ -130,7 +173,9 @@ function PrivacyContent() {
       <div className="mx-auto grid container grid-cols-1 gap-8 px-4 sm:px-6 lg:grid-cols-[380px_minmax(0,1fr)] lg:gap-12 lg:px-8 xl:gap-16">
         <aside className="">
           <div className="lg:sticky lg:top-24 ">
-            <h2 className="mb-4 text-lg font-semibold text-[#264AFF]">Contents</h2>
+            <h2 className="mb-4 text-lg font-semibold text-[#264AFF]">
+              Contents
+            </h2>
             <nav className="flex gap-2 overflow-x-auto pb-2 lg:block lg:space-y-1 lg:overflow-visible lg:pb-0 border-l  ">
               {privacySections.map((section, index) => {
                 const isActive = activeId === section.id;
@@ -154,7 +199,7 @@ function PrivacyContent() {
             <div className="mt-7 hidden pl-3 lg:block">
               <h3 className="text-lg font-bold text-[#315CF6]">Need help?</h3>
               <p className="mt-2 max-w-[250px] text-[14px] leading-[1.35] text-[#8B93B8]">
-                Questions about these terms? Our legal team is here to assist.
+                Questions about this policy? Contact us at legal@noltra.ai.
               </p>
             </div>
           </div>
@@ -164,13 +209,20 @@ function PrivacyContent() {
           <div className="mb-9 flex items-start gap-3 rounded-[12px] border border-[#F59E0B] bg-[#F59E0B1A] px-4 py-2.5 text-[#F59E0B]">
             <Info className="mt-0.5 size-4 shrink-0" />
             <p className="text-[11px] leading-snug sm:text-sm font-normal">
-              <span className="font-bold">Summary:</span> By using Noltra, you agree to use the platform lawfully, keep your credentials secure, and understand that AI outputs require human review. Your data is private - we never train shared models on it.
+              <span className="font-bold">Summary:</span> Noltra uses your
+              information to provide and secure the platform. We do not sell
+              your personal or business information, use Zoom data or meeting
+              content to train AI models, or use it for advertising.
             </p>
           </div>
 
           <div className="space-y-9 sm:space-y-10">
             {privacySections.map((section, sectionIndex) => (
-              <section key={section.id} id={section.id} className="scroll-mt-28">
+              <section
+                key={section.id}
+                id={section.id}
+                className="scroll-mt-28"
+              >
                 <h2 className="typography-h2-section mb-2 text-[#141936]">
                   {sectionIndex + 1}. {section.title}
                 </h2>

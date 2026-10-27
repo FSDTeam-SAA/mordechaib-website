@@ -1,8 +1,8 @@
 import { Loader2, SquarePen } from "lucide-react";
 import { useEffect, useRef, type WheelEvent } from "react";
 
-const quickActions = ["“Get today’s briefing”", "“Schedule a meeting with Iqbal”", "“Review yesterday’s performance”", "“Identify top 5 risks this week”", "“Discuss team challenges”", "“Generate ROI report “", "“Show me what changed today”"] as const;
-const intelligence = ["Churn Prediction", "NPS Analytics", "Customer Health Score", "Renewal Forecasting"] as const;
+const quickActions = ["Get today’s briefing", "Schedule a meeting with Iqbal", "Review yesterday’s performance", "Identify top 5 risks this week", "Generate ROI report", "Show me what changed today"] as const;
+// const intelligence = ["Churn Prediction", "NPS Analytics", "Customer Health Score", "Renewal Forecasting"] as const;
 
 export type ChiefConversation = {
   _id: string;
@@ -21,13 +21,14 @@ type ChiefSidebarProps = {
   onNewChat: () => void;
   onSelectConversation: (conversationId: string) => void;
   onLoadMore: () => void;
+  onQuickAction: (action: string) => void;
 };
 
 function PanelTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="border-b border-[#E4EAF8] pb-4 text-base font-medium">{children}</h2>;
 }
 
-export function ChiefSidebar({ conversations, activeConversationId, isCreatingConversation, isLoadingMore, hasMore, error, onNewChat, onSelectConversation, onLoadMore }: ChiefSidebarProps) {
+export function ChiefSidebar({ conversations, activeConversationId, isCreatingConversation, isLoadingMore, hasMore, error, onNewChat, onSelectConversation, onLoadMore, onQuickAction }: ChiefSidebarProps) {
   const recentListRef = useRef<HTMLDivElement>(null);
   const activeConversationRef = useRef<HTMLButtonElement>(null);
   const loadRequested = useRef(false);
@@ -85,15 +86,15 @@ export function ChiefSidebar({ conversations, activeConversationId, isCreatingCo
       <section className="rounded-lg bg-white p-3">
         <PanelTitle>Quick Actions</PanelTitle>
         <div className="mt-4 space-y-2">
-          {quickActions.map((action) => <button key={action} className="block min-h-[31px] w-full rounded-lg bg-[#F5F7FF] px-3 py-2 text-left text-xs transition-colors hover:bg-[#E9EDFC]">{action}</button>)}
+          {quickActions.map((action) => <button key={action} type="button" onClick={() => onQuickAction(action)} title={`Use quick action: ${action}`} className="block min-h-[31px] w-full rounded-lg bg-[#F5F7FF] px-3 py-2 text-left text-xs transition-colors hover:bg-[#E9EDFC] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5B7FF0]">“{action}”</button>)}
         </div>
       </section>
-      <section className="rounded-lg bg-white p-3">
+      {/* <section className="rounded-lg bg-white p-3">
         <PanelTitle>Customer Intelligence</PanelTitle>
         <div className="mt-4 space-y-2">
           {intelligence.map((item) => <button key={item} className="block min-h-[31px] w-full rounded-lg bg-[#F5F7FF] px-3 py-2 text-left text-xs transition-colors hover:bg-[#E9EDFC]">{item}</button>)}
         </div>
-      </section>
+      </section> */}
     </aside>
   );
 }
