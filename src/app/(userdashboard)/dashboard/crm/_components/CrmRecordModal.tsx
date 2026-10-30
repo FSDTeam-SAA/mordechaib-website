@@ -10,7 +10,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CrmRecordEditForm } from "./CrmRecordEditForm";
+import { CrmRecordEditForm, type CrmEditSchemaField } from "./CrmRecordEditForm";
 import { CrmRecordModalSkeleton } from "./CrmRecordModalSkeleton";
 
 export type CrmRecordModalMode = "view" | "edit";
@@ -27,6 +27,15 @@ type RecordResponse = {
   message?: string | string[];
   data?: CrmRecord | { record?: CrmRecord };
 };
+type SchemaResponse = {
+  success?: boolean;
+  message?: string | string[];
+  data?: CrmEditSchemaField[] | {
+    fields?: CrmEditSchemaField[];
+    items?: CrmEditSchemaField[];
+    pagination?: { pages?: number; totalPages?: number };
+  };
+};
 type Props = {
   recordId: string | null;
   provider: string;
@@ -36,7 +45,7 @@ type Props = {
   onOpenChange: (open: boolean) => void;
 };
 
-function messageOf(result: RecordResponse, fallback: string) {
+function messageOf(result: { message?: string | string[] }, fallback: string) {
   return Array.isArray(result.message)
     ? result.message.join(", ")
     : result.message || fallback;
@@ -118,8 +127,45 @@ export function CrmRecordModal({
     },
   });
 
+  const selectedObjectType = recordQuery.data?.objectType ?? objectType;
+  const schemaQuery = useQuery({
+    queryKey: ["crm-object-schema", provider, selectedObjectType],
+    enabled:
+      open &&
+      mode === "edit" &&
+      Boolean(accessToken) &&
+      Boolean(selectedObjectType),
+    queryFn: async ({ signal }) => {
+      const fetchPage = async (page: number) => {
+        const params = new URLSearchParams({ view: "FULL", page: String(page), limit: "100" });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/crm/${encodeURIComponent(provider)}/objects/${encodeURIComponent(selectedObjectType)}/schema?${params}`,
+          { headers: { Authorization: `Bearer ${accessToken}` }, cache: "no-store", signal },
+        );
+        const result = (await response.json().catch(() => ({}))) as SchemaResponse;
+        if (!response.ok || !result.success || !result.data) {
+          throw new Error(messageOf(result, "Unable to load editable CRM fields."));
+        }
+        return result.data;
+      };
+      const firstPage = await fetchPage(1);
+      const pages = Array.isArray(firstPage)
+        ? 1
+        : firstPage.pagination?.totalPages ?? firstPage.pagination?.pages ?? 1;
+      const remainingPages = await Promise.all(
+        Array.from({ length: Math.max(0, pages - 1) }, (_, index) => fetchPage(index + 2)),
+      );
+      const fields = [firstPage, ...remainingPages].flatMap((data) =>
+        Array.isArray(data) ? data : data.fields ?? data.items ?? [],
+      );
+      return fields.filter(
+        (field) => Boolean(field.name ?? field.fieldName) && field.updateable === true,
+      );
+    },
+  });
+
   const updateMutation = useMutation({
-    mutationFn: async (properties: Record<string, string>) => {
+    mutationFn: async (properties: Record<string, unknown>) => {
       const externalId = recordQuery.data?.externalId;
       const selectedObjectType = recordQuery.data?.objectType ?? objectType;
       if (!externalId) {
@@ -132,7 +178,7 @@ export function CrmRecordModal({
         throw new Error("Your session is missing. Please sign in again.");
       }
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/crm/${encodeURIComponent(provider)}/${encodeURIComponent(selectedObjectType)}/${encodeURIComponent(externalId)}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/crm/${encodeURIComponent(provider)}/objects/${encodeURIComponent(selectedObjectType)}/records/${encodeURIComponent(externalId)}`,
         {
           method: "PATCH",
           headers: {
@@ -215,10 +261,18 @@ export function CrmRecordModal({
               Try again
             </button>
           </div>
+        ) : mode === "edit" && schemaQuery.isPending ? (
+          <CrmRecordModalSkeleton />
+        ) : mode === "edit" && schemaQuery.isError ? (
+          <div className="flex min-h-56 flex-col items-center justify-center p-6 text-center">
+            <p className="text-sm text-[#C24152]">{schemaQuery.error.message}</p>
+            <button type="button" onClick={() => schemaQuery.refetch()} className="mt-4 rounded-[12px] border border-[#5B7FF0] px-4 py-2 text-sm font-medium text-[#5B7FF0]">Try again</button>
+          </div>
         ) : mode === "edit" && record ? (
           <CrmRecordEditForm
             key={record.id ?? recordId}
             properties={properties}
+            fields={schemaQuery.data ?? []}
             isSaving={updateMutation.isPending}
             error={
               updateMutation.error instanceof Error
