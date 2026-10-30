@@ -1,8 +1,9 @@
 "use client";
 
-import { FormEvent, ReactNode, useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { FormEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 import {
   Box,
   Building2,
@@ -35,15 +36,24 @@ export interface AddCrmRecordModalProps {
   provider: string;
   activeObjectType?: string;
 }
-type SchemaOption = string | { label?: string; value?: string | number };
+type SchemaOption =
+  | string
+  | {
+      label?: string;
+      value?: string | number | boolean;
+      active?: boolean;
+      disabled?: boolean;
+    };
 type SchemaField = {
   name?: string;
   fieldName?: string;
   label?: string;
   type?: string;
   dataType?: string;
+  providerType?: string;
   required?: boolean;
   createable?: boolean;
+  updateable?: boolean;
   writable?: boolean;
   readOnly?: boolean;
   description?: string;
@@ -52,8 +62,58 @@ type SchemaField = {
 type SchemaResponse = {
   success?: boolean;
   message?: string | string[];
-  data?: SchemaField[] | { fields?: SchemaField[]; items?: SchemaField[] };
+  data?: SchemaField[] | {
+    fields?: SchemaField[];
+    items?: SchemaField[];
+    pagination?: { pages?: number; totalPages?: number };
+  };
 };
+type CreateRecordResponse = {
+  success?: boolean;
+  message?: string | string[];
+  data?: unknown;
+};
+
+function responseMessage(result: CreateRecordResponse, fallback: string) {
+  return Array.isArray(result.message)
+    ? result.message.join(", ")
+    : result.message || fallback;
+}
+
+function propertyValue(
+  value: string,
+  field?: SchemaField,
+  control?: Element | RadioNodeList | null,
+): unknown {
+  const type = (
+    field?.dataType ??
+    field?.type ??
+    field?.providerType ??
+    "STRING"
+  ).toUpperCase();
+
+  if (
+    /NUMBER|INTEGER|DOUBLE|FLOAT|DECIMAL|CURRENCY/.test(type) ||
+    (control instanceof HTMLInputElement && control.type === "number")
+  ) {
+    const numberValue =
+      control instanceof HTMLInputElement && control.type === "number"
+        ? control.valueAsNumber
+        : Number(value);
+    if (!Number.isFinite(numberValue)) {
+      return value;
+    }
+    return numberValue;
+  }
+
+  if (/BOOLEAN|BOOL/.test(type)) {
+    return value.toLowerCase() === "true";
+  }
+
+  // JSON has no native date type. DATETIME, ENUMERATION and STRING values
+  // therefore stay as strings and are validated by the CRM API.
+  return value;
+}
 
 function objectIcon(objectType: string) {
   const type = objectType.toLowerCase();
@@ -76,11 +136,19 @@ export function AddCrmRecordModal({
 }: AddCrmRecordModalProps) {
   const { data: session } = useSession();
   const accessToken = session?.user.accessToken;
+  const queryClient = useQueryClient();
+  const formRef = useRef<HTMLFormElement>(null);
   const [open, setOpen] = useState(false);
   const [recordType, setRecordType] = useState(activeObjectType ?? "");
   const [optionalOpen, setOptionalOpen] = useState(false);
   const [selectedExtraFields, setSelectedExtraFields] = useState<string[]>([]);
-  const selectedObject = objects.find((object) => object.objectType === recordType);
+  const createableObjects = useMemo(
+    () => objects.filter((object) => object.createable === true),
+    [objects],
+  );
+  const selectedObject = createableObjects.find(
+    (object) => object.objectType === recordType,
+  );
   const recordLabel = selectedObject?.label || recordType || "Record";
 
   const schemaQuery = useQuery({
@@ -90,35 +158,37 @@ export function AddCrmRecordModal({
       if (!accessToken) {
         throw new Error("Your session is missing. Please sign in again.");
       }
-      const params = new URLSearchParams({
-        view: "FULL",
-        page: "1",
-        limit: "100",
-      });
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/crm/${encodeURIComponent(provider)}/objects/${encodeURIComponent(recordType)}/schema?${params}`,
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-          cache: "no-store",
-          signal,
-        },
-      );
-      const result = (await response.json().catch(() => ({}))) as SchemaResponse;
-      if (!response.ok || !result.success || !result.data) {
-        throw new Error(
-          Array.isArray(result.message)
-            ? result.message.join(", ")
-            : result.message || "Unable to load CRM fields.",
+      const fetchPage = async (page: number) => {
+        const params = new URLSearchParams({
+          view: "ESSENTIAL",
+          page: String(page),
+          limit: "100",
+        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/crm/${encodeURIComponent(provider)}/objects/${encodeURIComponent(recordType)}/schema?${params}`,
+          { headers: { Authorization: `Bearer ${accessToken}` }, cache: "no-store", signal },
         );
-      }
-      if (Array.isArray(result.data)) return result.data;
-      return result.data.fields ?? result.data.items ?? [];
+        const result = (await response.json().catch(() => ({}))) as SchemaResponse;
+        if (!response.ok || !result.success || !result.data) {
+          throw new Error(Array.isArray(result.message) ? result.message.join(", ") : result.message || "Unable to load CRM fields.");
+        }
+        return result.data;
+      };
+      const firstPage = await fetchPage(1);
+      if (Array.isArray(firstPage)) return firstPage;
+      const pages = firstPage.pagination?.totalPages ?? firstPage.pagination?.pages ?? 1;
+      const remainingPages = await Promise.all(
+        Array.from({ length: Math.max(0, pages - 1) }, (_, index) => fetchPage(index + 2)),
+      );
+      return [firstPage, ...remainingPages].flatMap((data) =>
+        Array.isArray(data) ? data : data.fields ?? data.items ?? [],
+      );
     },
   });
   const schemaFields = (schemaQuery.data ?? []).filter(
     (field) =>
       Boolean(field.name ?? field.fieldName) &&
-      field.createable !== false &&
+      field.createable === true &&
       field.writable !== false &&
       field.readOnly !== true,
   );
@@ -141,29 +211,105 @@ export function AddCrmRecordModal({
     selectedExtraFields.includes(field.name ?? field.fieldName ?? ""),
   );
 
+  const createRecordMutation = useMutation({
+    mutationFn: async (properties: Record<string, unknown>) => {
+      if (!accessToken) {
+        throw new Error("Your session is missing. Please sign in again.");
+      }
+      if (!recordType) {
+        throw new Error("Please select a CRM record type.");
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/crm/${encodeURIComponent(provider)}/objects/${encodeURIComponent(recordType)}/records`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ properties }),
+        },
+      );
+      const result = (await response
+        .json()
+        .catch(() => ({}))) as CreateRecordResponse;
+
+      if (!response.ok || result.success === false) {
+        throw new Error(responseMessage(result, "Unable to create CRM record."));
+      }
+      return result;
+    },
+    onSuccess: async (result) => {
+      toast.success(
+        responseMessage(result, `${recordLabel} created successfully.`),
+      );
+      await queryClient.invalidateQueries({
+        queryKey: ["crm-records", provider],
+      });
+      formRef.current?.reset();
+      setOpen(false);
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to create CRM record.",
+      );
+    },
+  });
+
   useEffect(() => {
-    if (!open || !objects.length) return;
+    if (!open || !createableObjects.length) return;
     setRecordType((current) =>
-      objects.some((object) => object.objectType === activeObjectType)
-        ? activeObjectType ?? objects[0].objectType
-        : objects.some((object) => object.objectType === current)
+      createableObjects.some((object) => object.objectType === activeObjectType)
+        ? activeObjectType ?? createableObjects[0].objectType
+        : createableObjects.some((object) => object.objectType === current)
           ? current
-          : objects[0].objectType,
+          : createableObjects[0].objectType,
     );
-  }, [activeObjectType, objects, open]);
+  }, [activeObjectType, createableObjects, open]);
 
   useEffect(() => {
     setSelectedExtraFields([]);
     setOptionalOpen(false);
+    formRef.current?.reset();
   }, [recordType]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setOpen(false);
+    try {
+      const fieldsByName = new Map(
+        schemaFields.map((field) => [field.name ?? field.fieldName ?? "", field]),
+      );
+      const form = event.currentTarget;
+      const properties = Object.fromEntries(
+        Array.from(new FormData(form).entries())
+          .filter((entry): entry is [string, string] => typeof entry[1] === "string")
+          .map(([key, value]) => [key, value.trim()])
+          .filter(([, value]) => value !== "")
+          .map(([key, value]) => [
+            key,
+            propertyValue(
+              value,
+              fieldsByName.get(key),
+              form.elements.namedItem(key),
+            ),
+          ]),
+      );
+      createRecordMutation.mutate(properties);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Please check the field values.",
+      );
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) =>
+        !createRecordMutation.isPending && setOpen(nextOpen)
+      }
+    >
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         data-lenis-prevent
@@ -188,7 +334,9 @@ export function AddCrmRecordModal({
         </header>
 
         <form
+          ref={formRef}
           id="add-record-form"
+          noValidate
           data-lenis-prevent
           onSubmit={handleSubmit}
           className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5 pb-5 [scrollbar-color:#B8C4EE_transparent] [scrollbar-width:thin] sm:px-7 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#B8C4EE] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
@@ -208,7 +356,7 @@ export function AddCrmRecordModal({
                   <ChevronUp className="ml-auto size-4 text-[#7183AA]" />
                 </div>
                 <div className="p-1.5">
-                  {objects.map((object) => {
+                  {createableObjects.map((object) => {
                     const Icon = objectIcon(object.objectType);
                     const selected = object.objectType === recordType;
                     return (
@@ -230,7 +378,7 @@ export function AddCrmRecordModal({
                       </button>
                     );
                   })}
-                  {objects.length === 0 && (
+                  {createableObjects.length === 0 && (
                     <p className="px-3 py-4 text-center text-xs text-[#8292B2]">
                       No CRM record types are available.
                     </p>
@@ -295,13 +443,11 @@ export function AddCrmRecordModal({
                               <button
                                 key={name}
                                 type="button"
-                                onClick={() =>
-                                  setSelectedExtraFields((current) =>
-                                    current.includes(name)
-                                      ? current.filter((item) => item !== name)
-                                      : [...current, name],
-                                  )
-                                }
+                                onClick={() => setSelectedExtraFields((current) =>
+                                  current.includes(name)
+                                    ? current.filter((item) => item !== name)
+                                    : [...current, name],
+                                )}
                                 className={cn(
                                   "flex w-full items-center gap-2 rounded-[6px] px-3 py-2 text-left text-xs transition",
                                   selected
@@ -340,8 +486,8 @@ export function AddCrmRecordModal({
         </form>
 
         <footer className="flex shrink-0 flex-col-reverse gap-2 border-t border-[#DDE5F2] px-5 py-3 sm:flex-row sm:justify-end sm:px-7">
-          <button type="button" onClick={() => setOpen(false)} className="h-9 rounded-[7px] border border-[#5277F5] bg-white px-7 text-sm font-medium text-[#3E68F1] transition hover:bg-[#F5F7FF]">Cancel</button>
-          <button type="submit" form="add-record-form" disabled={schemaQuery.isPending || schemaQuery.isError || schemaFields.length === 0} className="h-9 rounded-[7px] bg-[#4169F3] px-7 text-sm font-medium text-white shadow-[0_4px_10px_rgba(65,105,243,0.25)] transition hover:bg-[#345BE2] disabled:cursor-not-allowed disabled:opacity-50">Review &amp; Create</button>
+          <button type="button" onClick={() => setOpen(false)} disabled={createRecordMutation.isPending} className="h-9 rounded-[7px] border border-[#5277F5] bg-white px-7 text-sm font-medium text-[#3E68F1] transition hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-50">Cancel</button>
+          <button type="submit" form="add-record-form" disabled={schemaQuery.isPending || schemaQuery.isError || schemaFields.length === 0 || createRecordMutation.isPending} className="h-9 rounded-[7px] bg-[#4169F3] px-7 text-sm font-medium text-white shadow-[0_4px_10px_rgba(65,105,243,0.25)] transition hover:bg-[#345BE2] disabled:cursor-not-allowed disabled:opacity-50">{createRecordMutation.isPending ? "Creating..." : "Create Record"}</button>
         </footer>
       </DialogContent>
     </Dialog>
@@ -355,25 +501,18 @@ function FormField({ label, required, children }: { label: string; required?: bo
 function SchemaFormField({ field }: { field: SchemaField }) {
   const name = field.name ?? field.fieldName ?? "";
   const label = field.label || name.replaceAll("_", " ");
-  const type = (field.type ?? field.dataType ?? "string").toLowerCase();
-  const options = field.options ?? [];
+  const type = (
+    field.dataType ??
+    field.type ??
+    field.providerType ??
+    "STRING"
+  ).toUpperCase();
+  const options = (field.options ?? []).filter(
+    (option) => typeof option === "string" || option.active !== false,
+  );
+  const placeholder = field.description || `Enter ${label.toLowerCase()}`;
 
-  if (options.length > 0 || /select|enum|picklist|option/.test(type)) {
-    return (
-      <FormField label={label} required={field.required}>
-        <select name={name} required={field.required} defaultValue="" className={inputClassName}>
-          <option value="">Select {label.toLowerCase()}</option>
-          {options.map((option, index) => {
-            const value = typeof option === "string" ? option : String(option.value ?? "");
-            const optionLabel = typeof option === "string" ? option : option.label ?? value;
-            return <option key={`${value}-${index}`} value={value}>{optionLabel}</option>;
-          })}
-        </select>
-      </FormField>
-    );
-  }
-
-  if (/bool/.test(type)) {
+  if (/BOOLEAN|BOOL/.test(type)) {
     return (
       <FormField label={label} required={field.required}>
         <select name={name} required={field.required} defaultValue="" className={inputClassName}>
@@ -385,29 +524,66 @@ function SchemaFormField({ field }: { field: SchemaField }) {
     );
   }
 
-  if (/textarea|multiline|richtext/.test(type)) {
+  // An enum without options is not actionable as a dropdown. Some providers
+  // expose fields such as "Additional email addresses" as ENUMERATION while
+  // still expecting free-form input, so only render a select when choices exist.
+  if (options.length > 0) {
     return (
       <FormField label={label} required={field.required}>
-        <textarea name={name} required={field.required} placeholder={field.description || `Enter ${label.toLowerCase()}`} className={`${inputClassName} min-h-24 resize-y py-3`} />
+        <select
+          name={name}
+          required={field.required}
+          defaultValue=""
+          className={inputClassName}
+        >
+          <option value="">Select {label.toLowerCase()}</option>
+          {options.map((option, index) => {
+            const value =
+              typeof option === "string" ? option : String(option.value ?? "");
+            const optionLabel =
+              typeof option === "string" ? option : option.label ?? value;
+            const disabled =
+              typeof option === "string" ? false : option.disabled === true;
+            return (
+              <option key={`${value}-${index}`} value={value} disabled={disabled}>
+                {optionLabel}
+              </option>
+            );
+          })}
+        </select>
       </FormField>
     );
   }
 
-  const inputType = /date|time/.test(type)
+  if (/TEXTAREA|MULTILINE|RICHTEXT|LONGTEXT/.test(type)) {
+    return (
+      <FormField label={label} required={field.required}>
+        <textarea name={name} required={field.required} placeholder={placeholder} className={`${inputClassName} min-h-24 resize-y py-3`} />
+      </FormField>
+    );
+  }
+
+  const inputType = /DATETIME|TIMESTAMP/.test(type)
     ? "datetime-local"
-    : /number|double|float|decimal|currency|integer/.test(type)
+    : type === "DATE"
+      ? "date"
+      : type === "TIME"
+        ? "time"
+        : /NUMBER|DOUBLE|FLOAT|DECIMAL|CURRENCY|INTEGER/.test(type)
       ? "number"
-      : /email/.test(name)
+      : /email/i.test(name)
         ? "email"
-        : /phone|mobile/.test(name)
+        : /phone|mobile/i.test(name)
           ? "tel"
-          : /url|website/.test(name)
+          : /url|website/i.test(name)
             ? "url"
             : "text";
+  const acceptsMultipleEmails =
+    inputType === "email" && /additional|alternate|secondary/i.test(name);
 
   return (
     <FormField label={label} required={field.required}>
-      <input name={name} type={inputType} required={field.required} placeholder={field.description || `Enter ${label.toLowerCase()}`} className={inputClassName} />
+      <input name={name} type={inputType} multiple={acceptsMultipleEmails} step={inputType === "number" ? "any" : undefined} required={field.required} placeholder={acceptsMultipleEmails ? "Enter email addresses separated by commas" : placeholder} className={inputClassName} />
     </FormField>
   );
 }
