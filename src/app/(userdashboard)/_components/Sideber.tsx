@@ -3,8 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
-import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   BarChart3,
@@ -17,8 +15,6 @@ import {
   Crown,
   Headphones,
   LayoutGrid,
-  Loader2,
-  LogOut,
   Menu,
   Settings,
   Sparkles,
@@ -27,14 +23,6 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutGrid },
@@ -69,19 +57,7 @@ type SidebarProps = {
 
 export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
   const pathname = usePathname();
-  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const [isSigningOut, setIsSigningOut] = useState(false);
-
-  const handleLogout = async () => {
-    if (isSigningOut) return;
-
-    setIsSigningOut(true);
-    localStorage.removeItem("accessToken");
-    queryClient.clear();
-    await signOut({ callbackUrl: "/" });
-  };
 
   return (
     <>
@@ -184,17 +160,6 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
             <Headphones className="size-6" strokeWidth={1.6} />
             <span className={cn("whitespace-nowrap", collapsed && "md:hidden")}>Help &amp; Support</span>
           </Link>
-          <button
-            type="button"
-            onClick={() => setIsLogoutModalOpen(true)}
-            disabled={isSigningOut}
-            aria-label={collapsed ? "Log out" : undefined}
-            title={collapsed ? "Log out" : undefined}
-            className={cn("flex h-12 items-center gap-2 rounded-lg text-base font-medium text-[#6B6B6B] hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-60", collapsed ? "px-4 md:w-12 md:justify-center md:px-0" : "px-4")}
-          >
-            <LogOut className="size-6" strokeWidth={1.6} />
-            <span className={cn("whitespace-nowrap", collapsed && "md:hidden")}>{isSigningOut ? "Logging out..." : "Log out"}</span>
-          </button>
         </nav>
         <div className={cn("rounded-[12px] bg-[linear-gradient(100deg,#5F08FA_34%,#D946EF_148%)] px-4 py-2 text-white", collapsed && "md:hidden")}>
           <div className="flex items-center gap-2">
@@ -213,57 +178,6 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
           </button>
         </div>
       </aside>
-      <Dialog
-        open={isLogoutModalOpen}
-        onOpenChange={(nextOpen) => {
-          if (!isSigningOut) setIsLogoutModalOpen(nextOpen);
-        }}
-      >
-        <DialogContent
-          showClose={false}
-          overlayClassName="bg-black/30 backdrop-blur-[3px]"
-          className="w-[calc(100%-32px)] max-w-[480px] gap-0 overflow-hidden rounded-2xl border-0 bg-white p-0 shadow-xl"
-        >
-          <div className="flex items-center gap-3 border-b border-[#E4EAF8] p-5">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#EF4444]/10 text-[#EF4444]">
-              <LogOut className="size-5" />
-            </span>
-            <DialogTitle className="text-xl font-medium text-[#0E1224]">
-              Confirm Logout
-            </DialogTitle>
-          </div>
-
-          <div className="p-5 sm:p-6">
-            <DialogDescription className="text-base leading-6 text-[#64748B]">
-              Are you sure you want to log out of your account?
-            </DialogDescription>
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={isSigningOut}
-                  className="h-11 border-[#5B7FF0] text-[#5B7FF0] hover:bg-[#F5F7FF] hover:text-[#5B7FF0]"
-                >
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button
-                type="button"
-                onClick={() => void handleLogout()}
-                disabled={isSigningOut}
-                className="h-11 bg-[#EF4444] text-white hover:bg-[#DC2626]"
-              >
-                {isSigningOut ? (
-                  <><Loader2 className="mr-2 size-4 animate-spin" /> Logging out...</>
-                ) : (
-                  "Log out"
-                )}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
