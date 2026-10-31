@@ -93,7 +93,7 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
               : "text-[#5B7FF0] hover:bg-[#EEF3FF]"
           }`}
         >
-          Start with Pay as You Go
+          Get Started
         </Link>
       ) : custom ? (
         <button
@@ -144,7 +144,14 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
 
             <div className="mt-3 !rounded-[8px] border border-[#AFC1FF] bg-[#F2F5FF] p-4">
               <div className="flex items-center justify-between gap-3">
-                <p className="font-semibold text-[#0E1224]">{plan.name} plan</p>
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <p className="font-semibold text-[#0E1224]">{plan.name} plan</p>
+                  <p className="text-sm font-semibold text-[#7655F6]">
+                    {price == null
+                      ? "Contact sales"
+                      : `$${price}/${billingCycle === "year" ? "year" : "month"}`}
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={() => handleOpenChange(false)}
@@ -173,7 +180,7 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
                   return (
                     <div
                       key={group.id}
-                      className={`rounded-lg border p-4 transition-colors ${selected ? "border-[#5B7FF0] bg-[#F5F7FF]" : "border-[#DFE4F2] bg-white"}`}
+                      className={`rounded-[12px] border p-4 transition-colors ${selected ? "border-[#5B7FF0] bg-[#F5F7FF]" : "border-[#DFE4F2] bg-white"}`}
                     >
                       <p className="text-sm font-semibold text-[#0E1224]">{group.title}</p>
                       <p className="mt-1 text-xs leading-relaxed text-[#7A849D]">
@@ -233,10 +240,9 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
 
             <div className="mt-3">
               <p className="text-[11px] font-bold uppercase text-[#64708D]">Your plan</p>
-              <div className="mt-3 flex items-start justify-between gap-4 rounded-lg bg-[#F7F8FC] p-4">
+              <div className="mt-3 flex items-start justify-between gap-4 rounded-[12px] bg-[#F7F8FC] p-4">
                 <div>
                   <p className="font-semibold text-[#0E1224]">{plan.name}</p>
-                  <p className="mt-2 text-xs text-[#7A849D]">Begins after the {trialDays}-day free trial</p>
                 </div>
                 <p className="shrink-0 text-xl font-bold text-[#7655F6]">
                   {custom ? "Custom" : price == null ? "Contact sales" : `$${price}/${billingCycle === "year" ? "year" : "month"}`}
@@ -246,7 +252,7 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
 
             <div className="mt-6">
               <p className="text-[11px] font-bold uppercase text-[#64708D]">Optional add-ons</p>
-              <div className="mt-3 rounded-lg bg-[#F7F8FC] p-4">
+              <div className="mt-3 rounded-[12px] bg-[#F7F8FC] p-4">
                 {selectedAddOns.length === 0 ? (
                   <>
                     <p className="text-sm font-semibold text-[#0E1224]">No add-ons selected</p>
@@ -291,7 +297,7 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
               onClick={() => custom ? handleContactSales() : void handleCheckout()}
               className="mt-6 h-12 w-full rounded-[12px] bg-[#5B7FF0] text-sm font-semibold text-white transition-colors hover:bg-[#4D70DC]"
             >
-              {pending ? "Opening checkout…" : custom ? "Contact sales" : trialDays > 0 ? `Start ${trialDays}-day free trial` : "Continue to checkout"}
+              {pending ? "Opening checkout…" : custom ? "Contact sales" : trialDays > 0 ? `Continue ` : "Continue to checkout"}
             </button>
 
             <button
