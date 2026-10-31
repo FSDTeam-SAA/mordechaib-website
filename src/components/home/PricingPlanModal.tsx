@@ -87,7 +87,7 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
       {isPayAsYouGo ? (
         <Link
           href="/dashboard"
-          className={`mt-5 flex h-12 items-center justify-center rounded-[8px] border border-[#5B7FF0] text-sm font-semibold transition-colors ${
+          className={`mt-5 flex h-12 items-center justify-center !rounded-[8px] border border-[#5B7FF0] text-sm font-semibold transition-colors ${
             popular
               ? "bg-[#5B7FF0] text-white hover:bg-[#4D70DC]"
               : "text-[#5B7FF0] hover:bg-[#EEF3FF]"
@@ -111,7 +111,7 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
         <DialogTrigger asChild>
           <button
             type="button"
-            className={`mt-5 h-12 rounded-[8px] border border-[#5B7FF0] text-sm font-semibold transition-colors ${
+            className={`mt-5 h-12 !rounded-[8px] border border-[#5B7FF0] text-sm font-semibold transition-colors ${
               popular
                 ? "bg-[#5B7FF0] text-white hover:bg-[#4D70DC]"
                 : "text-[#5B7FF0] hover:bg-[#EEF3FF]"
@@ -124,7 +124,7 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
 
       <DialogContent
         data-lenis-prevent
-        className="max-h-[92dvh] w-[calc(100%-24px)] max-w-[680px] touch-pan-y overflow-y-auto overscroll-contain rounded-xl border-0 bg-white p-4 shadow-2xl [scrollbar-width:thin] [scrollbar-color:#B8C4EE_transparent] sm:p-7 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#B8C4EE] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+        className="max-h-[92dvh] w-[calc(100%-24px)] max-w-[680px] touch-pan-y overflow-y-auto overscroll-contain !rounded-xl border-0 bg-white p-4 shadow-2xl [scrollbar-width:thin] [scrollbar-color:#B8C4EE_transparent] sm:p-7 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#B8C4EE] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
       >
         {step === "configure" ? (
           <>
@@ -142,7 +142,7 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
               </div>
             </DialogHeader>
 
-            <div className="mt-3 rounded-lg border border-[#AFC1FF] bg-[#F2F5FF] p-4">
+            <div className="mt-3 !rounded-[8px] border border-[#AFC1FF] bg-[#F2F5FF] p-4">
               <div className="flex items-center justify-between gap-3">
                 <p className="font-semibold text-[#0E1224]">{plan.name} plan</p>
                 <button
@@ -153,9 +153,6 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
                   Change
                 </button>
               </div>
-              <p className="mt-1 text-xs text-[#596078]">
-                {custom ? "Custom pricing" : price == null ? "Contact sales" : `$${price}/${billingCycle === "year" ? "year" : "month"}`} · {trialDays}-day free trial · {plan.meetingHoursPerMonth ?? "—"} meeting hours included
-              </p>
             </div>
 
             <div className="mt-6">

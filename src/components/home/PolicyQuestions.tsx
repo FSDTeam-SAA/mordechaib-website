@@ -12,9 +12,9 @@ const PolicyQuestions = () => {
             <h2 className="text-[20px] font-bold leading-tight text-white sm:text-5xl lg:text-[48px]">
              Your AI Chief of Staff is Ready ?
             </h2>
-            <p className="mx-auto mt-3  text-[12px] leading-relaxed text-white sm:mt-5 sm:text-lg">
+            {/* <p className="mx-auto mt-3  text-[12px] leading-relaxed text-white sm:mt-5 sm:text-lg">
               Join 1,200+ small business owners who let Noltra.ai handle the admin so they can focus on growth.
-            </p>
+            </p> */}
             <a
               href="mailto:mordy@noltra.ai"
               className="mx-auto mt-6 inline-flex h-12 max-w-full items-center justify-center gap-2 rounded-[12px] bg-white px-6 text-sm font-semibold text-[#0E1224] shadow-sm sm:mt-8 sm:h-14 sm:gap-3 sm:px-8 sm:text-base"
@@ -28,7 +28,7 @@ const PolicyQuestions = () => {
               height={1000}
               sizes="100vw"
               alt="Noltra policy"
-              className="absolute left-[30%] top-[110px] hidden sm:block"
+              className="absolute left-[30%] top-[65px] hidden sm:block"
             />
           </div>
         </div>
