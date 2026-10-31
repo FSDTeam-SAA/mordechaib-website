@@ -192,7 +192,7 @@ const PricingSection = () => {
                     <Icon size={20} />
                   </span>
                   <h3 className="text-xl font-bold text-[#0E1224]">
-                    {plan.name}
+                    {isFreePlan ? "Usage Based Plan" : plan.name}
                   </h3>
                 </div>
                 <p className="mt-4 min-h-[42px] text-base text-[#0E1224]">
