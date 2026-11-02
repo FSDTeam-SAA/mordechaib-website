@@ -2,11 +2,11 @@ import Image from "next/image";
 import { Check } from "lucide-react";
 
 const visionPoints = [
-  "AI that lightens the load, not adds to it",
-  "A workspace where owners and AI work side-by-side",
-  "Days that feel organized instead of overwhelming",
-  "Insights that make decisions easier and smarter",
-  "Technology that grows with the business, not against it",
+  "Conversations become action: Calls, meetings, and voice notes automatically turn into tasks, follow-ups, and next steps.",
+  "AI works as a team: Specialized AI agents collaborate across Sales, Marketing, Operations, and Customer Support.",
+  "Nothing falls through the cracks: Tasks, commitments, and customer interactions stay organized and connected.",
+  "Business owners stay in control: AI handles repetitive operational work while people focus on decisions, relationships, and growth.",
+  "Businesses operate with greater intelligence: One connected platform brings people, workflows, and AI together.",
 ];
 
 function OurVision() {
@@ -18,20 +18,30 @@ function OurVision() {
             Our Vision With <span className="text-[#5B7FF0]">Noltra</span>
           </h2>
           <h3 className="mt-5 text-base font-midium leading-tight text-[#141936] sm:text-2xl">
-            Built from real struggle, shaped by real owners
+            A smarter way to run a business. An AI workforce that works alongside you.
           </h3>
 
           <div className="mt-5 space-y-4 text-sm leading-relaxed font-normal text-[#141936] sm:text-xl">
             <p>
-              Noltra wasn&apos;t imagined in a strategy meeting - it came from living
-              the chaos of small-business life. The long nights, the constant
-              pressure, the feeling of running everything alone. I built Noltra
-              because I knew that pain personally, and I knew owners deserved better.
+              Noltra was built around a simple belief: business owners shouldn&apos;t have
+              to manage every task, chase every follow-up, or carry every operational
+              responsibility themselves.
             </p>
             <p>
-              Our vision is to give small-business owners clarity, confidence, and
-              time back - through an AI operating system that feels like a partner,
-              not another tool to manage.
+              Running a business involves countless conversations, decisions, and
+              responsibilities. Too much time is spent coordinating work instead of
+              moving the business forward.
+            </p>
+            <p>
+              We envisioned a different future — one where AI doesn&apos;t just provide
+              answers or automate individual tasks, but actively helps run business
+              operations.
+            </p>
+            <p>
+              Our vision is to make every business more intelligent, organized, and
+              efficient through an AI Chief of Staff that coordinates specialized AI
+              agents, understands business context, and turns everyday conversations
+              into execution.
             </p>
           </div>
 
@@ -45,6 +55,15 @@ function OurVision() {
               </li>
             ))}
           </ul>
+
+          <div className="mt-6 space-y-4 text-sm leading-relaxed text-[#141936] sm:text-xl">
+            <p>Our goal isn&apos;t to build another tool businesses have to manage.</p>
+            <p>
+              We&apos;re building the future of business operations — where every
+              business has an AI Chief of Staff and an entire AI workforce working
+              behind it.
+            </p>
+          </div>
         </div>
 
         <div className="relative order-1 aspect-[16/9] overflow-hidden rounded-lg lg:order-2">

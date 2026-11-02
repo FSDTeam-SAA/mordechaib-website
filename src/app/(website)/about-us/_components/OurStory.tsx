@@ -30,13 +30,15 @@ function OurStory() {
             Noltra was created with a simple belief:
           </h3>
           <p className="mt-1 text-base text-[#141936] leading-relaxed sm:text-base">
-            Small business owners deserve tools that make life easier - not more
-            complicated. As a husband, father, and founder, <strong>Mordy</strong>,
-            together with his wife <strong>Noa</strong>, understands the daily pressure
-            of running a business while supporting a family. That shared experience
-            inspired them to build an AI system that saves time, reduces stress, and
-            helps owners focus on what truly matters - growth, customers, and the
-            people they care about.
+            Every business deserves an AI workforce that makes running a business
+            easier. As a husband, father, and founder, <strong>Mordy</strong>, together
+            with his wife <strong>Noa</strong>, understands the challenges of balancing
+            business, family, and everyday responsibilities.
+          </p>
+          <p className="mt-4 text-base leading-relaxed text-[#141936] sm:text-base">
+            That experience inspired them to build Noltra — an AI Chief of Staff that
+            turns conversations into action, coordinates AI agents, and helps business
+            owners spend less time managing work and more time growing their businesses.
           </p>
         </div>
       </div>
