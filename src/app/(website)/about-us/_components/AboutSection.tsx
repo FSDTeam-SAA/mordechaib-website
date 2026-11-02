@@ -3,20 +3,20 @@ import { Check } from "lucide-react";
 
 const benefits = [
   {
-    title: "Eliminates fragmentation",
-    text: "by consolidating CRM, tasks, meetings, workflows, and communication into a single, aligned system",
+    title: "Turns Conversations Into Action",
+    text: "After every client call, meeting, or voice note, Noltra understands what was discussed, identifies important next steps, and automatically creates actionable tasks.",
   },
   {
-    title: "Executes work automatically",
-    text: "with AI that understands context, priorities, and the operational chain of command",
+    title: "Automates the Follow-Through",
+    text: "From updating your CRM and scheduling meetings to sending follow-ups and assigning tasks, Noltra helps ensure that nothing important gets overlooked.",
   },
   {
-    title: "Executes work automatically",
-    text: "with AI that understands context, priorities, and the operational chain of command",
+    title: "Coordinates Your AI Workforce",
+    text: "Your AI Chief of Staff connects specialized AI agents to the work that needs to get done, helping coordinate Sales, Marketing, Operations, and Customer Support.",
   },
   {
-    title: "Keeps teams accountable and synchronized",
-    text: "with clear ownership, structured processes, and real-time visibility",
+    title: "Keeps Your Business Moving",
+    text: "With organized tasks, clear ownership, and visibility into ongoing work, Noltra helps your business stay aligned and on track.",
   },
 ];
 
@@ -40,15 +40,14 @@ function AboutSection() {
           </h2>
 
           <p className="mt-5 text-sm leading-relaxed text-[#141936] sm:text-xl">
-            Modern companies lose efficiency because teams are forced to work across
-            scattered, disconnected tools. Information gets buried, workflows stall,
-            and leaders end up managing operational friction instead of scaling the
-            business.
+            Running a business means managing countless conversations, decisions,
+            tasks, and follow-ups. But too often, important details get lost, tasks go
+            unfinished, and business owners spend more time managing operations than
+            growing their company.
           </p>
           <p className="mt-4 text-sm font-medium leading-relaxed text-[#141936] sm:text-xl">
-            Noltra fixes this by giving CEOs{" "}
-            <span className="text-[#5B7FF0]">one intelligent operating system</span>{" "}
-            that delivers real operational efficiency:
+            We built Noltra to change that. Noltra turns everyday business
+            conversations into organized action and execution.
           </p>
 
           <div className="mt-5 space-y-9">
@@ -73,9 +72,9 @@ function AboutSection() {
           </div>
 
           <p className="mt-6 text-sm leading-relaxed text-[#20263D] sm:text-base">
-            This isn&apos;t another productivity tool - it&apos;s your AI workforce,
-            engineered to run your company with precision, speed, and efficiency so
-            leadership can focus entirely on growth.
+            Noltra isn&apos;t another tool you have to manage. It&apos;s your AI Chief of
+            Staff, turning conversations into execution so you can spend less time
+            managing the work and more time growing your business.
           </p>
         </div>
       </div>

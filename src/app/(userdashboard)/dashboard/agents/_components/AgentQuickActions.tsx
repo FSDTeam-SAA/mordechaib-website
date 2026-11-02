@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { agentColor, roleLabel, type AgentDashboardItem } from "./agentDashboardTypes";
+import type { AgentDashboardItem } from "./agentDashboardTypes";
 
 export function AgentQuickActions({
   activeAgentId,
@@ -15,7 +15,7 @@ export function AgentQuickActions({
         Quick Actions
       </h2>
       <div className="mt-4 space-y-4">
-        {agents.map((agent, index) => {
+        {agents.map((agent) => {
           const active = agent.id === activeAgentId;
           const enabled = agent.organizationSettings.enabled;
           return (
@@ -35,12 +35,6 @@ export function AgentQuickActions({
                 <strong className="block text-base font-medium">
                   {agent.name}
                 </strong>
-                <span
-                  className="mt-2 block text-xs"
-                  style={{ color: agentColor(index) }}
-                >
-                  {roleLabel(agent.type)}
-                </span>
               </span>
               <span className="flex shrink-0 flex-col items-end gap-2">
                 {!enabled ? (
@@ -52,7 +46,11 @@ export function AgentQuickActions({
                     Active
                   </span>
                 )}
-                <span className="text-xs text-[#8B93B8]">{agent.performance.successRatePercent === null ? "No job data" : `${agent.performance.successRatePercent}% Success`}</span>
+                {agent.performance.successRatePercent !== null && (
+                  <span className="text-xs text-[#8B93B8]">
+                    {agent.performance.successRatePercent}% Success
+                  </span>
+                )}
               </span>
             </Link>
           );

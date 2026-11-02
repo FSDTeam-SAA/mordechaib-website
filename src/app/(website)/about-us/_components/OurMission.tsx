@@ -1,13 +1,4 @@
 import Image from "next/image";
-import { Check } from "lucide-react";
-
-const missionPoints = [
-  "Turn conversations into organized tasks and workflows",
-  "Remove repetitive work so owners reclaim real time",
-  "Centralize CRM, tasks, meetings, and insights",
-  "Deliver secure, reliable, easy-to-use AI",
-  "Improve continuously based on real stories and real needs",
-];
 
 function OurMission() {
   return (
@@ -28,31 +19,22 @@ function OurMission() {
             Our Mission With <span className="text-[#5B7FF0]">Noltra</span>
           </h2>
           <h3 className="mt-5 text-base font-midium  text-[#141936] sm:text-xl">
-            To protect the people who carry the weight of their communities
+            Give every business the power of an AI workforce.
           </h3>
 
           <p className="mt-5 text-sm leading-relaxed text-[#141936] sm:text-xl">
-            Small-business owners are dreamers, parents, immigrants, leaders - and
-            they deserve tools that make their lives easier. Our mission is to build
-            AI that quietly handles the chaos so owners can focus on customers,
-            revenue, and the life they&apos;re building. Noltra is the system I wish I
-            had. Now it&apos;s the system I&apos;m committed to giving others.
+            Our mission is to help businesses operate smarter by turning everyday
+            conversations into action. Noltra&apos;s AI Chief of Staff coordinates
+            specialized AI agents to manage tasks, automate follow-ups, organize
+            operations, and keep work moving forward.
           </p>
-
-          <ul className="mt-6 space-y-4">
-            {missionPoints.map((point) => (
-              <li key={point} className="flex items-start gap-3 text-sm text-[#20263D] sm:text-xl font-medium">
-                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-[#5B7FF0] text-white">
-                  <Check size={10} strokeWidth={3} />
-                </span>
-                <span>{point}</span>
-              </li>
-            ))}
-          </ul>
-
-          <p className="mt-6 text-sm leading-relaxed text-[#141936] sm:text-base">
-            Noltra isn&apos;t just software - it&apos;s a promise that you don&apos;t have to
-            run your business alone.
+          <p className="mt-5 text-sm leading-relaxed text-[#141936] sm:text-xl">
+            We believe business owners should spend less time managing operations
+            and more time focusing on customers, growth, and what matters most.
+          </p>
+          <p className="mt-5 text-sm leading-relaxed text-[#141936] sm:text-xl">
+            Our goal is simple: give every business an intelligent AI workforce that
+            works alongside them, so they never have to do everything alone.
           </p>
         </div>
       </div>
