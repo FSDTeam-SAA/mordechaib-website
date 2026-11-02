@@ -4,9 +4,7 @@ import Image from "next/image";
 import {
   AlertCircle,
   CalendarDays,
-  Check,
   CheckSquare,
-  ChevronDown,
   FileText,
   Loader2,
   Mic,
@@ -164,9 +162,11 @@ const TASK_DEPARTMENTS = [
   "OTHER",
 ] as const;
 const TASK_PRIORITIES = ["LOW", "MEDIUM", "HIGH"] as const;
-// const VOICE_WAVE_BARS = [
-//   8, 13, 20, 10, 16, 25, 12, 19, 30, 16, 23, 35, 18, 12, 28, 20, 11, 16, 9,
-// ] as const;
+// SpeechRecognition does not expose microphone volume, so these bars provide
+// a calm visual cue while the browser is actively listening.
+const VOICE_WAVE_BARS = [
+  8, 13, 20, 10, 16, 25, 12, 19, 30, 16, 23, 35, 18, 12, 28, 20, 11, 16, 9,
+] as const;
 
 function isTaskDepartment(
   value: string,
@@ -767,8 +767,6 @@ export function LauraConversation({
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgentId, setSelectedAgentId] = useState("");
   const [isLoadingAgents, setIsLoadingAgents] = useState(false);
-  const [agentLoadError, setAgentLoadError] = useState<string | null>(null);
-  const [isAgentMenuOpen, setIsAgentMenuOpen] = useState(false);
   const [details, setDetails] = useState<IntelligenceDetails | null>(null);
   const [proposalCache, setProposalCache] = useState<Record<string, Proposal>>(
     {},
@@ -798,11 +796,13 @@ export function LauraConversation({
   const composerInputRef = useRef<HTMLInputElement>(null);
   const lastPreview = useRef("");
   const chatScrollRef = useRef<HTMLDivElement>(null);
-  const agentMenuRef = useRef<HTMLDivElement>(null);
-  const selectedAgentConversationRef = useRef<string | null>(null);
   const pendingNewConversationIdRef = useRef<string | null>(null);
   const voiceRecognitionRef = useRef<VoiceRecognition | null>(null);
   const voiceMessagePrefixRef = useRef("");
+  const voiceSessionActiveRef = useRef(false);
+  const voiceRestartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const clearPolling = useCallback(() => {
     if (pollTimeout.current) {
@@ -818,7 +818,6 @@ export function LauraConversation({
       return;
     }
     setIsLoadingAgents(true);
-    setAgentLoadError(null);
     try {
       const query = new URLSearchParams({ page: "1", limit: "20" });
       const response = await fetch(
@@ -830,27 +829,22 @@ export function LauraConversation({
         .catch(() => ({}))) as ApiEnvelope<AgentsPayload>;
       if (!response.ok || !result.success || !result.data)
         throw new Error(apiError(result, "Unable to load available agents."));
-      const activeAgents = (result.data.items || []).filter(
-        (agent) => agent.status?.toUpperCase() === "ACTIVE",
+      const laura = (result.data.items || []).find(
+        (agent) =>
+          agent.status?.toUpperCase() === "ACTIVE" &&
+          (agent.nameKey?.toLowerCase() === "laura" ||
+            agent.name.toLowerCase() === "laura"),
       );
-      setAgents(activeAgents);
-      setSelectedAgentId((current) => {
-        if (activeAgents.some((agent) => agent._id === current)) return current;
-        return (
-          activeAgents.find(
-            (agent) =>
-              agent.nameKey?.toLowerCase() === "laura" ||
-              agent.name.toLowerCase() === "laura",
-          )?._id ||
-          activeAgents[0]?._id ||
-          ""
-        );
-      });
+      if (!laura) throw new Error("Laura is currently unavailable.");
+      // Laura is the dedicated Chief of Staff for this screen. Keep her ID
+      // fixed even when an older conversation contains another selected agent.
+      setAgents([laura]);
+      setSelectedAgentId(laura._id);
     } catch (agentError) {
-      setAgentLoadError(
+      setError(
         agentError instanceof Error
           ? agentError.message
-          : "Unable to load available agents.",
+          : "Laura is currently unavailable.",
       );
     } finally {
       setIsLoadingAgents(false);
@@ -861,16 +855,15 @@ export function LauraConversation({
     void loadAgents();
   }, [loadAgents]);
 
-  useEffect(() => () => voiceRecognitionRef.current?.abort(), []);
-
-  useEffect(() => {
-    const closeAgentMenu = (event: MouseEvent) => {
-      if (!agentMenuRef.current?.contains(event.target as Node))
-        setIsAgentMenuOpen(false);
-    };
-    document.addEventListener("mousedown", closeAgentMenu);
-    return () => document.removeEventListener("mousedown", closeAgentMenu);
-  }, []);
+  useEffect(
+    () => () => {
+      voiceSessionActiveRef.current = false;
+      if (voiceRestartTimeoutRef.current)
+        clearTimeout(voiceRestartTimeoutRef.current);
+      voiceRecognitionRef.current?.abort();
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!composerDraft) return;
@@ -926,7 +919,6 @@ export function LauraConversation({
       const messagePages: ChatMessage[] = [];
       let page = 1;
       let totalPages = 1;
-      let conversationSelectedAgentId: string | null | undefined;
 
       do {
         const query = new URLSearchParams({
@@ -944,7 +936,6 @@ export function LauraConversation({
         if (!response.ok || !result.success || !result.data)
           throw new Error(apiError(result, "Unable to load messages."));
         messagePages.push(...result.data.items);
-        conversationSelectedAgentId = result.data.conversation?.selectedAgentId;
         totalPages = Math.max(1, result.data.pagination?.pages || 1);
         page += 1;
       } while (page <= totalPages);
@@ -953,11 +944,19 @@ export function LauraConversation({
       // the whole conversation in natural, oldest-to-newest chat order.
       const chronologicalMessages = messagePages.reverse();
       setMessages(chronologicalMessages);
-      if (selectedAgentConversationRef.current !== requestedConversationId) {
-        selectedAgentConversationRef.current = requestedConversationId;
-        if (conversationSelectedAgentId)
-          setSelectedAgentId(conversationSelectedAgentId);
-      }
+      const latestUserMessage = [...chronologicalMessages]
+        .reverse()
+        .find((item) => item.senderType.toUpperCase() === "USER");
+      const latestReplyIsVisible = latestUserMessage
+        ? chronologicalMessages.some(
+            (item) =>
+              item.senderType.toUpperCase() === "AI" &&
+              item.sourceMessageId === latestUserMessage.id,
+          )
+        : false;
+      // The reply is already on screen, so do not keep a second "thinking"
+      // indicator visible while its supporting intelligence data is fetched.
+      if (latestReplyIsVisible) setIsWaitingForAi(false);
       const latestMessage = chronologicalMessages.at(-1);
       const preview = latestMessage?.content?.replace(/\s+/g, " ").trim();
       if (preview && preview !== lastPreview.current) {
@@ -1101,7 +1100,6 @@ export function LauraConversation({
       return;
     }
     clearPolling();
-    selectedAgentConversationRef.current = null;
     setMessages([]);
     setAttachments([]);
     setDetails(null);
@@ -1157,20 +1155,10 @@ export function LauraConversation({
     pollForIntelligence,
   ]);
 
-  useEffect(() => {
-    if (conversationId || agents.length === 0) return;
-    const lauraId = agents.find(
-      (agent) =>
-        agent.nameKey?.toLowerCase() === "laura" ||
-        agent.name.toLowerCase() === "laura",
-    )?._id;
-    if (lauraId) setSelectedAgentId(lauraId);
-  }, [agents, conversationId]);
-
   function toggleVoiceInput() {
     if (!isReady || isSending) return;
     if (isListening) {
-      voiceRecognitionRef.current?.stop();
+      stopVoiceInput();
       return;
     }
 
@@ -1185,8 +1173,9 @@ export function LauraConversation({
 
     const recognition = new Recognition();
     voiceRecognitionRef.current = recognition;
+    voiceSessionActiveRef.current = true;
     voiceMessagePrefixRef.current = message.trim();
-    recognition.continuous = false;
+    recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = navigator.language || "en-US";
     recognition.onstart = () => {
@@ -1209,22 +1198,44 @@ export function LauraConversation({
     };
     recognition.onerror = (event) => {
       if (event.error === "aborted") return;
+      // Browsers can emit no-speech after a short pause. Keep the recording
+      // session alive and let onend restart it instead of showing an error.
+      if (event.error === "no-speech" && voiceSessionActiveRef.current) return;
+      voiceSessionActiveRef.current = false;
+      setIsListening(false);
       const messageForError =
         event.error === "not-allowed" || event.error === "service-not-allowed"
           ? "Please allow microphone access, then try voice input again."
-          : event.error === "no-speech"
-            ? "We couldn't hear anything. Please try speaking again."
-            : "Voice input could not start. Please try again.";
+          : "Voice input could not start. Please try again.";
       setError(messageForError);
     };
     recognition.onend = () => {
-      setIsListening(false);
-      if (voiceRecognitionRef.current === recognition)
-        voiceRecognitionRef.current = null;
+      if (!voiceSessionActiveRef.current) {
+        setIsListening(false);
+        if (voiceRecognitionRef.current === recognition)
+          voiceRecognitionRef.current = null;
+        return;
+      }
+
+      // Some browsers stop recognition after a pause even with continuous
+      // mode. Restart it quietly so listening remains user-controlled.
+      voiceRestartTimeoutRef.current = setTimeout(() => {
+        if (!voiceSessionActiveRef.current) return;
+        try {
+          recognition.start();
+        } catch {
+          voiceSessionActiveRef.current = false;
+          setIsListening(false);
+          setError("Voice input stopped unexpectedly. Please try again.");
+        }
+      }, 250);
     };
     try {
+      // Give immediate visual confirmation while the browser asks for access.
+      setIsListening(true);
       recognition.start();
     } catch {
+      voiceSessionActiveRef.current = false;
       setIsListening(false);
       setError(
         "Voice input is already starting. Please try again in a moment.",
@@ -1232,14 +1243,27 @@ export function LauraConversation({
     }
   }
 
-  // function cancelVoiceInput() {
-  //   // Restore the message as it was before recording, rather than keeping a
-  //   // partial transcript when the user explicitly cancels.
-  //   voiceRecognitionRef.current?.abort();
-  //   voiceRecognitionRef.current = null;
-  //   setMessage(voiceMessagePrefixRef.current);
-  //   setIsListening(false);
-  // }
+  function cancelVoiceInput() {
+    // A deliberate cancel restores the draft from before recording, so an
+    // incomplete transcript never ends up in a message by accident.
+    voiceSessionActiveRef.current = false;
+    if (voiceRestartTimeoutRef.current)
+      clearTimeout(voiceRestartTimeoutRef.current);
+    voiceRecognitionRef.current?.abort();
+    voiceRecognitionRef.current = null;
+    setMessage(voiceMessagePrefixRef.current);
+    setIsListening(false);
+    requestAnimationFrame(() => composerInputRef.current?.focus());
+  }
+
+  function stopVoiceInput() {
+    voiceSessionActiveRef.current = false;
+    if (voiceRestartTimeoutRef.current)
+      clearTimeout(voiceRestartTimeoutRef.current);
+    voiceRecognitionRef.current?.stop();
+    setIsListening(false);
+    requestAnimationFrame(() => composerInputRef.current?.focus());
+  }
 
   async function submitMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -1253,7 +1277,7 @@ export function LauraConversation({
       return;
     // Do not allow a late speech-recognition callback to alter a message that
     // has already been handed off to the normal send flow.
-    voiceRecognitionRef.current?.stop();
+    stopVoiceInput();
     const submittedAttachments = attachments;
     const clientMessageId = crypto.randomUUID();
     const optimisticMessageId = `sending-${clientMessageId}`;
@@ -1928,14 +1952,6 @@ export function LauraConversation({
     event.preventDefault();
     event.stopPropagation();
     chat.scrollBy({ top: event.deltaY, behavior: "auto" });
-  }
-
-  function handleAgentMenuWheel(event: WheelEvent<HTMLDivElement>) {
-    // The menu is rendered above the composer, outside the chat scroll pane.
-    // Handle the wheel locally so neither the chat nor the browser page moves.
-    event.preventDefault();
-    event.stopPropagation();
-    event.currentTarget.scrollBy({ top: event.deltaY, behavior: "auto" });
   }
 
   return (
@@ -2741,6 +2757,53 @@ export function LauraConversation({
         onSubmit={submitMessage}
         className="flex h-20 items-center gap-3 rounded-xl bg-white px-6 shadow-[0_1px_2px_rgba(32,53,112,0.03)] sm:gap-4 sm:px-10"
       >
+        {isListening ? (
+          <div className="mx-auto flex h-12 w-full max-w-2xl items-center gap-3 rounded-2xl bg-gradient-to-r from-[#5B7FF0] to-[#7792F4] px-3 shadow-[0_8px_20px_rgba(91,127,240,0.24)]">
+            <button
+              type="button"
+              onClick={cancelVoiceInput}
+              aria-label="Cancel voice input"
+              className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              title="Cancel voice input"
+            >
+              <X className="size-5" strokeWidth={1.8} />
+            </button>
+            <div className="flex h-9 min-w-0 flex-1 items-center gap-3 rounded-xl border border-white/25 bg-[#4C6FE0]/70 px-4">
+              <span className="hidden shrink-0 text-xs font-medium text-white/80 sm:inline">
+                Listening
+              </span>
+              <div
+                aria-hidden="true"
+                className="flex h-7 flex-1 items-center justify-center gap-[3px]"
+              >
+                {VOICE_WAVE_BARS.map((height, index) => (
+                  <span
+                    key={`${height}-${index}`}
+                    className="w-[2px] rounded-full bg-white motion-safe:animate-pulse"
+                    style={{
+                      height: `${height}px`,
+                      animationDelay: `${index * 75}ms`,
+                      animationDuration: `${620 + (index % 4) * 150}ms`,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+            <span aria-live="polite" className="sr-only">
+              Listening. Speak now, then choose stop to review your message.
+            </span>
+            <button
+              type="button"
+              onClick={stopVoiceInput}
+              aria-label="Stop voice input and review message"
+              className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-[#5B7FF0] transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              title="Stop and review"
+            >
+              <span aria-hidden="true" className="size-3 rounded-[2px] bg-current" />
+            </button>
+          </div>
+        ) : (
+          <>
         <input
           ref={fileInputRef}
           type="file"
@@ -2793,100 +2856,20 @@ export function LauraConversation({
               : "Start voice input"}
           </span>
         </button>
-        <div ref={agentMenuRef} className="relative shrink-0">
-          <button
-            type="button"
-            onClick={() => setIsAgentMenuOpen((open) => !open)}
-            disabled={!isReady || isSending}
-            aria-haspopup="listbox"
-            aria-expanded={isAgentMenuOpen}
-            className="flex h-11 max-w-36 items-center gap-1.5 rounded-full border border-[#E3E9FA] bg-[#F8FAFF] px-2 text-[#454E76] transition-colors hover:border-[#B9C5E7] hover:bg-[#F2F5FF] disabled:cursor-not-allowed disabled:opacity-55"
-            title="Choose the agent who should respond"
-          >
-            {isLoadingAgents ? (
-              <Loader2 className="size-4 animate-spin text-[#5B7FF0]" />
-            ) : (
-              <LauraAvatar
-                name={selectedAgent?.name}
-                imageUrl={selectedAgent?.imageUrl}
-              />
-            )}
-            <span className="max-w-16 truncate text-xs font-medium sm:max-w-20">
-              {isLoadingAgents ? "Loading" : agentName}
-            </span>
-            <ChevronDown
-              className={`size-3.5 shrink-0 transition-transform ${isAgentMenuOpen ? "rotate-180" : ""}`}
+        <div
+          aria-label="Laura responds to all messages"
+          className="flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-[#E3E9FA] bg-[#F8FAFF] px-2 text-[#454E76]"
+          title="Laura responds to all messages"
+        >
+          {isLoadingAgents ? (
+            <Loader2 className="size-4 animate-spin text-[#5B7FF0]" />
+          ) : (
+            <LauraAvatar
+              name={selectedAgent?.name || "Laura"}
+              imageUrl={selectedAgent?.imageUrl}
             />
-          </button>
-          {isAgentMenuOpen ? (
-            <div
-              role="listbox"
-              aria-label="Available agents"
-              className="absolute bottom-full right-0 z-30 mb-3 w-72 overflow-hidden rounded-xl border border-[#E3E9FA] bg-white p-2 shadow-[0_12px_32px_rgba(34,52,105,0.16)]"
-            >
-              <div className="flex items-center justify-between px-2 py-1.5">
-                <div>
-                  <p className="text-sm font-semibold text-[#252B48]">
-                    Choose an agent
-                  </p>
-                  <p className="text-[11px] text-[#8B93B8]">
-                    The selected agent will reply to your next message.
-                  </p>
-                </div>
-                {isLoadingAgents ? (
-                  <Loader2 className="size-4 animate-spin text-[#5B7FF0]" />
-                ) : null}
-              </div>
-              <div
-                onWheel={handleAgentMenuWheel}
-                className="mt-1 max-h-56 space-y-1 overflow-y-auto overscroll-y-contain pr-1"
-              >
-                {agentLoadError ? (
-                  <div className="rounded-lg bg-[#FFF9EE] p-2 text-xs text-[#93601A]">
-                    <p>{agentLoadError}</p>
-                    <button
-                      type="button"
-                      onClick={() => void loadAgents()}
-                      className="mt-1.5 font-medium text-[#5B7FF0] hover:underline"
-                    >
-                      Try again
-                    </button>
-                  </div>
-                ) : null}
-                {!agentLoadError && !isLoadingAgents && agents.length === 0 ? (
-                  <p className="px-2 py-3 text-center text-xs text-[#8B93B8]">
-                    No active agents are available.
-                  </p>
-                ) : null}
-                {agents.map((agent) => (
-                  <button
-                    key={agent._id}
-                    type="button"
-                    role="option"
-                    aria-selected={agent._id === selectedAgentId}
-                    onClick={() => {
-                      setSelectedAgentId(agent._id);
-                      setIsAgentMenuOpen(false);
-                    }}
-                    className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left transition-colors ${agent._id === selectedAgentId ? "bg-[#EEF2FF]" : "hover:bg-[#F7F9FF]"}`}
-                  >
-                    <LauraAvatar name={agent.name} imageUrl={agent.imageUrl} />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-[#252B48]">
-                        {agent.name}
-                      </span>
-                      <span className="block truncate text-[11px] text-[#8B93B8]">
-                        {formatMeetingPlatform(agent.type || "Agent")}
-                      </span>
-                    </span>
-                    {agent._id === selectedAgentId ? (
-                      <Check className="size-4 shrink-0 text-[#5B7FF0]" />
-                    ) : null}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : null}
+          )}
+          <span className="text-xs font-medium">Laura</span>
         </div>
         <button
           type="submit"
@@ -2902,6 +2885,8 @@ export function LauraConversation({
             <Send className="size-7" strokeWidth={1.6} />
           )}
         </button>
+          </>
+        )}
       </form>
     </section>
   );
