@@ -60,6 +60,24 @@ type Agent = {
   status?: string;
 };
 type AgentsPayload = { items?: Agent[] };
+type StreamMessageCreated = {
+  id?: string;
+  conversationId?: string;
+  processingStatus?: string;
+  content?: string | null;
+  createdAt?: string;
+  attachments?: MessageAttachment[];
+};
+type StreamReply = {
+  id?: string;
+  content?: string;
+  agent?: { name?: string; imageUrl?: string | null };
+};
+type StreamResult = {
+  reply?: StreamReply;
+  result?: { type?: string; proposal?: Proposal; draft?: Proposal };
+  proposal?: Proposal;
+};
 type Proposal = {
   id: string;
   actionType?: string;
@@ -145,9 +163,10 @@ declare global {
 const INTELLIGENCE_POLL_INTERVAL_MS = 2_000;
 const INTELLIGENCE_POLL_MAX_ATTEMPTS = 150;
 const PREVIEW_DELAYED_ERROR = "meeting-preview-delayed";
-const MAX_ATTACHMENTS = 10;
+const MAX_ATTACHMENTS = 5;
+const MAX_ATTACHMENT_TOTAL_BYTES = 20 * 1024 * 1024;
 const ATTACHMENT_ACCEPT =
-  "image/*,audio/*,video/*,.pdf,.txt,.csv,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.rtf";
+  "image/png,image/jpeg,image/webp,image/gif,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.docx";
 // Keep this list aligned with the backend TaskDepartment enum. A proposal can
 // outlive a backend enum change, so an old/free-text value must never be sent
 // back in a PATCH request.
@@ -198,6 +217,101 @@ function apiError(result: ApiEnvelope<unknown>, fallback: string) {
     ? result.message.join(", ")
     : result.message;
   return message || fallback;
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return typeof value === "object" && value !== null
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function streamErrorMessage(value: unknown, fallback: string) {
+  if (typeof value === "string") return value;
+  const payload = asRecord(value);
+  const message = payload?.message;
+  if (Array.isArray(message)) return message.join(", ");
+  return typeof message === "string" ? message : fallback;
+}
+
+function streamActivityLabel(value: unknown) {
+  if (typeof value === "string") return value;
+  const payload = asRecord(value);
+  for (const key of ["message", "label", "status", "activity"]) {
+    const candidate = payload?.[key];
+    if (typeof candidate === "string" && candidate.trim()) return candidate;
+  }
+  return null;
+}
+
+function parseSseBlock(block: string) {
+  const event = /^event: ?(.*)$/m.exec(block)?.[1] || "message";
+  const data = block
+    .split("\n")
+    .filter((line) => line.startsWith("data:"))
+    .map((line) => line.slice(5).replace(/^ /, ""));
+  if (data.length === 0) return null;
+  try {
+    return { event, data: JSON.parse(data.join("\n")) as unknown };
+  } catch {
+    return null;
+  }
+}
+
+async function consumeMessageStream(
+  response: Response,
+  handlers: {
+    onMessageCreated: (message: StreamMessageCreated) => void;
+    onActivity: (activity: unknown) => void;
+    onTextDelta: (text: string) => void;
+    onTextReset: () => void;
+    onResult: (result: StreamResult) => void;
+  },
+) {
+  if (!response.body) throw new Error("Message stream has no response body.");
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  for (;;) {
+    const { value, done } = await reader.read();
+    buffer += decoder.decode(value, { stream: !done }).replace(/\r\n/g, "\n");
+    let boundary = buffer.indexOf("\n\n");
+    while (boundary >= 0) {
+      const parsed = parseSseBlock(buffer.slice(0, boundary));
+      buffer = buffer.slice(boundary + 2);
+      boundary = buffer.indexOf("\n\n");
+      if (!parsed) continue; // SSE keep-alive comments have no data.
+
+      switch (parsed.event) {
+        case "message_created":
+          handlers.onMessageCreated(parsed.data as StreamMessageCreated);
+          break;
+        case "activity":
+          handlers.onActivity(parsed.data);
+          break;
+        case "text_delta": {
+          const payload = asRecord(parsed.data);
+          handlers.onTextDelta(
+            typeof payload?.text === "string" ? payload.text : "",
+          );
+          break;
+        }
+        case "text_reset":
+          handlers.onTextReset();
+          break;
+        case "result":
+          handlers.onResult(parsed.data as StreamResult);
+          return;
+        case "error":
+          throw new Error(
+            streamErrorMessage(parsed.data, "The AI response could not be completed."),
+          );
+      }
+    }
+    if (done) break;
+  }
+
+  throw new Error("Message stream ended before a final result was received.");
 }
 
 async function fetchMessageIntelligence(
@@ -705,35 +819,12 @@ function fileSizeLabel(sizeBytes: number) {
 function attachmentValidationMessage(file: File) {
   const extension = file.name.split(".").pop()?.toLowerCase() || "";
   const isImage =
-    file.type.startsWith("image/") ||
-    ["jpg", "jpeg", "png", "gif", "webp", "heic"].includes(extension);
-  const isAudio =
-    file.type.startsWith("audio/") ||
-    ["mp3", "wav", "ogg", "m4a", "aac", "flac", "webm"].includes(extension);
-  const isVideo =
-    file.type.startsWith("video/") ||
-    ["mp4", "mov", "webm", "mpeg", "mpg", "avi"].includes(extension);
-  const isDocument = [
-    "pdf",
-    "txt",
-    "csv",
-    "doc",
-    "docx",
-    "xls",
-    "xlsx",
-    "ppt",
-    "pptx",
-    "rtf",
-  ].includes(extension);
-  if (!isImage && !isAudio && !isVideo && !isDocument)
-    return `“${file.name}” is not a supported attachment.`;
-  const maxBytes = isVideo
-    ? 200 * 1024 * 1024
-    : isAudio
-      ? 50 * 1024 * 1024
-      : 20 * 1024 * 1024;
-  if (file.size > maxBytes)
-    return `“${file.name}” is too large. The limit is ${maxBytes / (1024 * 1024)} MB.`;
+    ["image/png", "image/jpeg", "image/webp", "image/gif"].includes(
+      file.type.toLowerCase(),
+    ) || ["jpg", "jpeg", "png", "gif", "webp"].includes(extension);
+  const isDocument = ["pdf", "docx"].includes(extension);
+  if (!isImage && !isDocument)
+    return `“${file.name}” is not supported. Attach a PDF, DOCX, PNG, JPEG, WEBP, or GIF file.`;
   return null;
 }
 
@@ -744,7 +835,7 @@ function attachmentKey(file: File, index: number) {
 function isImageAttachment(file: File) {
   return (
     file.type.startsWith("image/") ||
-    ["jpg", "jpeg", "png", "gif", "webp", "heic"].includes(
+    ["jpg", "jpeg", "png", "gif", "webp"].includes(
       file.name.split(".").pop()?.toLowerCase() || "",
     )
   );
@@ -775,6 +866,8 @@ export function LauraConversation({
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isWaitingForAi, setIsWaitingForAi] = useState(false);
+  const [streamActivity, setStreamActivity] = useState<string | null>(null);
+  const [streamedAssistantText, setStreamedAssistantText] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
@@ -803,6 +896,12 @@ export function LauraConversation({
   const voiceRestartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+  const streamAbortControllerRef = useRef<AbortController | null>(null);
+  const failedTurnRef = useRef<{
+    clientMessageId: string;
+    content: string;
+    attachments: File[];
+  } | null>(null);
 
   const clearPolling = useCallback(() => {
     if (pollTimeout.current) {
@@ -861,6 +960,7 @@ export function LauraConversation({
       if (voiceRestartTimeoutRef.current)
         clearTimeout(voiceRestartTimeoutRef.current);
       voiceRecognitionRef.current?.abort();
+      streamAbortControllerRef.current?.abort();
     },
     [],
   );
@@ -1112,6 +1212,8 @@ export function LauraConversation({
     setTaskEditDraft(null);
     setTaskEditError(null);
     setIsWaitingForAi(false);
+    setStreamActivity(null);
+    setStreamedAssistantText("");
     lastPreview.current = "";
     setError(null);
     setSuccessMessage(null);
@@ -1279,14 +1381,125 @@ export function LauraConversation({
     // has already been handed off to the normal send flow.
     stopVoiceInput();
     const submittedAttachments = attachments;
-    const clientMessageId = crypto.randomUUID();
+    const failedTurn = failedTurnRef.current;
+    const isRetry =
+      failedTurn?.content === content &&
+      failedTurn.attachments.length === submittedAttachments.length &&
+      failedTurn.attachments.every(
+        (file, index) => file === submittedAttachments[index],
+      );
+    const clientMessageId = isRetry
+      ? failedTurn!.clientMessageId
+      : crypto.randomUUID();
+    if (!isRetry) failedTurnRef.current = null;
     const optimisticMessageId = `sending-${clientMessageId}`;
     const isNewConversation = !conversationId;
+    const conversationPreview =
+      content || submittedAttachments[0]?.name || "Attachment";
+    let targetConversationId = conversationId || "";
+    let sourceMessageId = "";
+    let conversationStarted = false;
+    let streamedText = "";
+
+    const applySourceMessage = (created: StreamMessageCreated | ChatMessage) => {
+      const createdId = typeof created.id === "string" ? created.id : "";
+      const createdConversationId =
+        typeof created.conversationId === "string"
+          ? created.conversationId
+          : targetConversationId;
+      if (!createdId || !createdConversationId) {
+        throw new Error(
+          "The message stream did not provide a conversation ID. Please try again.",
+        );
+      }
+      sourceMessageId = createdId;
+      targetConversationId = createdConversationId;
+      setActiveMessageId(createdId);
+      const sourceMessage: ChatMessage = {
+        id: createdId,
+        conversationId: createdConversationId,
+        content: created.content ?? (content || null),
+        senderType: "USER",
+        attachments: created.attachments || [],
+        createdAt: created.createdAt || new Date().toISOString(),
+      };
+      setMessages((current) => {
+        let replaced = false;
+        const next = current.map((item) => {
+          if (item.id === optimisticMessageId || item.id === createdId) {
+            replaced = true;
+            return sourceMessage;
+          }
+          return item;
+        });
+        return replaced ? next : [...next, sourceMessage];
+      });
+      if (isNewConversation && !conversationStarted) {
+        conversationStarted = true;
+        pendingNewConversationIdRef.current = createdConversationId;
+        onConversationStarted(createdConversationId, conversationPreview);
+      }
+      onConversationUpdated(createdConversationId, conversationPreview, true);
+    };
+
+    const applyStreamResult = (rawResult: StreamResult) => {
+      const wrappedData = asRecord(rawResult)?.data;
+      const result = (asRecord(wrappedData) || rawResult) as StreamResult;
+      const reply = result.reply;
+      const finalText = reply?.content?.trim() || streamedText.trim();
+      setStreamActivity(null);
+      setStreamedAssistantText("");
+      setIsWaitingForAi(false);
+      if (finalText) {
+        const assistantMessage: ChatMessage = {
+          id: reply?.id || `stream-reply-${clientMessageId}`,
+          conversationId: targetConversationId || conversationId || "",
+          content: finalText,
+          senderType: "AI",
+          sourceMessageId: sourceMessageId || undefined,
+          agentName: reply?.agent?.name || agentName,
+          agentImageUrl: reply?.agent?.imageUrl || selectedAgent?.imageUrl,
+          createdAt: new Date().toISOString(),
+        };
+        setMessages((current) => {
+          const existingIndex = current.findIndex(
+            (item) =>
+              item.senderType.toUpperCase() === "AI" &&
+              item.sourceMessageId === assistantMessage.sourceMessageId,
+          );
+          if (existingIndex < 0) return [...current, assistantMessage];
+          return current.map((item, index) =>
+            index === existingIndex ? assistantMessage : item,
+          );
+        });
+      }
+
+      const resultType = result.result?.type?.toUpperCase();
+      const proposal =
+        result.proposal || result.result?.proposal || result.result?.draft;
+      if (proposal?.id) {
+        cacheProposal(proposal);
+        setDetails({
+          actions:
+            proposal.actionType === "SCHEDULE_MEETING"
+              ? { meetingSchedules: [proposal], priorityTasks: [] }
+              : { meetingSchedules: [], priorityTasks: [proposal] },
+        });
+      } else if (resultType && resultType !== "MESSAGE" && sourceMessageId) {
+        // The stream is authoritative for the AI turn. This single details
+        // refresh only hydrates its persisted proposal card when it is not
+        // included in the terminal event.
+        void loadIntelligence(sourceMessageId).catch(() => undefined);
+      }
+    };
+
     clearPolling();
     setIsSending(true);
     setError(null);
     setSuccessMessage(null);
     setDetails(null);
+    setStreamActivity(null);
+    setStreamedAssistantText("");
     // Show the user's message immediately. The server reply can take a few
     // seconds, but the chat should still feel instant and preserve the turn.
     setMessages((current) => [
@@ -1305,52 +1518,90 @@ export function LauraConversation({
     if (fileInputRef.current) fileInputRef.current.value = "";
     setIsWaitingForAi(true);
     try {
-      const body = new FormData();
-      body.append("startNewConversation", String(isNewConversation));
-      body.append("clientMessageId", clientMessageId);
-      if (conversationId) body.append("conversationId", conversationId);
-      body.append("selectedAgentId", selectedAgentId);
-      if (content) body.append("content", content);
-      submittedAttachments.forEach((file) => body.append("files", file));
+      const headers: Record<string, string> = {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "text/event-stream",
+      };
+      let body: BodyInit;
+      if (submittedAttachments.length > 0) {
+        const form = new FormData();
+        form.append("startNewConversation", String(isNewConversation));
+        form.append("clientMessageId", clientMessageId);
+        if (conversationId) form.append("conversationId", conversationId);
+        form.append("selectedAgentId", selectedAgentId);
+        if (content) form.append("content", content);
+        submittedAttachments.forEach((file) => form.append("files", file));
+        // Do not set Content-Type: the browser supplies the multipart boundary.
+        body = form;
+      } else {
+        headers["Content-Type"] = "application/json";
+        body = JSON.stringify({
+          startNewConversation: isNewConversation,
+          clientMessageId,
+          ...(conversationId ? { conversationId } : {}),
+          content,
+          selectedAgentId,
+        });
+      }
+
+      const controller = new AbortController();
+      streamAbortControllerRef.current = controller;
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/messages`,
         {
           method: "POST",
-          headers: { Authorization: `Bearer ${accessToken}` },
+          headers,
           body,
+          signal: controller.signal,
         },
       );
-      const result = (await response
-        .json()
-        .catch(() => ({}))) as ApiEnvelope<ChatMessage>;
-      if (!response.ok || !result.success || !result.data?.id)
-        throw new Error(apiError(result, "Unable to send your message."));
-      const targetConversationId = result.data.conversationId;
-      if (!targetConversationId)
-        throw new Error(
-          "The new chat was created without a conversation ID. Please try again.",
-        );
-      setActiveMessageId(result.data.id);
-      setMessages((current) => [
-        ...current.filter((item) => item.id !== optimisticMessageId),
-        result.data!,
-      ]);
-      if (isNewConversation) {
-        pendingNewConversationIdRef.current = targetConversationId;
-        onConversationStarted(
-          targetConversationId,
-          content || submittedAttachments[0]?.name || "Attachment",
-        );
+      if (!response.ok) {
+        const errorResponse = (await response
+          .json()
+          .catch(() => ({}))) as ApiEnvelope<unknown>;
+        throw new Error(apiError(errorResponse, "Unable to send your message."));
       }
-      onConversationUpdated(
-        targetConversationId,
-        content || submittedAttachments[0]?.name || "Attachment",
-        true,
-      );
-      await loadMessages(targetConversationId);
-      void pollForIntelligence(result.data.id, 0, targetConversationId);
+
+      if (response.headers.get("content-type")?.includes("text/event-stream")) {
+        await consumeMessageStream(response, {
+          onMessageCreated: applySourceMessage,
+          onActivity: (activity) => {
+            setStreamActivity(streamActivityLabel(activity));
+          },
+          onTextDelta: (text) => {
+            if (!text) return;
+            streamedText += text;
+            setStreamedAssistantText(streamedText);
+            setIsWaitingForAi(false);
+          },
+          onTextReset: () => {
+            streamedText = "";
+            setStreamedAssistantText("");
+            setIsWaitingForAi(true);
+          },
+          onResult: applyStreamResult,
+        });
+      } else {
+        // Compatibility for a legacy JSON backend during a staged SSE rollout.
+        const result = (await response
+          .json()
+          .catch(() => ({}))) as ApiEnvelope<ChatMessage>;
+        if (!result.success || !result.data?.id)
+          throw new Error(apiError(result, "Unable to send your message."));
+        applySourceMessage(result.data);
+        await loadMessages(targetConversationId);
+        void pollForIntelligence(result.data.id, 0, targetConversationId);
+      }
+      failedTurnRef.current = null;
     } catch (sendError) {
+      failedTurnRef.current = {
+        clientMessageId,
+        content,
+        attachments: submittedAttachments,
+      };
       setIsWaitingForAi(false);
+      setStreamActivity(null);
+      setStreamedAssistantText("");
       setMessages((current) =>
         current.filter((item) => item.id !== optimisticMessageId),
       );
@@ -1362,6 +1613,7 @@ export function LauraConversation({
           : "Unable to send your message.",
       );
     } finally {
+      streamAbortControllerRef.current = null;
       setIsSending(false);
     }
   }
@@ -1376,6 +1628,14 @@ export function LauraConversation({
     }
     if (attachments.length + selected.length > MAX_ATTACHMENTS) {
       setError(`You can attach up to ${MAX_ATTACHMENTS} files in one message.`);
+      return;
+    }
+    const totalBytes = [...attachments, ...selected].reduce(
+      (total, file) => total + file.size,
+      0,
+    );
+    if (totalBytes > MAX_ATTACHMENT_TOTAL_BYTES) {
+      setError("Attachments must be 20 MB or less in total.");
       return;
     }
     setError(null);
@@ -1908,7 +2168,7 @@ export function LauraConversation({
   const agentName = selectedAgent?.name || "Laura";
   const agentIsReady = Boolean(selectedAgentId) && !isLoadingAgents;
   const isComposerDisabled = !isReady || isSending || !agentIsReady;
-  const thinkingLabel = `${agentName} is thinking`;
+  const thinkingLabel = streamActivity || `${agentName} is thinking`;
   const meetingDateTime = formatMeetingDateTime(
     readyMeeting?.payload?.startsAt || readyMeeting?.startsAt,
   );
@@ -1942,6 +2202,8 @@ export function LauraConversation({
     messages.length,
     readyMeeting?.id,
     readyTask?.id,
+    streamActivity,
+    streamedAssistantText,
   ]);
 
   function handleChatWheel(event: WheelEvent<HTMLDivElement>) {
@@ -2043,7 +2305,14 @@ export function LauraConversation({
                   ];
                 })
               )}
-              {isWaitingForAi ? (
+              {streamedAssistantText ? (
+                <LauraMessage agent={selectedAgent}>
+                  <p className="mb-1 text-xs font-medium text-[#5B7FF0]">
+                    {agentName}
+                  </p>
+                  <p>{streamedAssistantText}</p>
+                </LauraMessage>
+              ) : isWaitingForAi ? (
                 <LauraThinking label={thinkingLabel} agent={selectedAgent} />
               ) : null}
               {false ? (
@@ -2711,7 +2980,7 @@ export function LauraConversation({
               to send
             </span>
             <span className="text-[#8B93B8]">
-              Up to {MAX_ATTACHMENTS} files
+              Up to {MAX_ATTACHMENTS} files · 20 MB total
             </span>
           </div>
           <div className="flex max-h-24 flex-wrap gap-2 overflow-y-auto">
