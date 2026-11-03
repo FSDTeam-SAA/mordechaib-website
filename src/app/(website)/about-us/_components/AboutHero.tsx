@@ -17,14 +17,16 @@ function AboutHero() {
       <div className="container mx-auto grid items-center gap-10 lg:min-h-[520px] lg:grid-cols-[1.02fr_0.98fr] lg:gap-8 xl:gap-14">
         <div className="mx-auto max-w-[650px] text-center lg:mx-0 lg:text-left">
           <h1 className="text-[34px] font-bold leading-[1.2] tracking-normal text-[#0E1224] sm:text-[44px] lg:text-[46px] xl:text-[54px]">
-            Driving Executive Efficiency Through an{" "}
-            <span className="text-[#5B7FF0]">AI-Powered</span> Operating System
+            Your Business. Your <span className="text-[#5B7FF0]">AI Workforce.</span>{" "}
+            All Working Together.
           </h1>
 
           <p className="mx-auto mt-5 max-w-[650px] text-sm leading-relaxed text-[#6B6B6B] sm:text-base lg:mx-0 lg:text-[17px]">
-            Noltra gives CEOs a unified AI workforce that eliminates operational
-            waste, accelerates execution, and delivers measurable efficiency from
-            day one.
+            Noltra brings your business operations, conversations, and specialized
+            AI agents together in one intelligent platform. From capturing meetings
+            and creating tasks to managing follow-ups, updating your CRM, and
+            executing work, Noltra keeps your business moving forward — so you can
+            focus on leading and growing.
           </p>
 
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap lg:justify-start lg:gap-4">

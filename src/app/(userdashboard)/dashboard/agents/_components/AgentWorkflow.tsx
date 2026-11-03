@@ -1,6 +1,25 @@
 import Image from "next/image";
-import { agentColor, roleLabel, type AgentDashboardItem } from "./agentDashboardTypes";
+import type { AgentDashboardItem } from "./agentDashboardTypes";
 export function AgentWorkflow({ agents }: { agents: AgentDashboardItem[] }) {
+  const chiefOfStaffIndex = agents.findIndex(
+    (agent) => agent.name.toLowerCase() === "laura",
+  );
+  const workflowAgents = agents.filter(
+    (agent) => agent.name.toLowerCase() !== "laura",
+  );
+  const vizzyIndex = workflowAgents.findIndex((agent) =>
+    /^vizz/i.test(agent.name),
+  );
+
+  if (chiefOfStaffIndex >= 0 && vizzyIndex >= 0) {
+    const [vizzy] = workflowAgents.splice(vizzyIndex, 1);
+    workflowAgents.splice(
+      Math.min(chiefOfStaffIndex, workflowAgents.length),
+      0,
+      vizzy,
+    );
+  }
+
   return (
     <section className="overflow-hidden rounded-2xl bg-white p-4">
       <h2 className="text-center text-xl font-medium">
@@ -21,7 +40,7 @@ export function AgentWorkflow({ agents }: { agents: AgentDashboardItem[] }) {
           <Image src="/agents/arrow-outer-right.svg" alt="" width={256} height={7} className="absolute left-[357px] top-[10px] w-[450px] rotate-[18.47deg]" />
         </div>
         <div className="mt-6 grid w-full grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 lg:mt-0 lg:grid-cols-6 lg:gap-4">
-          {agents.map((agent, index) => (
+          {workflowAgents.map((agent) => (
             <article
               key={agent.id}
               className="min-w-0 text-center lg:border-r lg:border-dashed lg:border-[#E4EAF8] lg:last:border-r-0"
@@ -34,9 +53,6 @@ export function AgentWorkflow({ agents }: { agents: AgentDashboardItem[] }) {
                 className="mx-auto w-[80px] h-[70px] rounded-[12px] object-cover"
               />
               <p className="mt-2 font-medium">{agent.name}</p>
-              <p className="mt-1 text-xs" style={{ color: agentColor(index) }}>
-                {roleLabel(agent.type)}
-              </p>
               <div className="mt-4 px-1 text-sm">
                 <p className="mx-auto max-w-[90px] leading-[18px]">
                   Task

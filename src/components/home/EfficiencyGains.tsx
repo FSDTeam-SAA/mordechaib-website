@@ -11,20 +11,20 @@ const cards = [
     body: "Every automated task gives you back minutes, hours, and momentum so you can focus on decisions, not admin work.",
     stat: "+18%",
     visual: (
-      <div className="rounded-xl border bg-white p-5 shadow-sm">
+      <div className="rounded-xl border bg-white p-4 shadow-sm">
         <div className="flex items-center justify-between">
-          <p className="text-lg font-semibold text-[#0E1224]">Payment Method</p>
+          <p className="text-sm font-semibold text-[#0E1224]">Payment Method</p>
           <span className="h-5 w-10 rounded-full bg-[#31C86B] p-0.5">
             <span className="block h-4 w-4 translate-x-5 rounded-full bg-white" />
           </span>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-[#0E1224]">
+        <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-[#0E1224]">
           <span>Automation Method</span>
           <span className="text-right">Task - Based</span>
           <span>Every Date</span>
           <span className="text-right">Every Month</span>
         </div>
-        <div className="mt-3 h-1.5 rounded-full bg-[#D9D9D9]">
+        <div className="mt-2 h-1.5 rounded-full bg-[#D9D9D9]">
           <div className="h-full w-[60%] rounded-full bg-[#5B7FF0]" />
         </div>
       </div>
@@ -62,12 +62,12 @@ const cards = [
     stat: "+22%",
     visual: (
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl border bg-white p-4 shadow-sm">
+        <div className="rounded-xl border bg-white p-3 shadow-sm">
           <p className="text-sm text-[#0E1224]">Target Achieved</p>
           <p className="mt-3 font-bold">$2,640</p>
           <div className="mt-3 h-1.5 rounded-full bg-[#10B981]" />
         </div>
-        <div className="rounded-xl border bg-white p-4 shadow-sm">
+        <div className="rounded-xl border bg-white p-3 shadow-sm">
           <p className="text-sm text-[#0E1224]">Goal achieved</p>
           <p className="mt-3 font-bold">100%</p>
           <div className="mt-3 h-1.5 rounded-full bg-[#9BE8D0]" />
@@ -118,25 +118,25 @@ const EfficiencyGains = () => {
           </p>
         </div>
 
-        <div className="mx-auto mt-9 grid max-w-[960px] gap-4 sm:mt-12 sm:gap-5 lg:grid-cols-2">
+        <div className="mx-auto mt-9 grid max-w-[1400px] gap-4 sm:mt-12 sm:grid-cols-2 xl:grid-cols-4">
           {cards.map((card) => {
             const Icon = card.icon;
             return (
-              <article key={card.title} className="rounded-xl border border-[#E7E7E7] bg-white p-4 shadow-[0_0_12px_rgba(14,18,36,0.10)] sm:p-5">
+              <article key={card.title} className="rounded-xl border border-[#E7E7E7] bg-white p-4 shadow-[0_0_12px_rgba(14,18,36,0.10)]">
                 <div className="flex items-center justify-between">
                   <span className={`flex h-9 w-9 items-center justify-center rounded-[12px] bg-current/10 ${card.color}`}>
                     <Icon size={19} />
                   </span>
                   <span className="rounded-[12px] bg-[#ECFFF8] px-2 py-1 text-xs text-[#10B981]">{card.stat}</span>
                 </div>
-                <div className="mt-5">
-                  <span className={`text-[32px] font-bold leading-none sm:text-[36px] ${card.color}`}>{card.value}</span>
-                  <span className={`ml-2 text-xs ${card.color}`}>{card.suffix}</span>
+                <div className="mt-4">
+                  <span className={`text-[30px] font-bold leading-none ${card.color}`}>{card.value}</span>
+                  <span className={`ml-2 text-[11px] ${card.color}`}>{card.suffix}</span>
                 </div>
-                <p className="mt-5 text-sm text-[#0E1224]">{card.sub}</p>
-                <div className="mt-5 min-h-[112px]">{card.visual}</div>
-                <h3 className={`mt-6 text-xl font-bold ${card.color}`}>{card.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#6B6B6B]">{card.body}</p>
+                <p className="mt-4 text-[13px] text-[#0E1224]">{card.sub}</p>
+                <div className="mt-4 min-h-[108px]">{card.visual}</div>
+                <h3 className={`mt-5 text-lg font-bold ${card.color}`}>{card.title}</h3>
+                <p className="mt-2 text-[13px] leading-relaxed text-[#6B6B6B]">{card.body}</p>
               </article>
             );
           })}
