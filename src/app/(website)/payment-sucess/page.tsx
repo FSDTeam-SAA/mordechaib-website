@@ -113,7 +113,7 @@ export default function PaymentSuccessPage() {
         {/* CTA */}
         <div ref={buttonRef} className="mt-8">
           <Link
-            href="/starter"
+            href="/#contact"
             className="group inline-flex h-12 items-center justify-center gap-2.5 rounded-xl bg-[#5B7FF0] px-7 text-sm font-semibold text-white shadow-lg shadow-[#5B7FF0]/25 transition-all duration-200 hover:bg-[#486EE2] hover:shadow-xl hover:shadow-[#5B7FF0]/30 active:scale-[0.98] sm:text-base"
           >
             <CalendarDays className="h-5 w-5" />
