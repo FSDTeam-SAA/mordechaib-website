@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Building2,
@@ -14,7 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import PricingPlanModal from "@/components/home/PricingPlanModal";
-// import UsageEstimator from "@/components/home/UsageEstimator";
+import UsageEstimator from "@/components/home/UsageEstimator";
 import { checkoutRequest, type CheckoutPlan } from "@/lib/checkout-api";
 
 type BillingCycle = "month" | "year";
@@ -65,6 +65,14 @@ function planGroups(plan: CheckoutPlan) {
 
 const PricingSection = () => {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("month");
+  const billingAvailabilityQuery = useQuery({
+    queryKey: ["subscription-plans", "month"],
+    queryFn: ({ signal }) =>
+      checkoutRequest<CheckoutPlan[]>(
+        "/subscription-plans?billingCycle=month",
+        { signal },
+      ),
+  });
   const plansQuery = useQuery({
     queryKey: ["subscription-plans", billingCycle],
     queryFn: ({ signal }) =>
@@ -74,9 +82,15 @@ const PricingSection = () => {
       ),
   });
   const plans = plansQuery.data ?? [];
-  const yearlyAvailable = plans.some((plan) =>
+  const yearlyAvailable = (billingAvailabilityQuery.data ?? []).some((plan) =>
     plan.billingCycles?.includes("year"),
   );
+
+  useEffect(() => {
+    if (billingAvailabilityQuery.isSuccess && !yearlyAvailable) {
+      setBillingCycle("month");
+    }
+  }, [billingAvailabilityQuery.isSuccess, yearlyAvailable]);
   // const maximumTrialDays = Math.max(
   //   0,
   //   ...plans.map((plan) => plan.trialDays ?? 0),
@@ -97,42 +111,38 @@ const PricingSection = () => {
 
         </div>
         <div className="mt-12">
-          {/* <UsageEstimator /> */}
+          <UsageEstimator />
         </div>
 
-        <div className="mt-10 text-center">
-          <div
-            className="mx-auto flex w-full max-w-[330px] rounded-[16px] bg-[#F5F7FF] p-2"
-            role="group"
-            aria-label="Billing cycle"
-          >
-            <button
-              type="button"
-              onClick={() => setBillingCycle("month")}
-              aria-pressed={billingCycle === "month"}
-              className={`h-12 flex-1 rounded-[12px] text-base font-semibold ${billingCycle === "month" ? "bg-[#5B7FF0] text-white" : "text-[#5B7FF0]"}`}
+        {yearlyAvailable && (
+          <div className="mt-10 text-center">
+            <div
+              className="mx-auto flex w-full max-w-[330px] rounded-[16px] bg-[#F5F7FF] p-2"
+              role="group"
+              aria-label="Billing cycle"
             >
-              Monthly
-            </button>
-            <button
-              type="button"
-              onClick={() => yearlyAvailable && setBillingCycle("year")}
-              disabled={plansQuery.isSuccess && !yearlyAvailable}
-              title={
-                plansQuery.isSuccess && !yearlyAvailable
-                  ? "Yearly billing is currently unavailable."
-                  : undefined
-              }
-              aria-pressed={billingCycle === "year"}
-              className={`h-11 flex-1 rounded-lg text-base font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${billingCycle === "year" ? "bg-[#5B7FF0] text-white" : "text-[#5B7FF0]"}`}
-            >
-              Yearly{" "}
-              <span className="ml-1 rounded-full bg-[#DDE7FF] px-2 py-1 text-[12px] text-[#5B7FF0]">
-                2 months free
-              </span>
-            </button>
+              <button
+                type="button"
+                onClick={() => setBillingCycle("month")}
+                aria-pressed={billingCycle === "month"}
+                className={`h-12 flex-1 rounded-[12px] text-base font-semibold ${billingCycle === "month" ? "bg-[#5B7FF0] text-white" : "text-[#5B7FF0]"}`}
+              >
+                Monthly
+              </button>
+              <button
+                type="button"
+                onClick={() => setBillingCycle("year")}
+                aria-pressed={billingCycle === "year"}
+                className={`h-12 flex-1 rounded-[12px] text-base font-semibold ${billingCycle === "year" ? "bg-[#5B7FF0] text-white" : "text-[#5B7FF0]"}`}
+              >
+                Yearly{" "}
+                <span className="ml-1 rounded-full bg-[#DDE7FF] px-2 py-1 text-[12px] text-[#5B7FF0]">
+                  2 months free
+                </span>
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {plansQuery.isPending && (

@@ -4,7 +4,7 @@ import { MessageSquare } from "lucide-react";
 
 const ContactMeeting = () => {
   return (
-    <section id="contact" className="bg-white px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-28">
+    <section id="contact" className="scroll-mt-24 bg-white px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-28">
       <div className="container mx-auto grid gap-9 sm:gap-12 lg:grid-cols-[0.82fr_1fr] lg:items-start">
         <div className="max-w-[672px]">
           <div className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-[#5B7FF01A] px-3 py-1.5 text-[11px] font-medium text-[#5B7FF0] sm:mb-5 sm:py-2 sm:text-sm">

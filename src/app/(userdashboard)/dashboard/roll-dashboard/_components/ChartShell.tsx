@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { useRoiDashboard } from "./RoiDashboardClient";
 
 type ChartShellProps = { title: string; subtitle?: string; controls?: ReactNode; children: ReactNode; className?: string };
 
@@ -7,5 +8,7 @@ export function ChartShell({ title, subtitle, controls, children, className = ""
 }
 
 export function PeriodTabs() {
-  return <div className="flex items-center gap-2" aria-label="Chart period">{["7D", "30D", "3M"].map((period, index) => <button key={period} type="button" className={`rounded-lg bg-[#5B9CD5]/10 px-2 py-1 text-xs ${index === 0 ? "text-[#5B7FF0]" : "text-[#8B93B8]"}`}>{period}</button>)}</div>;
+  const { range, setRange } = useRoiDashboard();
+  const periods = [{label:"7D",value:"7_DAYS"},{label:"30D",value:"30_DAYS"},{label:"3M",value:"90_DAYS"}] as const;
+  return <div className="flex items-center gap-2" aria-label="Chart period">{periods.map(({label,value}) => <button key={value} type="button" onClick={()=>setRange(value)} className={`rounded-lg bg-[#5B9CD5]/10 px-2 py-1 text-xs ${range === value ? "text-[#5B7FF0]" : "text-[#8B93B8]"}`}>{label}</button>)}</div>;
 }

@@ -67,7 +67,7 @@ const Hero = () => {
               </Link>
             )}
             <Link
-              href="#meeting"
+              href="#contact"
               className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-[12px] px-1 text-sm font-medium text-[#5B7FF0] sm:w-auto sm:text-base"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#5B7FF0] bg-white sm:h-12 sm:w-12">

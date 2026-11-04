@@ -129,14 +129,14 @@ const EfficiencyGains = () => {
                   </span>
                   <span className="rounded-[12px] bg-[#ECFFF8] px-2 py-1 text-xs text-[#10B981]">{card.stat}</span>
                 </div>
-                <div className="mt-4">
+                <div className="mt-2 min-h-[60px]">
                   <span className={`text-[30px] font-bold leading-none ${card.color}`}>{card.value}</span>
                   <span className={`ml-2 text-[11px] ${card.color}`}>{card.suffix}</span>
                 </div>
-                <p className="mt-4 text-[13px] text-[#0E1224]">{card.sub}</p>
-                <div className="mt-4 min-h-[108px]">{card.visual}</div>
-                <h3 className={`mt-5 text-lg font-bold ${card.color}`}>{card.title}</h3>
-                <p className="mt-2 text-[13px] leading-relaxed text-[#6B6B6B]">{card.body}</p>
+                <p className="mt-1 min-h-[40px] text-[13px] text-[#0E1224]">{card.sub}</p>
+                <div className="mt-4 flex min-h-[230px] items-start [&>*]:w-full">{card.visual}</div>
+                <h3 className={`mt-0 min-h-[56px] text-lg font-bold leading-snug ${card.color}`}>{card.title}</h3>
+                <p className="mt-0 text-[13px] leading-relaxed text-[#6B6B6B]">{card.body}</p>
               </article>
             );
           })}

@@ -42,7 +42,7 @@ function AboutHero() {
 
             <div className="relative">
               <Link
-                href="/#meeting"
+                href="/#contact"
                 className="inline-flex h-12 items-center justify-center gap-2 text-sm font-medium text-[#5B7FF0]"
               >
                 <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-[#5B7FF0] bg-white">

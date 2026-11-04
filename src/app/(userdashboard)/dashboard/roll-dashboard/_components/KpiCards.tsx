@@ -1,13 +1,16 @@
 import Image from "next/image";
-
-const cards = [
-  { value: "15", label: "Total Tasks Automated", icon: "/roi-dashboard/tasks.svg", chart: "/roi-dashboard/tasks-sparkline.svg", iconBg: "bg-[#D946EF]/10" },
-  { value: "50", label: "Meetings Auto-Scheduled", icon: "/roi-dashboard/meetings.svg", chart: "/roi-dashboard/meetings-sparkline.svg", iconBg: "bg-[#5B9CD5]/10" },
-  { value: "15h", label: "Total Hours Saved", icon: "/roi-dashboard/hours.svg", chart: "/roi-dashboard/hours-sparkline.svg", iconBg: "bg-[#F59E0B]/10" },
-  { value: "$ 1200", label: "Total Money Saved", chart: "/roi-dashboard/money-sparkline.svg", iconBg: "bg-[#10B981]/10" },
-];
+import { useRoiDashboard } from "./RoiDashboardClient";
 
 export function KpiCards() {
+  const { data } = useRoiDashboard();
+  const n=(value:number)=>new Intl.NumberFormat("en-US",{maximumFractionDigits:2}).format(value);
+  const cash=(value:number,currency:string)=>new Intl.NumberFormat("en-US",{style:"currency",currency,maximumFractionDigits:2}).format(value);
+  const cards = [
+    { value:n(data.cards.tasksAutomated.total), label:"Total Tasks Automated", icon:"/roi-dashboard/tasks.svg", chart:"/roi-dashboard/tasks-sparkline.svg", iconBg:"bg-[#D946EF]/10" },
+    { value:n(data.cards.meetingsAutoScheduled.total), label:"Meetings Auto-Scheduled", icon:"/roi-dashboard/meetings.svg", chart:"/roi-dashboard/meetings-sparkline.svg", iconBg:"bg-[#5B9CD5]/10" },
+    { value:`${n(data.cards.hoursSaved.value)}h`, label:"Total Hours Saved", icon:"/roi-dashboard/hours.svg", chart:"/roi-dashboard/hours-sparkline.svg", iconBg:"bg-[#F59E0B]/10" },
+    { value:cash(data.cards.moneySaved.amount,data.cards.moneySaved.currency), label:"Total Money Saved", chart:"/roi-dashboard/money-sparkline.svg", iconBg:"bg-[#10B981]/10" },
+  ];
   return (
     <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {cards.map((card) => (

@@ -107,6 +107,19 @@ const PricingPlanModal = ({ plan, billingCycle, popular = false }: PricingPlanMo
         >
           Contact Sales
         </button>
+      ) : status !== "authenticated" ? (
+        <button
+          type="button"
+          disabled={status === "loading"}
+          onClick={() => toast.error("Please login.")}
+          className={`mt-5 h-12 rounded-[8px] border border-[#5B7FF0] text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-60 ${
+            popular
+              ? "bg-[#5B7FF0] text-white hover:bg-[#4D70DC]"
+              : "text-[#5B7FF0] hover:bg-[#EEF3FF]"
+          }`}
+        >
+          Choose a Plan
+        </button>
       ) : (
         <DialogTrigger asChild>
           <button
