@@ -144,7 +144,7 @@ const PricingSection = () => {
           </div>
         )}
 
-        <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div id="pricing-plans" className="mt-12 scroll-mt-24 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {plansQuery.isPending && (
             <p
               role="status"
