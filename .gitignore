@@ -24,7 +24,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# environment variables - NEVER PUSH
+# Environment variables - NEVER PUSH TO GITHUB
 !.env.example
 
 # vercel
@@ -33,4 +33,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
 config.bat
