@@ -93,7 +93,7 @@ export function AgentStatusBar() {
       {sessionStatus === "loading" || workforceQuery.isLoading ? <AgentStatusSkeleton /> : null}
 
       {workforceQuery.isError ? (
-        <div className="mt-4 flex min-h-[76px] items-center justify-between gap-3 rounded-lg border border-[#FECACA] bg-[#FEF2F2] p-3" role="alert">
+        <div className="mt-4 flex min-h-[76px] flex-col items-stretch gap-3 rounded-lg border border-[#FECACA] bg-[#FEF2F2] p-3 sm:flex-row sm:items-center sm:justify-between" role="alert">
           <div className="flex min-w-0 items-start gap-2">
             <AlertCircle className="mt-0.5 size-4 shrink-0 text-[#EF4444]" />
             <div className="min-w-0">
@@ -101,7 +101,7 @@ export function AgentStatusBar() {
               <p className="mt-0.5 truncate text-xs text-[#B54708]">{errorMessage}</p>
             </div>
           </div>
-          <button type="button" onClick={() => void workforceQuery.refetch()} className="flex shrink-0 items-center gap-1 rounded-md bg-white px-2.5 py-1.5 text-xs font-medium text-[#5B7FF0] shadow-sm transition-colors hover:bg-[#F5F7FF]">
+          <button type="button" onClick={() => void workforceQuery.refetch()} className="flex min-h-9 shrink-0 items-center justify-center gap-1 rounded-md bg-white px-2.5 py-1.5 text-xs font-medium text-[#5B7FF0] shadow-sm transition-colors hover:bg-[#F5F7FF] sm:min-h-0">
             <RefreshCw className="size-3.5" /> Retry
           </button>
         </div>

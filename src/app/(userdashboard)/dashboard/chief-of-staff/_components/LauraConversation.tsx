@@ -14,6 +14,8 @@ import {
   Send,
   X,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import {
   FormEvent,
   useCallback,
@@ -60,6 +62,14 @@ type Agent = {
   status?: string;
 };
 type AgentsPayload = { items?: Agent[] };
+type UserProfile = {
+  firstName?: string;
+  lastName?: string;
+  avatarUrl?: string | null;
+  profileImage?: string | null;
+  avatar?: string | null;
+};
+type UserProfileResponse = { success?: boolean; data?: UserProfile };
 type StreamMessageCreated = {
   id?: string;
   conversationId?: string;
@@ -338,10 +348,33 @@ async function fetchMessageIntelligence(
   return result.data;
 }
 
-function UserAvatar() {
+function UserAvatar({
+  firstName,
+  lastName,
+  imageUrl,
+}: {
+  firstName: string;
+  lastName: string;
+  imageUrl?: string | null;
+}) {
+  if (imageUrl) {
+    return (
+      <Image
+        src={imageUrl}
+        alt={`${`${firstName} ${lastName}`.trim() || "User"} avatar`}
+        width={36}
+        height={36}
+        unoptimized
+        className="size-9 shrink-0 rounded-full border border-[#8B93B8] bg-white object-cover"
+      />
+    );
+  }
+  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`
+    .trim()
+    .toUpperCase() || "U";
   return (
     <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-xl font-medium text-[#5B7FF0] shadow-[0_0_4px_rgba(0,0,0,.25)]">
-      RH
+      {initials}
     </span>
   );
 }
@@ -401,13 +434,19 @@ function LauraMessage({
   );
 }
 
-function UserMessage({ children }: { children: React.ReactNode }) {
+function UserMessage({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user: { firstName: string; lastName: string; imageUrl?: string | null };
+}) {
   return (
     <div className="flex max-w-[520px] items-end gap-3 self-end">
       <div className="rounded-bl-2xl rounded-tl-2xl rounded-tr-2xl bg-[#5B7FF0] p-3 text-sm text-white">
         {children}
       </div>
-      <UserAvatar />
+      <UserAvatar {...user} />
     </div>
   );
 }
@@ -849,6 +888,36 @@ export function LauraConversation({
   onConversationStarted,
   composerDraft,
 }: LauraConversationProps) {
+  const { data: session } = useSession();
+  const userProfileQuery = useQuery({
+    queryKey: ["auth-me", session?.user.id],
+    enabled: sessionStatus === "authenticated" && Boolean(accessToken),
+    retry: false,
+    queryFn: async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/me`,
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+      const result = (await response
+        .json()
+        .catch(() => ({}))) as UserProfileResponse;
+      if (!response.ok || !result.success || !result.data) {
+        throw new Error("Unable to load profile");
+      }
+      return result.data;
+    },
+  });
+  const profile = userProfileQuery.data;
+  const currentUser = {
+    firstName: profile?.firstName || session?.user.firstName || "User",
+    lastName: profile?.lastName || session?.user.lastName || "",
+    imageUrl:
+      profile?.avatarUrl ??
+      profile?.profileImage ??
+      profile?.avatar ??
+      session?.user.profileImage ??
+      undefined,
+  };
   const [message, setMessage] = useState("");
   const [attachments, setAttachments] = useState<File[]>([]);
   const [attachmentPreviewUrls, setAttachmentPreviewUrls] = useState<
@@ -2217,7 +2286,7 @@ export function LauraConversation({
   }
 
   return (
-    <section className="flex h-[calc(100svh-300px)] min-h-[400px] flex-col gap-3 bg-transparent">
+    <section className="flex h-[min(70svh,620px)] min-h-[360px] flex-col gap-3 bg-transparent sm:h-[calc(100svh-300px)] sm:min-h-[400px]">
       <div
         ref={chatScrollRef}
         onWheel={handleChatWheel}
@@ -2245,7 +2314,7 @@ export function LauraConversation({
                   const isUserMessage =
                     item.senderType.toUpperCase() === "USER";
                   const renderedMessage = isUserMessage ? (
-                    <UserMessage key={item.id}>
+                    <UserMessage key={item.id} user={currentUser}>
                       <div className="space-y-2">
                         {item.content ? <p>{item.content}</p> : null}
                         {item.attachments?.length ? (
@@ -2939,7 +3008,7 @@ export function LauraConversation({
       </div>
       {error ? (
         <div
-          className="flex items-center justify-between gap-3 rounded-xl border border-[#F6D9A9] bg-[#FFF9EE] px-3 py-2.5"
+          className="flex flex-col items-stretch gap-3 rounded-xl border border-[#F6D9A9] bg-[#FFF9EE] px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between"
           role="alert"
         >
           <div className="flex min-w-0 items-start gap-2">
@@ -2962,7 +3031,7 @@ export function LauraConversation({
               type="button"
               onClick={checkMeetingPreviewAgain}
               disabled={isWaitingForAi}
-              className="flex shrink-0 items-center gap-1 rounded-md bg-white px-2.5 py-1.5 text-xs font-medium text-[#5B7FF0] shadow-sm transition-colors hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex min-h-9 shrink-0 items-center justify-center gap-1 rounded-md bg-white px-2.5 py-1.5 text-xs font-medium text-[#5B7FF0] shadow-sm transition-colors hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-0"
             >
               <RefreshCw
                 className={`size-3.5 ${isWaitingForAi ? "animate-spin" : ""}`}
@@ -2974,7 +3043,7 @@ export function LauraConversation({
       ) : null}
       {attachments.length ? (
         <div className="rounded-xl bg-white px-4 py-3 shadow-[0_1px_2px_rgba(32,53,112,0.02)]">
-          <div className="mb-2 flex items-center justify-between text-xs">
+          <div className="mb-2 flex flex-col gap-1 text-xs sm:flex-row sm:items-center sm:justify-between">
             <span className="font-medium text-[#252B48]">
               {attachments.length} file{attachments.length > 1 ? "s" : ""} ready
               to send
@@ -3024,7 +3093,7 @@ export function LauraConversation({
       ) : null}
       <form
         onSubmit={submitMessage}
-        className="flex h-20 items-center gap-3 rounded-xl bg-white px-6 shadow-[0_1px_2px_rgba(32,53,112,0.03)] sm:gap-4 sm:px-10"
+        className="flex min-h-16 items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-[0_1px_2px_rgba(32,53,112,0.03)] sm:h-20 sm:gap-4 sm:px-10 sm:py-0"
       >
         {isListening ? (
           <div className="mx-auto flex h-12 w-full max-w-2xl items-center gap-3 rounded-2xl bg-gradient-to-r from-[#5B7FF0] to-[#7792F4] px-3 shadow-[0_8px_20px_rgba(91,127,240,0.24)]">
@@ -3087,10 +3156,10 @@ export function LauraConversation({
           aria-label="Attach files"
           onClick={() => fileInputRef.current?.click()}
           disabled={isComposerDisabled}
-          className="flex size-10 shrink-0 items-center justify-center text-[#0E1224] transition-colors hover:text-[#5B7FF0] disabled:cursor-not-allowed disabled:opacity-45"
+          className="flex size-9 shrink-0 items-center justify-center text-[#0E1224] transition-colors hover:text-[#5B7FF0] disabled:cursor-not-allowed disabled:opacity-45 sm:size-10"
           title="Attach files"
         >
-          <Paperclip className="size-7" strokeWidth={1.7} />
+          <Paperclip className="size-6 sm:size-7" strokeWidth={1.7} />
         </button>
         <input
           ref={composerInputRef}
@@ -3104,7 +3173,7 @@ export function LauraConversation({
                 : `Start a new chat with ${agentName}...`
               : "Loading available agents..."
           }
-          className="min-w-0 flex-1 bg-transparent text-lg text-[#252B48] outline-none placeholder:text-[#667085] disabled:cursor-not-allowed"
+          className="min-w-0 flex-1 bg-transparent text-base text-[#252B48] outline-none placeholder:text-[#667085] disabled:cursor-not-allowed sm:text-lg"
         />
         <button
           type="button"
@@ -3112,11 +3181,11 @@ export function LauraConversation({
           disabled={!isReady || isSending}
           aria-label={isListening ? "Stop voice input" : "Start voice input"}
           aria-pressed={isListening}
-          className={`flex size-11 shrink-0 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-55 ${isListening ? "bg-[#EEF2FF] text-[#5B7FF0] ring-2 ring-[#B9C5E7]" : "bg-[#F5F7FF] text-[#0E1224] hover:bg-[#EEF2FF] hover:text-[#5B7FF0]"}`}
+          className={`flex size-10 shrink-0 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-55 sm:size-11 ${isListening ? "bg-[#EEF2FF] text-[#5B7FF0] ring-2 ring-[#B9C5E7]" : "bg-[#F5F7FF] text-[#0E1224] hover:bg-[#EEF2FF] hover:text-[#5B7FF0]"}`}
           title={isListening ? "Listening… click to stop" : "Speak a message"}
         >
           <Mic
-            className={`size-6 ${isListening ? "animate-pulse" : ""}`}
+            className={`size-5 sm:size-6 ${isListening ? "animate-pulse" : ""}`}
             strokeWidth={1.7}
           />
           <span className="sr-only">
@@ -3127,7 +3196,7 @@ export function LauraConversation({
         </button>
         <div
           aria-label="Laura responds to all messages"
-          className="flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-[#E3E9FA] bg-[#F8FAFF] px-2 text-[#454E76]"
+          className="flex size-10 shrink-0 items-center justify-center rounded-full border border-[#E3E9FA] bg-[#F8FAFF] text-[#454E76] sm:h-11 sm:w-auto sm:gap-1.5 sm:px-2"
           title="Laura responds to all messages"
         >
           {isLoadingAgents ? (
@@ -3138,7 +3207,7 @@ export function LauraConversation({
               imageUrl={selectedAgent?.imageUrl}
             />
           )}
-          <span className="text-xs font-medium">Laura</span>
+          <span className="hidden text-xs font-medium sm:inline">Laura</span>
         </div>
         <button
           type="submit"
@@ -3146,12 +3215,12 @@ export function LauraConversation({
             (!message.trim() && attachments.length === 0) || isComposerDisabled
           }
           aria-label="Send message"
-          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#5B7FF0] text-white shadow-[0_4px_10px_rgba(91,127,240,0.22)] transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#5B7FF0] text-white shadow-[0_4px_10px_rgba(91,127,240,0.22)] transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60 sm:size-11"
         >
           {isSending ? (
-            <Loader2 className="size-5 animate-spin" />
+            <Loader2 className="size-4 animate-spin sm:size-5" />
           ) : (
-            <Send className="size-7" strokeWidth={1.6} />
+            <Send className="size-6 sm:size-7" strokeWidth={1.6} />
           )}
         </button>
           </>
