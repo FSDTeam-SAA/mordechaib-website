@@ -25,10 +25,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # Environment variables - NEVER PUSH TO GITHUB
-.env
-.env.*
-**/.env
-**/.env.*
 !.env.example
 
 # vercel
@@ -38,3 +34,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+config.bat
