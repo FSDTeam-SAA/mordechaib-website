@@ -35,6 +35,7 @@ type MessageAttachment = {
   originalName: string;
   mimeType?: string;
   sizeBytes?: number;
+  isPending?: boolean;
 };
 type AttachmentDownload = { downloadUrl: string };
 type ChatMessage = {
@@ -595,12 +596,15 @@ function MessageAttachmentCard({
 }) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoadingPreview, setIsLoadingPreview] = useState(
-    isMessageImage(attachment),
+    isMessageImage(attachment) && !attachment.isPending,
   );
   const image = isMessageImage(attachment);
 
   useEffect(() => {
-    if (!image || !accessToken) return;
+    if (!image || !accessToken || attachment.isPending) {
+      setIsLoadingPreview(false);
+      return;
+    }
     const controller = new AbortController();
     void fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/messages/${encodeURIComponent(messageId)}/attachments/${encodeURIComponent(attachment.id)}/download?disposition=inline`,
@@ -619,7 +623,7 @@ function MessageAttachmentCard({
       .catch(() => undefined)
       .finally(() => setIsLoadingPreview(false));
     return () => controller.abort();
-  }, [accessToken, attachment.id, image, messageId]);
+  }, [accessToken, attachment.id, attachment.isPending, image, messageId]);
 
   if (image)
     return (
@@ -645,7 +649,9 @@ function MessageAttachmentCard({
             {isLoadingPreview ? (
               <Loader2 className="size-5 animate-spin" />
             ) : (
-              "Image preview unavailable"
+              attachment.isPending
+                ? "Image is uploading…"
+                : "Image preview unavailable"
             )}
           </div>
         )}
@@ -669,6 +675,9 @@ function MessageAttachmentCard({
         <span className="shrink-0 text-white/70">
           ({fileSizeLabel(attachment.sizeBytes)})
         </span>
+      ) : null}
+      {attachment.isPending ? (
+        <span className="shrink-0 text-white/70">Sending…</span>
       ) : null}
     </div>
   );
@@ -1462,6 +1471,15 @@ export function LauraConversation({
       : crypto.randomUUID();
     if (!isRetry) failedTurnRef.current = null;
     const optimisticMessageId = `sending-${clientMessageId}`;
+    const optimisticAttachments: MessageAttachment[] = submittedAttachments.map(
+      (file, index) => ({
+        id: `pending-${clientMessageId}-${index}`,
+        originalName: file.name,
+        mimeType: file.type || undefined,
+        sizeBytes: file.size,
+        isPending: true,
+      }),
+    );
     const isNewConversation = !conversationId;
     const conversationPreview =
       content || submittedAttachments[0]?.name || "Attachment";
@@ -1578,7 +1596,7 @@ export function LauraConversation({
         conversationId: conversationId || "new-conversation",
         content: content || null,
         senderType: "USER",
-        attachments: [],
+        attachments: optimisticAttachments,
         createdAt: new Date().toISOString(),
       },
     ]);
