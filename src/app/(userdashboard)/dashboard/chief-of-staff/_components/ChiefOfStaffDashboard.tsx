@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { htmlToPlainText } from "@/lib/sanitizeHtml";
 import { AgentStatusBar } from "./AgentStatusBar";
 import { ChiefNavigation, ChiefTab } from "./ChiefNavigation";
 import { ChiefConversation, ChiefSidebar } from "./ChiefSidebar";
@@ -79,9 +80,10 @@ export function ChiefOfStaffDashboard() {
             const previewResult = (await previewResponse
               .json()
               .catch(() => ({}))) as ApiEnvelope<MessagePreviewPayload>;
-            const preview = previewResult.data?.items[0]?.content
-              ?.replace(/\s+/g, " ")
-              .trim();
+            const previewContent = previewResult.data?.items[0]?.content;
+            const preview = previewContent
+              ? htmlToPlainText(previewContent)
+              : undefined;
             return preview ? { ...conversation, preview } : conversation;
           } catch {
             return conversation;

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { htmlToPlainText, sanitizeHtml } from "@/lib/sanitizeHtml";
 import {
   FormEvent,
   useCallback,
@@ -252,6 +253,21 @@ function streamActivityLabel(value: unknown) {
     if (typeof candidate === "string" && candidate.trim()) return candidate;
   }
   return null;
+}
+
+/**
+ * Assistant replies are authored as HTML by the AI service. Render only that
+ * trusted message type as sanitized rich text so users see readable
+ * paragraphs, lists, emphasis, and links rather than literal HTML tags.
+ * User-authored messages intentionally remain plain React text below.
+ */
+function AssistantMessageContent({ content }: { content: string }) {
+  return (
+    <div
+      className="break-words text-sm leading-6 text-[#252B48] [&_a]:text-[#4F71E8] [&_a]:underline [&_a]:underline-offset-2 [&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:border-[#B8C8F8] [&_blockquote]:pl-3 [&_code]:rounded [&_code]:bg-[#EAF0FF] [&_code]:px-1 [&_code]:py-0.5 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_p]:m-0 [&_p+p]:mt-2 [&_pre]:my-2 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-[#EAF0FF] [&_pre]:p-3 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5"
+      dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
+    />
+  );
 }
 
 function parseSseBlock(block: string) {
@@ -1136,7 +1152,9 @@ export function LauraConversation({
       // indicator visible while its supporting intelligence data is fetched.
       if (latestReplyIsVisible) setIsWaitingForAi(false);
       const latestMessage = chronologicalMessages.at(-1);
-      const preview = latestMessage?.content?.replace(/\s+/g, " ").trim();
+      const preview = latestMessage?.content
+        ? htmlToPlainText(latestMessage.content)
+        : undefined;
       if (preview && preview !== lastPreview.current) {
         lastPreview.current = preview;
         onConversationUpdated(requestedConversationId, preview);
@@ -2365,10 +2383,11 @@ export function LauraConversation({
                           {item.agentName}
                         </p>
                       ) : null}
-                      <p>
-                        {item.content ||
-                          "Your agent is preparing a response..."}
-                      </p>
+                      {item.content ? (
+                        <AssistantMessageContent content={item.content} />
+                      ) : (
+                        <p>Your agent is preparing a response...</p>
+                      )}
                     </LauraMessage>
                   );
                   // A draft is a result of a user message; place its persistent card
@@ -2397,7 +2416,7 @@ export function LauraConversation({
                   <p className="mb-1 text-xs font-medium text-[#5B7FF0]">
                     {agentName}
                   </p>
-                  <p>{streamedAssistantText}</p>
+                  <AssistantMessageContent content={streamedAssistantText} />
                 </LauraMessage>
               ) : isWaitingForAi ? (
                 <LauraThinking label={thinkingLabel} agent={selectedAgent} />
