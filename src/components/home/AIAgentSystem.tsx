@@ -82,7 +82,7 @@ const AIAgentSystem = () => {
             </h2>
           </div>
           <p className="mt-3 text-[13px] leading-relaxed text-[#6B6B6B] sm:mt-4 sm:text-lg lg:text-xl">
-            Leave a voice note, finish a client call, or record a meeting.Laura turns it into action across your six AI agents.
+            Leave a voice note, finish a client call, or record a meeting. Laura turns it into action across your six AI agents.
           </p>
         </div>
 

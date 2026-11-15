@@ -2,14 +2,13 @@ import { CalendarDays, CheckSquare, Clock3, DollarSign, TrendingUp } from "lucid
 
 const cards = [
   {
-    title: "Hours saved this month",
+    title: "Time Returned to Your Business",
     color: "text-[#5B7FF0]",
     icon: Clock3,
     value: "47",
-    suffix: "Hours of CEO Time Recovered",
-    sub: "Hours Returned to Your Schedule",
-    body: "Every automated task gives you back minutes, hours, and momentum so you can focus on decisions, not admin work.",
-    stat: "+18%",
+    suffix: "Hours Saved",
+    body: "Spend less time on repetitive work and more time leading, serving customers, and growing your business.",
+    stat: "+18% this month",
     visual: (
       <div className="rounded-xl border bg-white p-4 shadow-sm">
         <div className="flex items-center justify-between">
@@ -31,14 +30,13 @@ const cards = [
     ),
   },
   {
-    title: "Total Tasks Automated",
+    title: "Work Handled by AI",
     color: "text-[#D94DCE]",
     icon: CheckSquare,
     value: "312",
-    suffix: "Operational Tasks Completed by Your AI Workforce",
-    sub: "Tasks Executed Automatically",
-    body: "Your AI workforce runs nonstop. Track every action completed on your behalf.",
-    stat: "+18%",
+    suffix: "Tasks Completed",
+    body: "Your AI workforce handles repetitive tasks and keeps daily operations moving.",
+    stat: "+18% this month",
     visual: (
       <div className="rounded-xl bg-[#F7F7F7] p-4 text-xs text-[#0E1224]">
         {["T101", "T102", "T103"].map((id) => (
@@ -52,14 +50,13 @@ const cards = [
     ),
   },
   {
-    title: "Estimated Money Saved",
+    title: "Lower Operating Costs",
     color: "text-[#10B981]",
     icon: DollarSign,
     value: "$2,640",
-    suffix: "Operational Savings Generated",
-    sub: "Operational Savings Generated",
-    body: "Real financial impact, measured for you. Automatic cost calculations show how Noltra reduces operational waste.",
-    stat: "+22%",
+    suffix: "Estimated Savings",
+    body: "See how AI automation reduces manual work and helps lower operational expenses.",
+    stat: "+22% this month",
     visual: (
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-xl border bg-white p-3 shadow-sm">
@@ -76,14 +73,13 @@ const cards = [
     ),
   },
   {
-    title: "Meetings Auto-Scheduled",
+    title: "Scheduling Made Simple",
     color: "text-[#5BA5E8]",
     icon: CalendarDays,
     value: "28",
-    suffix: "Meetings Scheduled by Your AI",
-    sub: "Meetings Scheduled by Your AI",
-    body: "Your calendar fills itself intelligently with the right meetings and updated statuses.",
-    stat: "+12%",
+    suffix: "Meetings Scheduled",
+    body: "Let your AI workforce coordinate meetings, manage calendars, and keep everyone on schedule.",
+    stat: "+12% this month",
     visual: (
       <div className="rounded-xl bg-[#F7F7F7] p-4 text-xs">
         <p className="font-semibold text-[#0E1224]">All Scheduled Assets</p>
@@ -133,7 +129,6 @@ const EfficiencyGains = () => {
                   <span className={`text-[30px] font-bold leading-none ${card.color}`}>{card.value}</span>
                   <span className={`ml-2 text-[11px] ${card.color}`}>{card.suffix}</span>
                 </div>
-                <p className="mt-1 min-h-[40px] text-[13px] text-[#0E1224]">{card.sub}</p>
                 <div className="mt-4 flex min-h-[230px] items-start [&>*]:w-full">{card.visual}</div>
                 <h3 className={`mt-0 min-h-[56px] text-lg font-bold leading-snug ${card.color}`}>{card.title}</h3>
                 <p className="mt-0 text-[13px] leading-relaxed text-[#6B6B6B]">{card.body}</p>
