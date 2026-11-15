@@ -1,10 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import {
   AlertCircle,
   Activity,
   BarChart3,
-  CheckCircle2,
   Clock3,
   DollarSign,
   FileText,
@@ -146,6 +146,38 @@ const briefingOptions: Array<{ type: BriefingType; label: string }> = [
   { type: "WEEKLY_REVIEW", label: "Weekly Review" },
 ];
 
+type AgentVisual = {
+  src: string;
+  badge: string;
+};
+
+const AGENT_AVATARS: Record<string, AgentVisual> = {
+  steve: {
+    src: "/executive-briefings/today-steve.png",
+    badge: "/executive-briefings/today-steve-badge.svg",
+  },
+  cassie: {
+    src: "/executive-briefings/today-cassie.png",
+    badge: "/executive-briefings/today-cassie-badge.svg",
+  },
+  vizzy: {
+    src: "/executive-briefings/today-vizzy.png",
+    badge: "/executive-briefings/today-vizzy-badge.svg",
+  },
+  dexter: {
+    src: "/executive-briefings/today-dexter.png",
+    badge: "/executive-briefings/today-dexter-badge.svg",
+  },
+  havi: {
+    src: "/executive-briefings/today-havi.png",
+    badge: "/executive-briefings/today-havi-badge.svg",
+  },
+  soshie: {
+    src: "/executive-briefings/today-soshie.png",
+    badge: "/executive-briefings/today-soshie-badge.svg",
+  },
+};
+
 function createInitialState(): Record<BriefingType, BriefingUiState> {
   return {
     TODAY: { briefing: null, loading: false, error: null },
@@ -178,6 +210,13 @@ function itemValue(item: BriefingItem) {
   return `${item.value} ${labelOf(item.unit)}`;
 }
 
+function agentAvatarFor(name: string) {
+  const normalized = name.toLowerCase();
+  return Object.entries(AGENT_AVATARS).find(([agent]) =>
+    normalized.includes(agent),
+  )?.[1];
+}
+
 function MetricIcon({ label, index }: { label: string; index: number }) {
   const normalized = label.toLowerCase();
   const Icon = normalized.includes("revenue") || normalized.includes("cost")
@@ -194,16 +233,57 @@ function MetricIcon({ label, index }: { label: string; index: number }) {
   return <Icon className="size-4" />;
 }
 
-function DecisionIcon({ label, index }: { label: string; index: number }) {
+type MetricIconSet = "TEAM" | "WEEKLY_ROI" | "WEEKLY_MARKETING";
+
+const FIGMA_METRIC_ICONS: Record<MetricIconSet, string[]> = {
+  TEAM: [
+    "/executive-briefings/team-revenue.svg",
+    "/executive-briefings/team-active-project.svg",
+    "/executive-briefings/team-gross-margin.svg",
+    "/executive-briefings/team-burn-rate.svg",
+  ],
+  WEEKLY_ROI: [
+    "/executive-briefings/weekly-cost-savings.svg",
+    "/executive-briefings/weekly-hours-saved.svg",
+    "/executive-briefings/weekly-productivity-lift.svg",
+    "/executive-briefings/weekly-automation-impact.svg",
+  ],
+  WEEKLY_MARKETING: [
+    "/executive-briefings/weekly-funnel-performance.svg",
+    "/executive-briefings/weekly-leads-generated.svg",
+    "/executive-briefings/weekly-campaign-result.svg",
+    "/executive-briefings/weekly-social-mentions.svg",
+    "/executive-briefings/weekly-brand-momentum.svg",
+  ],
+};
+
+function BriefingMetricIcon({
+  label,
+  index,
+  iconSet,
+}: {
+  label: string;
+  index: number;
+  iconSet?: MetricIconSet;
+}) {
+  const icon = iconSet ? FIGMA_METRIC_ICONS[iconSet][index] : undefined;
+  return icon ? (
+    <Image src={icon} alt="" width={24} height={24} aria-hidden="true" />
+  ) : (
+    <MetricIcon label={label} index={index} />
+  );
+}
+
+function DecisionIcon({ label }: { label: string; index: number }) {
   const normalized = label.toLowerCase();
-  const Icon = normalized.includes("escal") || normalized.includes("risk")
-    ? AlertCircle
-    : normalized.includes("review") || normalized.includes("sign")
-      ? Sparkles
-      : normalized.includes("approval") || normalized.includes("approve")
-        ? CheckCircle2
-        : [CheckCircle2, Sparkles, AlertCircle, Target][index % 4];
-  return <Icon className="size-5" />;
+  const icon = normalized.includes("escal") || normalized.includes("risk")
+    ? "/executive-briefings/escalation.svg"
+    : normalized.includes("review")
+      ? "/executive-briefings/review.svg"
+      : normalized.includes("sign")
+        ? "/executive-briefings/sign-off.svg"
+        : "/executive-briefings/approval.svg";
+  return <Image src={icon} alt="" width={24} height={24} aria-hidden="true" />;
 }
 
 function SectionHeading({
@@ -221,7 +301,7 @@ function SectionHeading({
       <h2 className="text-base font-medium leading-5 text-[#0E1224]">
         {number}. {copy?.title || section.title}
       </h2>
-      <p className="mt-3 text-sm leading-[18px] text-[#0E1224]">
+      <p className="mt-4 text-sm leading-[18px] text-[#0E1224]">
         {copy?.description || section.summary}
       </p>
     </div>
@@ -230,7 +310,7 @@ function SectionHeading({
 
 function NoData() {
   return (
-    <div className="rounded-md bg-[#F3F5FF] px-3 py-3 text-[13px] text-[#8B93B8]">
+    <div className="rounded-xl bg-[#F3F5FF] px-3 py-3 text-[13px] text-[#8B93B8]">
       No data available
     </div>
   );
@@ -239,39 +319,41 @@ function NoData() {
 function DataRows({ items }: { items: BriefingItem[] }) {
   if (!items.length) return <NoData />;
   return (
-    <div className="space-y-2">
-      {items.map((item) => {
-        const value = itemValue(item);
-        const critical =
-          item.severity === "CRITICAL" || item.severity === "HIGH";
-        return (
-          <article
-            key={item.id}
-            className="flex min-h-[35px] items-center gap-2 rounded bg-[#F5F7FF] px-2"
-          >
-            <span
-              className={`h-[18px] w-1 shrink-0 rounded-full ${critical ? "bg-[#F04438]" : "bg-[#12B981]"}`}
-            />
-            <p
-              className="min-w-0 flex-1 truncate text-sm text-[#8B93B8]"
-              title={item.detail || item.label}
+    <div className="rounded-2xl bg-white p-3">
+      <div className="space-y-2">
+        {items.map((item) => {
+          const value = itemValue(item);
+          const critical =
+            item.severity === "CRITICAL" || item.severity === "HIGH";
+          return (
+            <article
+              key={item.id}
+              className="flex min-h-[35px] items-center gap-2 rounded-xl bg-[#F5F7FF] px-2"
             >
-              {item.label}
-            </p>
-            {value ? (
               <span
-                className={
-                  critical
-                    ? "shrink-0 text-sm text-[#F04438]"
-                    : "shrink-0 text-sm text-[#0ABF83]"
-                }
+                className={`h-[18px] w-1 shrink-0 rounded-[2px] ${critical ? "bg-[#F04438]" : "bg-[#12B981]"}`}
+              />
+              <p
+                className="min-w-0 flex-1 truncate text-sm text-[#8B93B8]"
+                title={item.detail || item.label}
               >
-                {value}
-              </span>
-            ) : null}
-          </article>
-        );
-      })}
+                {item.label}
+              </p>
+              {value ? (
+                <span
+                  className={
+                    critical
+                      ? "shrink-0 text-sm text-[#F04438]"
+                      : "shrink-0 text-sm text-[#0ABF83]"
+                  }
+                >
+                  {value}
+                </span>
+              ) : null}
+            </article>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -280,10 +362,12 @@ function MetricTiles({
   items,
   emptyLabels = [],
   columns = "sm:grid-cols-4",
+  iconSet,
 }: {
   items: BriefingItem[];
   emptyLabels?: string[];
   columns?: "sm:grid-cols-4" | "sm:grid-cols-5";
+  iconSet?: MetricIconSet;
 }) {
   const displayItems = items.length
     ? items
@@ -297,19 +381,28 @@ function MetricTiles({
           "text-[#D946EF]",
           "text-[#F59E0B]",
           "text-[#F04438]",
+          "text-[#12B981]",
+        ];
+        const iconBackgrounds = [
+          "bg-[rgba(91,127,240,0.10)]",
+          "bg-[rgba(210,79,199,0.10)]",
+          "bg-[rgba(245,158,11,0.10)]",
+          "bg-[rgba(239,68,68,0.10)]",
+          "bg-[rgba(18,185,129,0.10)]",
         ];
         return (
-          <article
-            key={item.id}
-            className="min-h-[112px] rounded-lg bg-[#F5F7FF] p-3 text-center"
-          >
+          <article key={item.id} className="min-h-[112px] rounded-2xl bg-[#F5F7FF] p-3 text-center">
             <span
-            className={`mx-auto flex size-9 items-center justify-center rounded-xl bg-white text-sm ${colors[index % colors.length]}`}
+              className={`mx-auto flex size-10 items-center justify-center rounded-xl text-sm ${iconBackgrounds[index % iconBackgrounds.length]} ${colors[index % colors.length]}`}
             >
-              <MetricIcon label={item.label} index={index} />
+              <BriefingMetricIcon
+                label={item.label}
+                index={index}
+                iconSet={iconSet}
+              />
             </span>
             <p
-            className="mt-2 truncate text-sm text-[#1D2338]"
+              className="mt-2 truncate text-sm font-medium text-[#1D2338]"
               title={item.label}
             >
               {item.label}
@@ -352,12 +445,17 @@ function ActionTiles({
         const body = (
           <>
             <span
-              className={`mx-auto flex size-10 items-center justify-center rounded-xl bg-white ${colours[index % colours.length]}`}
+              className={`mx-auto flex size-10 items-center justify-center rounded-xl ${[
+                "bg-[rgba(91,127,240,0.10)]",
+                "bg-[rgba(245,158,11,0.10)]",
+                "bg-[rgba(239,68,68,0.10)]",
+                "bg-[rgba(210,79,199,0.10)]",
+              ][index % colours.length]} ${colours[index % colours.length]}`}
             >
               <DecisionIcon label={item.label} index={index} />
             </span>
             <p
-              className={`mt-2 text-sm font-medium ${colours[index % colours.length]}`}
+              className={`mt-2 text-[18px] font-bold leading-none ${colours[index % colours.length]}`}
             >
               {state?.status === "SUCCESS"
                 ? "Submitted"
@@ -367,7 +465,7 @@ function ActionTiles({
                     ? labelOf(item.proposalAction)
                     : item.label}
             </p>
-            <p className="mt-1 line-clamp-2 text-xs text-[#8B93B8]">
+            <p className="mt-1 line-clamp-2 text-sm leading-[18px] text-[#8B93B8]">
               {item.label}
             </p>
             {state?.status === "ERROR" ? (
@@ -383,7 +481,7 @@ function ActionTiles({
             onClick={() =>
               onAction(item.proposalRecordId!, item.proposalAction!)
             }
-            className="min-h-[124px] rounded-lg bg-[#F5F7FF] p-4 text-center transition hover:bg-[#E8EDFF] disabled:opacity-60"
+            className="min-h-[124px] rounded-2xl bg-[#F5F7FF] px-2 py-4 text-center transition hover:bg-[#E8EDFF] disabled:opacity-60"
           >
             {state?.status === "LOADING" ? (
               <Loader2 className="mx-auto size-5 animate-spin text-[#5B7FF0]" />
@@ -394,12 +492,74 @@ function ActionTiles({
         ) : (
           <article
             key={item.id}
-            className="min-h-[124px] rounded-lg bg-[#F5F7FF] p-4 text-center"
+            className="min-h-[124px] rounded-2xl bg-[#F5F7FF] px-2 py-4 text-center"
           >
             {body}
           </article>
         );
       })}
+    </div>
+  );
+}
+
+function PriorityCards({ items }: { items: BriefingItem[] }) {
+  if (!items.length) return <NoData />;
+  const tones = [
+    { text: "text-[#5B7FF0]", surface: "bg-[rgba(91,127,240,0.10)]" },
+    { text: "text-[#10B981]", surface: "bg-[rgba(16,185,129,0.10)]" },
+    { text: "text-[#264AFF]", surface: "bg-[rgba(38,74,255,0.10)]" },
+  ];
+  return (
+    <div className="grid gap-2 md:grid-cols-3">
+      {items.slice(0, 3).map((item, index) => {
+        const tone = tones[index % tones.length];
+        const details = (item.detail || "").split(/\n|•/).map((value) => value.trim()).filter(Boolean);
+        return (
+          <article key={item.id} className="flex min-h-[97px] items-start gap-2 rounded-2xl bg-[#F5F7FF] px-2 py-4">
+            <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl text-xl font-bold ${tone.surface} ${tone.text}`}>
+              {index + 1}
+            </span>
+            <div className="min-w-0 space-y-[3px]">
+              <p className={`truncate text-base font-medium ${tone.text}`} title={item.label}>{item.label}</p>
+              <p className="truncate text-sm text-[#8B93B8]">{details[0] || item.status || "—"}</p>
+              <p className="truncate text-sm text-[#141936]">{details[1] || itemValue(item) || ""}</p>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
+function MilestoneProgress({ items }: { items: BriefingItem[] }) {
+  if (!items.length) return <NoData />;
+  const completed = Math.max(0, Number(items[0]?.value) || 0);
+  const total = Math.max(completed, Number(items[1]?.value) || 0, 1);
+  const progress = Math.min(100, Math.round((completed / total) * 100));
+  const labels = ["Completed", "Missed", "Blocker", "On Track"];
+  const tones = ["text-[#10B981]", "text-[#F04438]", "text-[#D24FC7]", "text-[#264AFF]"];
+  return (
+    <div>
+      <div className="mb-4 flex items-center justify-between text-sm text-[#0E1224]">
+        <span className="font-medium">Milestones Completed</span>
+        <span>{completed}/{total}</span>
+      </div>
+      <div className="h-2 rounded-full bg-[#F5F7FF]">
+        <div className="h-full rounded-full bg-[#5B7FF0]" style={{ width: `${progress}%` }} />
+      </div>
+      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {labels.map((label, index) => {
+          const item = items[index];
+          return (
+            <article key={label} className="min-h-[58px] rounded-2xl bg-[#F5F7FF] p-3 text-center">
+              <p className={`text-sm ${tones[index]}`}>{label}</p>
+              <p className={`mt-1 text-base font-medium ${tones[index]}`}>
+                {itemValue(item || { id: label, label }) || "—"}
+              </p>
+            </article>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -415,13 +575,58 @@ function ActionRows({
 }) {
   if (!items.length) return <NoData />;
   const colors = ["text-[#5B7FF0]", "text-[#F59E0B]", "text-[#F04438]"];
-  return <div className="space-y-2">{items.map((item, index) => {
-    const state = item.proposalRecordId ? proposalActions[item.proposalRecordId] : undefined;
-    const actionable = Boolean(item.proposalAction && item.proposalRecordId);
-    const content = <><span className={`flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#E8EDFF] ${colors[index % colors.length]}`}><DecisionIcon label={item.label} index={index} /></span><div className="min-w-0 flex-1 text-left"><p className={`truncate text-base font-medium ${colors[index % colors.length]}`}>{state?.status === "SUCCESS" ? "Submitted" : item.status ? labelOf(item.status) : item.proposalAction ? labelOf(item.proposalAction) : item.label}</p><p className="truncate text-sm text-[#8B93B8]">{item.label}</p></div>{itemValue(item) ? <span className="shrink-0 text-sm text-[#F59E0B]">{itemValue(item)}</span> : null}</>;
-    const className = "flex min-h-[54px] w-full items-center gap-3 rounded-lg bg-[#F5F7FF] px-3";
-    return actionable ? <button key={item.id} type="button" className={`${className} transition hover:bg-[#E8EDFF]`} disabled={state?.status === "LOADING"} onClick={() => onAction(item.proposalRecordId!, item.proposalAction!)}>{state?.status === "LOADING" ? <Loader2 className="mx-auto size-5 animate-spin text-[#5B7FF0]" /> : content}</button> : <article key={item.id} className={className}>{content}</article>;
-  })}</div>;
+  return (
+    <div className="space-y-2">
+      {items.map((item, index) => {
+        const state = item.proposalRecordId
+          ? proposalActions[item.proposalRecordId]
+          : undefined;
+        const actionable = Boolean(item.proposalAction && item.proposalRecordId);
+        const color = colors[index % colors.length];
+        const surfaces = [
+          "bg-[rgba(91,127,240,0.10)]",
+          "bg-[rgba(245,158,11,0.10)]",
+          "bg-[rgba(239,68,68,0.10)]",
+        ];
+        const content = (
+          <>
+            <span className={`flex size-6 shrink-0 items-center justify-center rounded-lg ${surfaces[index % surfaces.length]} ${color}`}>
+              <DecisionIcon label={item.label} index={index} />
+            </span>
+            <div className="min-w-0 flex-1 text-left">
+              <p className={`truncate text-[18px] font-bold leading-[23px] ${color}`}>
+                {state?.status === "SUCCESS"
+                  ? "Submitted"
+                  : item.status
+                    ? labelOf(item.status)
+                    : item.proposalAction
+                      ? labelOf(item.proposalAction)
+                      : item.label}
+              </p>
+              <p className="truncate text-sm leading-[18px] text-[#8B93B8]">{item.label}</p>
+            </div>
+            {itemValue(item) ? (
+              <span className={`shrink-0 text-sm ${color}`}>{itemValue(item)}</span>
+            ) : null}
+          </>
+        );
+        const className = "flex min-h-[60px] w-full items-center gap-4 rounded-2xl bg-[#F5F7FF] px-2";
+        return actionable ? (
+          <button
+            key={item.id}
+            type="button"
+            className={`${className} transition hover:bg-[#E8EDFF]`}
+            disabled={state?.status === "LOADING"}
+            onClick={() => onAction(item.proposalRecordId!, item.proposalAction!)}
+          >
+            {state?.status === "LOADING" ? <Loader2 className="mx-auto size-5 animate-spin text-[#5B7FF0]" /> : content}
+          </button>
+        ) : (
+          <article key={item.id} className={className}>{content}</article>
+        );
+      })}
+    </div>
+  );
 }
 
 function AgentCards({ items }: { items: BriefingItem[] }) {
@@ -430,8 +635,8 @@ function AgentCards({ items }: { items: BriefingItem[] }) {
     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
       {items.map((item, index) => {
         const borderColors = [
-          "border-[#5B9CD5]",
-          "border-[#06B6D4]",
+          "border-[#ACCDE9]",
+          "border-[#82DAE9]",
           "border-[#D24FC7]",
           "border-[#5B7FF0]",
           "border-[#F59E0B]",
@@ -441,14 +646,35 @@ function AgentCards({ items }: { items: BriefingItem[] }) {
           .split(/(?:\n|•)/)
           .map((entry) => entry.trim())
           .filter(Boolean);
+        const avatar = agentAvatarFor(item.label);
         return (
         <article
           key={item.id}
           className={`min-h-[166px] rounded-2xl border-x border-b border-t-4 bg-white p-3 ${borderColors[index % borderColors.length]}`}
         >
           <div className="flex items-center gap-3">
-            <span className="flex size-12 items-center justify-center rounded-lg border border-current bg-[#F5F7FF] text-base font-semibold text-[#5B7FF0]">
-              <Target className="size-5" aria-hidden="true" />
+            <span className={`relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-[#F5F7FF] ${borderColors[index % borderColors.length]}`}>
+              {avatar ? (
+                <>
+                  <Image
+                    src={avatar.src}
+                    alt={`${item.label} avatar`}
+                    fill
+                    sizes="48px"
+                    className="object-cover"
+                  />
+                  <Image
+                    src={avatar.badge}
+                    alt=""
+                    width={32}
+                    height={32}
+                    aria-hidden="true"
+                    className="relative z-10"
+                  />
+                </>
+              ) : (
+                <Target className="size-5 text-[#5B7FF0]" aria-hidden="true" />
+              )}
             </span>
             <div className="min-w-0">
               <h3 className="truncate text-xl font-medium">{item.label}</h3>
@@ -468,18 +694,28 @@ function AgentCards({ items }: { items: BriefingItem[] }) {
 
 function Funnel({ items }: { items: BriefingItem[] }) {
   if (!items.length) return <NoData />;
+  const colors = ["#264AFF", "#5B7FF0", "#209B78", "#F79009"];
   return (
-    <div className="space-y-2">
+    <div className="space-y-3 py-0.5">
       {items.slice(0, 4).map((item, index) => (
         <div
           key={item.id}
-          className="mx-auto flex h-7 items-center"
-          style={{ width: `${100 - index * 7}%` }}
+          className="mx-auto flex h-9 items-center"
+          style={{ width: `${Math.max(56, 86 - index * 7)}%` }}
         >
-          <span className="flex-1 bg-[#5B7FF0] px-3 py-1 text-center text-xs text-white">
+          <span
+            className="flex h-full flex-1 items-center justify-center px-3 text-sm text-white"
+            style={{
+              backgroundColor: colors[index],
+              clipPath: "polygon(0 0, 100% 0, 94% 100%, 6% 100%)",
+            }}
+          >
             {item.label}
           </span>
-          <span className="w-24 bg-[#EEF2FF] px-3 py-1 text-center text-xs">
+          <span
+            className="flex h-full w-[30%] items-center justify-center bg-[#F5F7FF] px-3 text-sm text-[#0E1224]"
+            style={{ clipPath: "polygon(5% 0, 100% 0, 94% 100%, 0 100%)" }}
+          >
             {itemValue(item) || "—"}
           </span>
         </div>
@@ -492,38 +728,59 @@ function Donut({ items }: { items: BriefingItem[] }) {
   if (!items.length) return <NoData />;
   const values = items.map((item) => Math.max(0, Number(item.value) || 0));
   const total = values.reduce((sum, value) => sum + value, 0);
-  const first = total ? Math.round((values[0] / total) * 100) : 0;
+  const colors = ["#12B981", "#F59E0B", "#F04438", "#8B93B8"];
+  const gradient = values.reduce(
+    (stops, value, index) => {
+      const start = stops.cursor;
+      const end = total ? start + (value / total) * 360 : start;
+      stops.parts.push(`${colors[index % colors.length]} ${start}deg ${Math.max(start, end - 2)}deg`);
+      if (index < values.length - 1) stops.parts.push(`#fff ${Math.max(start, end - 2)}deg ${end}deg`);
+      stops.cursor = end;
+      return stops;
+    },
+    { parts: [] as string[], cursor: 0 },
+  ).parts.join(", ");
   return (
-    <div className="flex flex-wrap items-center gap-6">
+    <div className="flex flex-wrap items-center gap-6 px-6 py-2">
       <div
         className="flex size-40 items-center justify-center rounded-full"
         style={{
-          background: `conic-gradient(#12B981 0 ${first}%, #F59E0B ${first}% ${Math.min(100, first + 25)}%, #F04438 ${Math.min(100, first + 25)}% 100%)`,
+          background: `conic-gradient(${gradient || "#E4EAF8 0deg 360deg"})`,
         }}
       >
-        <div className="flex size-[118px] flex-col items-center justify-center rounded-full bg-white">
+        <div className="flex size-[132px] flex-col items-center justify-center rounded-full bg-white">
           <span className="text-2xl font-medium">{total || "—"}</span>
           <span className="text-[11px] text-[#667085]">Total</span>
         </div>
       </div>
-      <div className="min-w-[180px] flex-1 space-y-3">
+      <div className="min-w-[180px] flex-1 space-y-4">
         {items.map((item, index) => (
-          <div key={item.id} className="flex items-center gap-2 text-xs">
+          <div key={item.id} className="flex items-center gap-2 text-sm">
             <span
-              className={
-                [
-                  "bg-[#12B981]",
-                  "bg-[#F59E0B]",
-                  "bg-[#F04438]",
-                  "bg-[#8B93B8]",
-                ][index % 4] + " size-2 rounded-full"
-              }
+              className="size-2 rounded-full"
+              style={{ backgroundColor: colors[index % colors.length] }}
             />
             <span className="flex-1">{item.label}</span>
             <span>{itemValue(item) || "—"}</span>
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ExecutiveNote({ section }: { section: BriefingSection }) {
+  const note = section.items[0]?.detail || section.items[0]?.label || section.summary;
+  return (
+    <div className="flex min-h-[104px] items-center gap-2 rounded-2xl bg-[#F5F7FF] p-3">
+      <Image
+        src="/executive-briefings/today-laura.png"
+        alt="Laura"
+        width={80}
+        height={80}
+        className="size-20 shrink-0 rounded-full border border-[#8B93B8] object-cover"
+      />
+      <p className="text-sm leading-6 text-[#667085]">{note}</p>
     </div>
   );
 }
@@ -573,9 +830,9 @@ function TodayLayout({
     ) : null;
   };
   return (
-    <div className="space-y-7">
+    <div className="space-y-4">
       {section("primary_focus", 1, (data) => (
-        <div className="rounded-md bg-[#F3F5FF] px-3 py-1.5 text-[13px]">
+        <div className="rounded-xl bg-[#F3F5FF] px-3 py-1.5 text-[13px]">
           {data.items[0]?.label || "No data available"}
         </div>
       ))}
@@ -590,12 +847,9 @@ function TodayLayout({
         />
       ))}
       {section("pipeline_revenue", 4, (data) => (
-        <MetricTiles
-          items={data.items}
-          emptyLabels={["Launch New product", "Expand Key Account", "Improved Team Efficiency"]}
-        />
+        <PriorityCards items={data.items} />
       ))}
-      <div className="grid gap-7 xl:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-2">
         {section("pipeline_revenue", 5, (data) => (
           <DataRows items={data.items} />
         ))}
@@ -609,7 +863,7 @@ function TodayLayout({
       {section("financial_pulse", 8, (data) => (
         <Funnel items={data.items} />
       ))}
-      <div className="grid gap-7 xl:grid-cols-3">
+      <div className="grid gap-4 xl:grid-cols-3">
         {section("vendor_accountability", 9, (data) => (
           <DataRows items={data.items} />
         ))}
@@ -621,14 +875,7 @@ function TodayLayout({
         ))}
       </div>
       {section("ceo_notes", 12, (data) => (
-        <div className="flex min-h-[104px] items-center gap-4 rounded-md bg-[#F5F7FF] p-3">
-          <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-white text-[#5B7FF0]">
-            L
-          </span>
-          <p className="text-sm text-[#667085]">
-            {data.items[0]?.detail || data.summary}
-          </p>
-        </div>
+        <ExecutiveNote section={data} />
       ))}
     </div>
   );
@@ -657,8 +904,8 @@ function TeamLayout({
     ) : null;
   };
   return (
-    <div className="space-y-7">
-      <div className="grid gap-7 xl:grid-cols-2">
+    <div className="space-y-4">
+      <div className="grid gap-4 xl:grid-cols-2">
         {s("completed_milestones", 1, (data) => (
           <DataRows items={data.items} />
         ))}
@@ -686,9 +933,10 @@ function TeamLayout({
         <MetricTiles
           items={data.items}
           emptyLabels={["Revenue", "Active Project", "Gross Margin", "Burn Rate"]}
+          iconSet="TEAM"
         />
       ))}
-      <div className="grid gap-7 xl:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-2">
         {s("vendor_performance", 8, (data) => (
           <Donut items={data.items} />
         ))}
@@ -703,14 +951,7 @@ function TeamLayout({
         ))}
       </div>
       {s("ceo_notes", 12, (data) => (
-        <div className="flex min-h-[104px] items-center gap-4 rounded-md bg-[#F5F7FF] p-3">
-          <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-white text-[#5B7FF0]">
-            L
-          </span>
-          <p className="text-sm text-[#667085]">
-            {data.items[0]?.detail || data.summary}
-          </p>
-        </div>
+        <ExecutiveNote section={data} />
       ))}
     </div>
   );
@@ -737,7 +978,7 @@ function WeeklyLayout({
     ) : null;
   };
   return (
-    <div className="space-y-7">
+    <div className="space-y-4">
       <Section
         section={{
           id: "executive_summary",
@@ -750,12 +991,29 @@ function WeeklyLayout({
         number={1}
         briefingType="WEEKLY_REVIEW"
       >
-        <div className="rounded-xl bg-[#F5F7FF] p-4">
-          <div className="flex items-center gap-3">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-white text-[#5B7FF0]">
-              <Sparkles className="size-4" />
+        <div className="rounded-2xl bg-[#F5F7FF] p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="flex size-9 items-center justify-center rounded-[10px] bg-[rgba(91,156,213,0.08)]">
+                <Image
+                  src="/executive-briefings/weekly-chat-summary.svg"
+                  alt=""
+                  width={24}
+                  height={24}
+                  aria-hidden="true"
+                />
+              </span>
+              <h3 className="font-medium">Chat Summary</h3>
+            </div>
+            <span className="flex size-9 items-center justify-center rounded-[10px] bg-[rgba(244,190,94,0.15)]">
+              <Image
+                src="/executive-briefings/weekly-warning.svg"
+                alt=""
+                width={24}
+                height={24}
+                aria-hidden="true"
+              />
             </span>
-            <h3 className="font-medium">Chat Summary</h3>
           </div>
           <p className="mt-3 text-sm text-[#667085]">{content.summary}</p>
         </div>
@@ -763,7 +1021,7 @@ function WeeklyLayout({
           {content.headlineMetrics.slice(0, 4).map((metric) => (
             <div
               key={metric.key}
-              className="min-h-[58px] rounded-lg bg-[#F5F7FF] p-3 text-center"
+              className="min-h-[58px] rounded-2xl bg-[#F5F7FF] p-3 text-center"
             >
               <p className="text-xs text-[#667085]">{metric.label}</p>
               <p className="mt-1 font-semibold text-[#5B7FF0]">
@@ -777,9 +1035,10 @@ function WeeklyLayout({
         <MetricTiles
           items={data.items}
           emptyLabels={["Cost Savings", "Hours Saved", "Productivity Lift", "Automation Impact"]}
+          iconSet="WEEKLY_ROI"
         />
       ))}
-      <div className="grid gap-7 xl:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-2">
         {s("sales_revenue", 3, (data) => (
           <DataRows items={data.items} />
         ))}
@@ -788,21 +1047,17 @@ function WeeklyLayout({
         ))}
       </div>
       {s("delivery_milestones", 5, (data) => (
-        <>
-          <DataRows items={data.items} />
-          <div className="mt-3 h-2 rounded-full bg-[#EEF2FF]">
-            <div className="h-full w-3/4 rounded-full bg-[#5B7FF0]" />
-          </div>
-        </>
+        <MilestoneProgress items={data.items} />
       ))}
       {s("marketing_growth", 6, (data) => (
         <MetricTiles
           items={data.items}
           emptyLabels={["Funnel Performance", "Leads Generate", "Campaign result", "Social Mentions", "Brand Momentum"]}
           columns="sm:grid-cols-5"
+          iconSet="WEEKLY_MARKETING"
         />
       ))}
-      <div className="grid gap-7 xl:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-2">
         {s("product_creative", 7, (data) => (
           <DataRows items={data.items} />
         ))}
@@ -820,14 +1075,7 @@ function WeeklyLayout({
         <DataRows items={data.items} />
       ))}
       {s("ceo_notes", 12, (data) => (
-        <div className="flex min-h-[104px] items-center gap-4 rounded-md bg-[#F5F7FF] p-3">
-          <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-white text-[#5B7FF0]">
-            L
-          </span>
-          <p className="text-sm text-[#667085]">
-            {data.items[0]?.detail || data.summary}
-          </p>
-        </div>
+        <ExecutiveNote section={data} />
       ))}
     </div>
   );
