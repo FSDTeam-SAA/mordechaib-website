@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Building2, Mail, Pencil, Phone, PhoneCall, Trash2, Users } from "lucide-react";
+import Image from "next/image";
+import { Building2, ExternalLink, Eye, Linkedin, Mail, MapPin, Pencil, Phone, PhoneCall, Trash2, Users } from "lucide-react";
 import { DeleteCustomerModal } from "./DeleteCustomerModal";
 import { EditCustomerModal } from "./EditCustomerModal";
 import { OutboundCallModal } from "./OutboundCallModal";
+import { ContactDetailsModal } from "./ContactDetailsModal";
 
 export type Customer = {
   id: string;
@@ -14,6 +16,11 @@ export type Customer = {
   phone?: string | null;
   company?: string | null;
   jobTitle?: string | null;
+  avatarUrl?: string | null;
+  location?: string | null;
+  website?: string | null;
+  linkedinUrl?: string | null;
+  leadStatus?: string | null;
   notes?: string | null;
   tags?: string[];
   status?: string;
@@ -30,17 +37,6 @@ const label = (value?: string) => {
   if (!value) return "—";
   const text = value.replaceAll("_", " ").toLowerCase();
   return text.charAt(0).toUpperCase() + text.slice(1);
-};
-const formatDate = (value?: string) => {
-  if (!value) return "—";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? "—"
-    : date.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      });
 };
 const initials = (name: string) =>
   name
@@ -60,27 +56,30 @@ export function CustomerTable({
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null);
   const [callingCustomer, setCallingCustomer] = useState<Customer | null>(null);
+  const [detailsCustomer, setDetailsCustomer] = useState<Customer | null>(null);
   return (
     <section className="overflow-hidden rounded-lg bg-white">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[1040px] table-fixed text-sm">
+        <table className="w-full min-w-[1260px] table-fixed text-sm">
           <colgroup>
-            <col className="w-[22%]" />
-            <col className="w-[17%]" />
-            <col className="w-[20%]" />
-            <col className="w-[15%]" />
-            <col className="w-[9%]" />
-            <col className="w-[9%]" />
-            <col className="w-[8%]" />
+            <col className="w-[260px]" />
+            <col className="w-[200px]" />
+            <col className="w-[220px]" />
+            <col className="w-[130px]" />
+            <col className="w-[170px]" />
+            <col className="w-[230px]" />
+            <col className="w-[120px]" />
+            <col className="w-[130px]" />
           </colgroup>
           <thead>
             <tr className="h-[52px] border-b border-[#E4EAF8] text-left text-[#0E1224]">
               <th className="px-5 font-normal">Customer</th>
+              <th className="px-5 font-normal">Location</th>
+              <th className="px-5 font-normal">Links</th>
+              <th className="px-5 font-normal">Lead Status</th>
               <th className="px-5 font-normal">Phone</th>
               <th className="px-5 font-normal">Company</th>
-              <th className="px-5 font-normal">Tags</th>
               <th className="px-5 text-center font-normal">Status</th>
-              <th className="px-5 text-center font-normal">Added</th>
               <th className="px-5 text-center font-normal">Action</th>
             </tr>
           </thead>
@@ -92,8 +91,10 @@ export function CustomerTable({
               >
                 <td className="px-5">
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#5B7FF0]/10 text-xs font-semibold text-[#5B7FF0]">
-                      {initials(customer.name)}
+                    <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#5B7FF0]/10 text-xs font-semibold text-[#5B7FF0]">
+                      {customer.avatarUrl ? (
+                        <Image src={customer.avatarUrl} alt={customer.name} fill unoptimized className="object-cover" />
+                      ) : initials(customer.name)}
                     </span>
                     <div className="min-w-0">
                       <p className="truncate font-medium" title={customer.name}>
@@ -107,6 +108,21 @@ export function CustomerTable({
                       </p>
                     </div>
                   </div>
+                </td>
+                <td className="px-5">
+                  <span className="flex items-start gap-2 text-[#44506F]">
+                    <MapPin className="mt-0.5 size-4 shrink-0 text-[#8B93B8]" />
+                    <span className="line-clamp-2" title={customer.location ?? ""}>{customer.location || "—"}</span>
+                  </span>
+                </td>
+                <td className="px-5">
+                  <div className="space-y-2 text-xs">
+                    {customer.website ? <a href={customer.website} target="_blank" rel="noreferrer" title={customer.website} className="flex items-center gap-2 text-[#5B7FF0] hover:underline"><ExternalLink className="size-3.5 shrink-0" /><span className="truncate">{customer.website}</span></a> : <span className="text-[#8B93B8]">No website</span>}
+                    {customer.linkedinUrl ? <a href={customer.linkedinUrl} target="_blank" rel="noreferrer" title={customer.linkedinUrl} className="flex items-center gap-2 text-[#3974C6] hover:underline"><Linkedin className="size-3.5 shrink-0" /><span className="truncate">{customer.linkedinUrl}</span></a> : <p className="text-[#8B93B8]">No LinkedIn</p>}
+                  </div>
+                </td>
+                <td className="px-5">
+                  <span className="inline-flex rounded-full bg-[#F59E0B]/10 px-2.5 py-1 text-xs font-medium text-[#D48605]">{label(customer.leadStatus ?? undefined)}</span>
                 </td>
                 <td className="px-5">
                   <span className="flex items-center gap-2 text-[#44506F]">
@@ -129,22 +145,6 @@ export function CustomerTable({
                     {customer.jobTitle || "No job title"}
                   </p>
                 </td>
-                <td className="px-5">
-                  <div className="flex max-h-14 flex-wrap gap-1.5 overflow-hidden">
-                    {customer.tags?.length ? (
-                      customer.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-full bg-[#5B7FF0]/10 px-2 py-1 text-[11px] font-medium text-[#5B7FF0]"
-                        >
-                          {tag}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-[#8B93B8]">—</span>
-                    )}
-                  </div>
-                </td>
                 <td className="px-5 text-center">
                   <span
                     className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${statusStyles[customer.status ?? ""] ?? "bg-[#8B93B8]/10 text-[#64748B]"}`}
@@ -152,11 +152,9 @@ export function CustomerTable({
                     {label(customer.status)}
                   </span>
                 </td>
-                <td className="px-5 text-center text-xs text-[#65708D]">
-                  {formatDate(customer.createdAt)}
-                </td>
                 <td className="px-5">
                   <div className="flex items-center justify-center gap-2">
+                    <button type="button" onClick={() => setDetailsCustomer(customer)} aria-label={`View ${customer.name} details`} className="flex size-8 items-center justify-center rounded-lg bg-[#8B5CF6]/10 text-[#8B5CF6] transition hover:bg-[#8B5CF6] hover:text-white"><Eye className="size-4" /></button>
                     {customer.phone ? (
                       <button type="button" onClick={() => setCallingCustomer(customer)} aria-label={`Call ${customer.name}`} className="flex size-8 items-center justify-center rounded-lg bg-[#10B981]/10 text-[#10B981] transition hover:bg-[#10B981] hover:text-white"><PhoneCall className="size-4" /></button>
                     ) : (
@@ -187,6 +185,7 @@ export function CustomerTable({
       <EditCustomerModal customerId={editingCustomer?.id ?? null} open={Boolean(editingCustomer)} onOpenChange={(open) => !open && setEditingCustomer(null)} onUpdated={onChanged} />
       <DeleteCustomerModal customerId={deletingCustomer?.id ?? null} customerName={deletingCustomer?.name} open={Boolean(deletingCustomer)} onOpenChange={(open) => !open && setDeletingCustomer(null)} onDeleted={onChanged} />
       <OutboundCallModal open={Boolean(callingCustomer)} onOpenChange={(open) => !open && setCallingCustomer(null)} customerName={callingCustomer?.name} initialClientPhone={callingCustomer?.phone ?? ""} />
+      <ContactDetailsModal customer={detailsCustomer} open={Boolean(detailsCustomer)} onOpenChange={(open) => !open && setDetailsCustomer(null)} onCall={(c) => { setDetailsCustomer(null); setCallingCustomer(c); }} />
     </section>
   );
 }

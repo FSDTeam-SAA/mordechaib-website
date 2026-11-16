@@ -18,7 +18,6 @@ import {
   Menu,
   Settings,
   Sparkles,
-  UserRoundCog,
   Users,
   X,
 } from "lucide-react";
@@ -30,11 +29,6 @@ const navigation = [
     name: "Call Intelligence",
     href: "/dashboard/call-intelligence",
     icon: Headphones,
-  },
-    {
-    name: "Customer ",
-    href: "/dashboard/customer",
-    icon: UserRoundCog,
   },
   {
     name: "Ai Chief of Staff",

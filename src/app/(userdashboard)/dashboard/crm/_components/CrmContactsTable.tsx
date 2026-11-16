@@ -158,6 +158,8 @@ const hiddenColumnKeys = new Set([
   "rawPayload",
   "archived",
   "associations",
+  "tags",
+  "tag",
 ]);
 const preferredColumnKeys = [
   "name",
