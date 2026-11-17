@@ -1,5 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { getJwtExpirationTime, isJwtExpired } from "./auth-token";
 
 type LoginUser = {
   id: string;
@@ -83,7 +84,17 @@ export const authOptions: NextAuthOptions = {
             throw new Error(response?.message || "Login failed");
           }
 
-          const { user, accessToken, refreshToken, refreshTokenExpiresAt } = response.data;
+          const {
+            user,
+            accessToken,
+            refreshToken,
+            refreshTokenExpiresAt,
+            accessTokenExpiresIn,
+          } = response.data;
+
+          const decodedExp = getJwtExpirationTime(accessToken);
+          const accessTokenExpiresAt =
+            decodedExp ?? Date.now() + (accessTokenExpiresIn || 3600) * 1000;
 
           return {
             id: user.id,
@@ -100,6 +111,7 @@ export const authOptions: NextAuthOptions = {
             refreshToken,
             refreshTokenExpiresAt,
             accessToken,
+            accessTokenExpiresAt,
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -132,12 +144,23 @@ export const authOptions: NextAuthOptions = {
         token.refreshToken = user.refreshToken;
         token.refreshTokenExpiresAt = user.refreshTokenExpiresAt;
         token.accessToken = user.accessToken;
+        token.accessTokenExpiresAt = user.accessTokenExpiresAt;
+      }
+
+      // Check if access token is expired
+      const accessToken = token.accessToken as string | undefined;
+      if (accessToken && isJwtExpired(accessToken)) {
+        token.error = "AccessTokenExpired";
       }
 
       return token;
     },
 
     async session({ session, token }) {
+      if (token.error === "AccessTokenExpired") {
+        session.error = "AccessTokenExpired";
+      }
+
       session.user = {
         id: token.id,
         organizationId: token.organizationId,
@@ -153,6 +176,7 @@ export const authOptions: NextAuthOptions = {
         refreshToken: token.refreshToken,
         refreshTokenExpiresAt: token.refreshTokenExpiresAt,
         accessToken: token.accessToken,
+        accessTokenExpiresAt: token.accessTokenExpiresAt as number | undefined,
       };
 
       return session;

@@ -233,7 +233,8 @@ const PricingSection = () => {
                     <p className="border-b border-[#E5E8F2] pb-5 text-sm leading-relaxed text-[#0E1224]">
                       Then <span className="font-semibold">$0.04</span> per AI
                       action · <span className="font-semibold">$0.20</span> per
-                      call minute
+                      call minute · <span className="font-semibold">$1.00</span> per
+                      meeting hour
                     </p>
                   )}
                   {groups.map((group) => (

@@ -13,6 +13,7 @@ type AuthUserFields = {
   isEmailVerified: boolean;
   profileImage: string | null;
   accessToken: string;
+  accessTokenExpiresAt?: number;
   refreshToken: string;
   refreshTokenExpiresAt: string;
 };
@@ -20,6 +21,7 @@ type AuthUserFields = {
 declare module "next-auth" {
   interface Session {
     user: AuthUserFields & DefaultSession["user"];
+    error?: string;
   }
 
   interface User {
@@ -35,6 +37,7 @@ declare module "next-auth" {
     isEmailVerified: boolean;
     profileImage: string | null;
     accessToken: string;
+    accessTokenExpiresAt?: number;
     refreshToken: string;
     refreshTokenExpiresAt: string;
   }
@@ -54,7 +57,9 @@ declare module "next-auth/jwt" {
     isEmailVerified: boolean;
     profileImage: string | null;
     accessToken: string;
+    accessTokenExpiresAt?: number;
     refreshToken: string;
     refreshTokenExpiresAt: string;
+    error?: string;
   }
 }

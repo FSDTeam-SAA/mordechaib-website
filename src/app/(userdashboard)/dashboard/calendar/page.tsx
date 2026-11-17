@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { AlertCircle, RefreshCw } from "lucide-react";
@@ -12,6 +13,7 @@ import { CalendarStats } from "./_components/CalendarStats";
 import { ConflictIntegration } from "./_components/ConflictIntegration";
 import { MeetingsTable } from "./_components/MeetingsTable";
 import { PriorityAutomation } from "./_components/PriorityAutomation";
+import { NewMeetingModal } from "./_components/NewMeetingModal";
 import type { CalendarDashboard, CalendarFilters } from "./_components/types";
 
 type DashboardResponse = { success?: boolean; data?: CalendarDashboard; message?: string | string[] };
@@ -48,10 +50,44 @@ function messageOf(result: { message?: string | string[] }) {
   return Array.isArray(result.message) ? result.message.join(", ") : result.message || "Unable to load calendar dashboard.";
 }
 
-export default function CalendarPage() {
+function CalendarContent() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const isNewMeetingParam =
+    searchParams.get("newMeeting") === "true" ||
+    searchParams.get("action") === "new-meeting";
+  const initialEmail = searchParams.get("email") || "";
+  const initialName = searchParams.get("name") || "";
+  const initialTitleParam =
+    searchParams.get("title") ||
+    (initialName ? `Meeting with ${initialName}` : "");
+
+  const [isRedirectModalOpen, setIsRedirectModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isNewMeetingParam) {
+      setIsRedirectModalOpen(true);
+    }
+  }, [isNewMeetingParam]);
+
+  const handleCloseRedirectModal = (nextOpen: boolean) => {
+    setIsRedirectModalOpen(nextOpen);
+    if (!nextOpen && isNewMeetingParam) {
+      router.replace(pathname, { scroll: false });
+    }
+  };
+
   const { data: session, status } = useSession();
   const accessToken = session?.user.accessToken;
-  const [filters, setFilters] = useState<CalendarFilters>(() => ({ date: new Date(), timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC", bufferMinutes: 15, upcomingLimit: 8, conflictLimit: 20 }));
+  const [filters, setFilters] = useState<CalendarFilters>(() => ({
+    date: new Date(),
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+    bufferMinutes: 15,
+    upcomingLimit: 8,
+    conflictLimit: 20,
+  }));
   const [selectedRangeDate, setSelectedRangeDate] = useState<Date | null>(null);
   const [calendarProvider, setCalendarProvider] = useState<"GOOGLE" | "OUTLOOK">("GOOGLE");
   const range = selectedRangeDate ? dayRange(selectedRangeDate) : monthRange(filters.date);
@@ -91,12 +127,30 @@ export default function CalendarPage() {
   }, [connectionsQuery.data]);
 
   const dashboardQuery = useQuery({
-    queryKey: ["calendar-dashboard", range.from, range.to, filters.timezone, filters.bufferMinutes, filters.upcomingLimit, filters.conflictLimit],
+    queryKey: [
+      "calendar-dashboard",
+      range.from,
+      range.to,
+      filters.timezone,
+      filters.bufferMinutes,
+      filters.upcomingLimit,
+      filters.conflictLimit,
+    ],
     enabled: status === "authenticated" && Boolean(accessToken),
     queryFn: async () => {
       if (!accessToken) throw new Error("Your session is missing. Please sign in again.");
-      const params = new URLSearchParams({ from: range.from, to: range.to, timezone: filters.timezone, bufferMinutes: String(filters.bufferMinutes), upcomingLimit: String(filters.upcomingLimit), conflictLimit: String(filters.conflictLimit) });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/calendar/dashboard?${params}`, { headers: { Authorization: `Bearer ${accessToken}` } });
+      const params = new URLSearchParams({
+        from: range.from,
+        to: range.to,
+        timezone: filters.timezone,
+        bufferMinutes: String(filters.bufferMinutes),
+        upcomingLimit: String(filters.upcomingLimit),
+        conflictLimit: String(filters.conflictLimit),
+      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/calendar/dashboard?${params}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
       const result = (await response.json().catch(() => ({}))) as DashboardResponse;
       if (!response.ok || !result.success || !result.data) throw new Error(messageOf(result));
       return result.data;
@@ -118,16 +172,23 @@ export default function CalendarPage() {
           body: JSON.stringify({ provider, from: range.from, to: range.to }),
         },
       );
-      const result = (await response.json().catch(() => ({}))) as { success?: boolean; message?: string | string[] };
+      const result = (await response.json().catch(() => ({}))) as {
+        success?: boolean;
+        message?: string | string[];
+      };
       if (!response.ok || result.success === false) {
         const message = Array.isArray(result.message) ? result.message.join(", ") : result.message;
-        throw new Error(message || `Unable to sync ${calendarProvider === "OUTLOOK" ? "Outlook" : "Google"} Calendar.`);
+        throw new Error(
+          message || `Unable to sync ${calendarProvider === "OUTLOOK" ? "Outlook" : "Google"} Calendar.`,
+        );
       }
       return result;
     },
     onSuccess: async (result) => {
       const message = Array.isArray(result.message) ? result.message.join(", ") : result.message;
-      toast.success(message || `${calendarProvider === "OUTLOOK" ? "Outlook" : "Google"} Calendar synced successfully.`);
+      toast.success(
+        message || `${calendarProvider === "OUTLOOK" ? "Outlook" : "Google"} Calendar synced successfully.`,
+      );
       await dashboardQuery.refetch();
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : "Unable to sync calendar."),
@@ -141,7 +202,10 @@ export default function CalendarPage() {
         headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
         body: JSON.stringify({ provider: provider === "OUTLOOK" ? "OUTLOOK_CALENDAR" : "GOOGLE_CALENDAR" }),
       });
-      const result = (await response.json().catch(() => ({}))) as { success?: boolean; message?: string | string[] };
+      const result = (await response.json().catch(() => ({}))) as {
+        success?: boolean;
+        message?: string | string[];
+      };
       if (!response.ok || result.success === false) {
         const message = Array.isArray(result.message) ? result.message.join(", ") : result.message;
         throw new Error(message || "Unable to update the default calendar.");
@@ -163,9 +227,47 @@ export default function CalendarPage() {
     },
   });
 
-  if (status === "loading" || dashboardQuery.isPending || connectionsQuery.isPending) return <div className="p-4 pb-10"><CalendarDashboardSkeleton /></div>;
+  if (status === "loading" || dashboardQuery.isPending || connectionsQuery.isPending) {
+    return (
+      <div className="p-4 pb-10">
+        <CalendarDashboardSkeleton />
+        {isRedirectModalOpen && (
+          <NewMeetingModal
+            open={isRedirectModalOpen}
+            onOpenChange={handleCloseRedirectModal}
+            initialInvitees={initialEmail ? [initialEmail] : []}
+            initialTitle={initialTitleParam}
+            onScheduled={() => {
+              handleCloseRedirectModal(false);
+              void dashboardQuery.refetch();
+            }}
+          />
+        )}
+      </div>
+    );
+  }
 
-  if (dashboardQuery.isError || !dashboardQuery.data) return <div className="p-4 pb-10"><div className="flex min-h-[360px] flex-col items-center justify-center rounded-[12px] bg-white p-6 text-center"><AlertCircle className="size-10 text-[#EF4444]" /><h2 className="mt-3 text-lg font-semibold">Calendar could not be loaded</h2><p className="mt-1 max-w-md text-sm text-[#8B93B8]">{dashboardQuery.error instanceof Error ? dashboardQuery.error.message : "Please try again."}</p><button type="button" onClick={() => void dashboardQuery.refetch()} className="mt-5 flex h-10 items-center gap-2 rounded-[8px] bg-[#5B7FF0] px-5 text-sm text-white"><RefreshCw className="size-4" />Try again</button></div></div>;
+  if (dashboardQuery.isError || !dashboardQuery.data) {
+    return (
+      <div className="p-4 pb-10">
+        <div className="flex min-h-[360px] flex-col items-center justify-center rounded-[12px] bg-white p-6 text-center">
+          <AlertCircle className="size-10 text-[#EF4444]" />
+          <h2 className="mt-3 text-lg font-semibold">Calendar could not be loaded</h2>
+          <p className="mt-1 max-w-md text-sm text-[#8B93B8]">
+            {dashboardQuery.error instanceof Error ? dashboardQuery.error.message : "Please try again."}
+          </p>
+          <button
+            type="button"
+            onClick={() => void dashboardQuery.refetch()}
+            className="mt-5 flex h-10 items-center gap-2 rounded-[8px] bg-[#5B7FF0] px-5 text-sm text-white"
+          >
+            <RefreshCw className="size-4" />
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const dashboard = dashboardQuery.data;
   const providerMeetings = dashboard.items.filter((meeting) => {
@@ -182,15 +284,83 @@ export default function CalendarPage() {
     cancelled: providerMeetings.filter((meeting) => meeting.status === "CANCELLED").length,
     failed: providerMeetings.filter((meeting) => meeting.status === "FAILED").length,
   };
-  return <div className="space-y-4 p-4 pb-10">
-    <CalendarStats summary={providerSummary} />
-    <section className="grid grid-cols-12 items-start gap-4"><div className="col-span-12 xl:col-span-9"><CalendarBoard meetings={providerMeetings} filters={filters} provider={calendarProvider} onProviderChange={(provider) => { if (!defaultCalendarMutation.isPending && provider !== calendarProvider) defaultCalendarMutation.mutate(provider); }} onFiltersChange={(value) => { setFilters(value); setSelectedRangeDate(null); }} onDateSelect={(date) => { setFilters((current) => ({ ...current, date })); setSelectedRangeDate(date); }} /></div><div className="col-span-12 xl:col-span-3"><CalendarSidebar meetings={providerMeetings} upcoming={dashboard.upcoming.filter((meeting) => providerMeetings.some((item) => item.id === meeting.id))} selectedDate={filters.date} timezone={dashboard.timezone} onRefresh={() => syncMutation.mutate()} isRefreshing={syncMutation.isPending || dashboardQuery.isFetching} /></div></section>
-    <ConflictIntegration conflicts={dashboard.conflicts} taskAndCalls={dashboard.taskAndCalls} timezone={dashboard.timezone} />
-    <PriorityAutomation priority={dashboard.priority} automation={dashboard.automation} />
-    <MeetingsTable
-      meetings={providerMeetings}
-      timezone={dashboard.timezone}
-      onMeetingUpdated={() => dashboardQuery.refetch()}
-    />
-  </div>;
+
+  return (
+    <div className="space-y-4 p-4 pb-10">
+      <CalendarStats summary={providerSummary} />
+      <section className="grid grid-cols-12 items-start gap-4">
+        <div className="col-span-12 xl:col-span-9">
+          <CalendarBoard
+            meetings={providerMeetings}
+            filters={filters}
+            provider={calendarProvider}
+            onProviderChange={(provider) => {
+              if (!defaultCalendarMutation.isPending && provider !== calendarProvider)
+                defaultCalendarMutation.mutate(provider);
+            }}
+            onFiltersChange={(value) => {
+              setFilters(value);
+              setSelectedRangeDate(null);
+            }}
+            onDateSelect={(date) => {
+              setFilters((current) => ({ ...current, date }));
+              setSelectedRangeDate(date);
+            }}
+          />
+        </div>
+        <div className="col-span-12 xl:col-span-3">
+          <CalendarSidebar
+            meetings={providerMeetings}
+            upcoming={dashboard.upcoming.filter((meeting) =>
+              providerMeetings.some((item) => item.id === meeting.id),
+            )}
+            selectedDate={filters.date}
+            timezone={dashboard.timezone}
+            onRefresh={() => syncMutation.mutate()}
+            isRefreshing={syncMutation.isPending || dashboardQuery.isFetching}
+          />
+        </div>
+      </section>
+      <ConflictIntegration
+        conflicts={dashboard.conflicts}
+        taskAndCalls={dashboard.taskAndCalls}
+        timezone={dashboard.timezone}
+      />
+      <PriorityAutomation
+        priority={dashboard.priority}
+        automation={dashboard.automation}
+      />
+      <MeetingsTable
+        meetings={providerMeetings}
+        timezone={dashboard.timezone}
+        onMeetingUpdated={() => dashboardQuery.refetch()}
+      />
+      {isRedirectModalOpen && (
+        <NewMeetingModal
+          open={isRedirectModalOpen}
+          onOpenChange={handleCloseRedirectModal}
+          initialInvitees={initialEmail ? [initialEmail] : []}
+          initialTitle={initialTitleParam}
+          onScheduled={() => {
+            handleCloseRedirectModal(false);
+            void dashboardQuery.refetch();
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+export default function CalendarPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-4 pb-10">
+          <CalendarDashboardSkeleton />
+        </div>
+      }
+    >
+      <CalendarContent />
+    </Suspense>
+  );
 }
