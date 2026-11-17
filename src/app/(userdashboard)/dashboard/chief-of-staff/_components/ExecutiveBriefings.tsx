@@ -32,8 +32,11 @@ type BriefingItem = {
   detail?: string;
   status?: string;
   severity?: "INFO" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  direction?: "UP" | "DOWN" | "FLAT" | "UNKNOWN";
   value?: string | number;
   unit?: string;
+  sourceRefs?: string[];
+  recommendationOnly?: boolean;
   proposalId?: string;
   proposalRecordId?: string;
   proposalAction?: "APPROVE" | "RETRY";
@@ -60,6 +63,9 @@ type HeadlineMetric = {
   label: string;
   value: string | number;
   unit: string;
+  direction?: "UP" | "DOWN" | "FLAT" | "UNKNOWN";
+  severity?: "INFO" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  sourceRefs?: string[];
 };
 
 type ExecutiveBriefing = {
@@ -201,13 +207,25 @@ function labelOf(value: string) {
 }
 
 function itemValue(item: BriefingItem) {
-  if (item.value === undefined) {
-    return item.status ? labelOf(item.status) : undefined;
+  return valueWithUnit(item.value, item.unit, item.status);
+}
+
+function valueWithUnit(
+  value: string | number | undefined,
+  unit?: string,
+  fallbackStatus?: string,
+) {
+  if (value === undefined) {
+    return fallbackStatus ? labelOf(fallbackStatus) : undefined;
   }
-  if (!item.unit || item.unit === "TEXT") return String(item.value);
-  if (item.unit === "PERCENT") return `${item.value}%`;
-  if (item.unit === "CURRENCY_USD") return `$${item.value}`;
-  return `${item.value} ${labelOf(item.unit)}`;
+  if (!unit || unit === "TEXT") return String(value);
+  if (unit === "PERCENT") return `${value}%`;
+  if (unit === "CURRENCY_USD") return `$${value}`;
+  return `${value} ${labelOf(unit)}`;
+}
+
+function hasMetricValues(items: BriefingItem[]) {
+  return items.some((item) => item.value !== undefined);
 }
 
 function agentAvatarFor(name: string) {
@@ -837,7 +855,11 @@ function TodayLayout({
         </div>
       ))}
       {section("overnight_movements", 2, (data) => (
-        <AgentCards items={data.items} />
+        data.kind === "AGENT_CARDS" ? (
+          <AgentCards items={data.items} />
+        ) : (
+          <DataRows items={data.items} />
+        )
       ))}
       {section("ceo_action_items", 3, (data) => (
         <ActionTiles
@@ -847,7 +869,11 @@ function TodayLayout({
         />
       ))}
       {section("pipeline_revenue", 4, (data) => (
-        <PriorityCards items={data.items} />
+        data.kind === "METRIC_GRID" ? (
+          <MetricTiles items={data.items} />
+        ) : (
+          <PriorityCards items={data.items} />
+        )
       ))}
       <div className="grid gap-4 xl:grid-cols-2">
         {section("pipeline_revenue", 5, (data) => (
@@ -858,20 +884,36 @@ function TodayLayout({
         ))}
       </div>
       {section("operational_status", 7, (data) => (
-        <DataRows items={data.items} />
+        hasMetricValues(data.items) ? (
+          <MetricTiles items={data.items} />
+        ) : (
+          <DataRows items={data.items} />
+        )
       ))}
       {section("financial_pulse", 8, (data) => (
-        <Funnel items={data.items} />
+        hasMetricValues(data.items) && data.kind === "METRIC_GRID" ? (
+          <MetricTiles items={data.items} />
+        ) : (
+          <Funnel items={data.items} />
+        )
       ))}
       <div className="grid gap-4 xl:grid-cols-3">
         {section("vendor_accountability", 9, (data) => (
           <DataRows items={data.items} />
         ))}
         {section("marketing_growth", 10, (data) => (
-          <DataRows items={data.items} />
+          data.kind === "METRIC_GRID" ? (
+            <MetricTiles items={data.items} />
+          ) : (
+            <DataRows items={data.items} />
+          )
         ))}
         {section("design_status", 11, (data) => (
-          <DataRows items={data.items} />
+          data.kind === "PROGRESS" ? (
+            <MilestoneProgress items={data.items} />
+          ) : (
+            <DataRows items={data.items} />
+          )
         ))}
       </div>
       {section("ceo_notes", 12, (data) => (
@@ -1025,7 +1067,7 @@ function WeeklyLayout({
             >
               <p className="text-xs text-[#667085]">{metric.label}</p>
               <p className="mt-1 font-semibold text-[#5B7FF0]">
-                {metric.unit === "PERCENT" ? `${metric.value}%` : metric.value}
+                {valueWithUnit(metric.value, metric.unit)}
               </p>
             </div>
           ))}
@@ -1062,7 +1104,11 @@ function WeeklyLayout({
           <DataRows items={data.items} />
         ))}
         {s("ai_system_health", 8, (data) => (
-          <DataRows items={data.items} />
+          hasMetricValues(data.items) ? (
+            <MetricTiles items={data.items} />
+          ) : (
+            <DataRows items={data.items} />
+          )
         ))}
         {s("financial_movements", 9, (data) => (
           <DataRows items={data.items} />
