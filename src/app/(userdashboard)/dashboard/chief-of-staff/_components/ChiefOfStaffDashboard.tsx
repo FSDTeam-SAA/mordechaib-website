@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 import { htmlToPlainText } from "@/lib/sanitizeHtml";
 import { AgentStatusBar } from "./AgentStatusBar";
 import { ChiefNavigation, ChiefTab } from "./ChiefNavigation";
@@ -18,6 +19,12 @@ type ApiEnvelope<T> = {
 type ConversationList = {
   items: ChiefConversation[];
   pagination: { page: number; pages: number };
+};
+type DeleteConversationResponse = {
+  conversationId: string;
+  deleted: boolean;
+  deletedMessageCount?: number;
+  cleanupComplete?: boolean;
 };
 type MessagePreviewPayload = { items: Array<{ content?: string | null }> };
 
@@ -191,6 +198,44 @@ export function ChiefOfStaffDashboard() {
     loadConversations,
   ]);
 
+  const deleteConversation = useCallback(
+    async (conversationId: string) => {
+      if (!accessToken)
+        throw new Error("Your session has expired. Please sign in again.");
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/messages/conversations/${encodeURIComponent(conversationId)}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      const result = (await response
+        .json()
+        .catch(() => ({}))) as ApiEnvelope<DeleteConversationResponse>;
+      if (!response.ok || !result.success)
+        throw new Error(apiError(result, "Unable to delete this conversation."));
+      if (!result.data?.deleted)
+        throw new Error(
+          "This conversation was not deleted. Please try again.",
+        );
+
+      setConversations((current) =>
+        current.filter((conversation) => conversation._id !== conversationId),
+      );
+      setActiveConversationId((current) =>
+        current === conversationId ? null : current,
+      );
+      toast.success("Conversation deleted", {
+        description:
+          result.data.cleanupComplete === false
+            ? "The conversation was removed. Some attachments are still being cleaned up."
+            : "The conversation and its messages have been removed.",
+      });
+    },
+    [accessToken],
+  );
+
   function useQuickAction(action: string) {
     // A changing id lets the same action be selected again after editing it.
     setComposerDraft({ id: Date.now(), text: action });
@@ -212,6 +257,7 @@ export function ChiefOfStaffDashboard() {
               error={conversationError}
               onNewChat={startNewChat}
               onSelectConversation={setActiveConversationId}
+              onDeleteConversation={deleteConversation}
               onLoadMore={loadMoreConversations}
               onQuickAction={useQuickAction}
             />
