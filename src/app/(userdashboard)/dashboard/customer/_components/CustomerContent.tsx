@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { RefreshCw } from "lucide-react";
 import { AddCustomerModal } from "./AddCustomerModal";
+import { ImportCustomerModal } from "./ImportCustomerModal";
+import { ExportCustomerButton } from "./ExportCustomerButton";
 import { CustomerTableSkeleton } from "./CustomerTableSkeleton";
 import { Customer, CustomerTable } from "./CustomerTable";
 
@@ -69,6 +71,8 @@ export function CustomerContent() {
           <p className="mt-1 text-sm text-[#8B93B8]">View and manage all of your customer contacts.</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          <ExportCustomerButton customers={customers} />
+          <ImportCustomerModal onImported={() => setRequestKey((key) => key + 1)} />
           <AddCustomerModal onCreated={() => setRequestKey((key) => key + 1)} />
         </div>
       </header>

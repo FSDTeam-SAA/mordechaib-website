@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Building2, ExternalLink, Eye, Linkedin, Mail, MapPin, Pencil, Phone, PhoneCall, Trash2, Users } from "lucide-react";
+import Link from "next/link";
+import { Building2, ExternalLink, Eye, Linkedin, Mail, MapPin, Phone, Trash2, Users } from "lucide-react";
 import { DeleteCustomerModal } from "./DeleteCustomerModal";
-import { EditCustomerModal } from "./EditCustomerModal";
-import { OutboundCallModal } from "./OutboundCallModal";
-import { ContactDetailsModal } from "./ContactDetailsModal";
 
 export type Customer = {
   id: string;
@@ -53,10 +51,7 @@ export function CustomerTable({
   customers: Customer[];
   onChanged: () => void;
 }) {
-  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null);
-  const [callingCustomer, setCallingCustomer] = useState<Customer | null>(null);
-  const [detailsCustomer, setDetailsCustomer] = useState<Customer | null>(null);
   return (
     <section className="overflow-hidden rounded-lg bg-white">
       <div className="overflow-x-auto">
@@ -69,7 +64,7 @@ export function CustomerTable({
             <col className="w-[170px]" />
             <col className="w-[230px]" />
             <col className="w-[120px]" />
-            <col className="w-[130px]" />
+            <col className="w-[150px]" />
           </colgroup>
           <thead>
             <tr className="h-[52px] border-b border-[#E4EAF8] text-left text-[#0E1224]">
@@ -154,14 +149,21 @@ export function CustomerTable({
                 </td>
                 <td className="px-5">
                   <div className="flex items-center justify-center gap-2">
-                    <button type="button" onClick={() => setDetailsCustomer(customer)} aria-label={`View ${customer.name} details`} className="flex size-8 items-center justify-center rounded-lg bg-[#8B5CF6]/10 text-[#8B5CF6] transition hover:bg-[#8B5CF6] hover:text-white"><Eye className="size-4" /></button>
-                    {customer.phone ? (
-                      <button type="button" onClick={() => setCallingCustomer(customer)} aria-label={`Call ${customer.name}`} className="flex size-8 items-center justify-center rounded-lg bg-[#10B981]/10 text-[#10B981] transition hover:bg-[#10B981] hover:text-white"><PhoneCall className="size-4" /></button>
-                    ) : (
-                      <button type="button" disabled aria-label={`${customer.name} has no phone number`} className="flex size-8 cursor-not-allowed items-center justify-center rounded-lg bg-[#8B93B8]/10 text-[#8B93B8] opacity-50"><PhoneCall className="size-4" /></button>
-                    )}
-                    <button type="button" onClick={() => setEditingCustomer(customer)} aria-label={`Edit ${customer.name}`} className="flex size-8 items-center justify-center rounded-lg bg-[#5B7FF0]/10 text-[#5B7FF0] transition hover:bg-[#5B7FF0] hover:text-white"><Pencil className="size-4" /></button>
-                    <button type="button" onClick={() => setDeletingCustomer(customer)} aria-label={`Delete ${customer.name}`} className="flex size-8 items-center justify-center rounded-lg bg-[#EF4444]/10 text-[#EF4444] transition hover:bg-[#EF4444] hover:text-white"><Trash2 className="size-4" /></button>
+                    <Link
+                      href={`/dashboard/crm/${customer.id}`}
+                      className="inline-flex h-8 items-center gap-1.5 rounded-full border border-[#84A9FF] bg-[#EEF3FF] px-3.5 text-xs font-medium text-[#2563EB] transition hover:bg-[#DCE6FA]"
+                    >
+                      <Eye className="size-3.5 shrink-0 text-[#2563EB]" />
+                      <span className="underline underline-offset-2">Details</span>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => setDeletingCustomer(customer)}
+                      aria-label={`Delete ${customer.name}`}
+                      className="flex size-8 items-center justify-center rounded-lg bg-[#EF4444]/10 text-[#EF4444] transition hover:bg-[#EF4444] hover:text-white"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -182,10 +184,13 @@ export function CustomerTable({
           </div>
         )}
       </div>
-      <EditCustomerModal customerId={editingCustomer?.id ?? null} open={Boolean(editingCustomer)} onOpenChange={(open) => !open && setEditingCustomer(null)} onUpdated={onChanged} />
-      <DeleteCustomerModal customerId={deletingCustomer?.id ?? null} customerName={deletingCustomer?.name} open={Boolean(deletingCustomer)} onOpenChange={(open) => !open && setDeletingCustomer(null)} onDeleted={onChanged} />
-      <OutboundCallModal open={Boolean(callingCustomer)} onOpenChange={(open) => !open && setCallingCustomer(null)} customerName={callingCustomer?.name} initialClientPhone={callingCustomer?.phone ?? ""} />
-      <ContactDetailsModal customer={detailsCustomer} open={Boolean(detailsCustomer)} onOpenChange={(open) => !open && setDetailsCustomer(null)} onCall={(c) => { setDetailsCustomer(null); setCallingCustomer(c); }} />
+      <DeleteCustomerModal
+        customerId={deletingCustomer?.id ?? null}
+        customerName={deletingCustomer?.name}
+        open={Boolean(deletingCustomer)}
+        onOpenChange={(open) => !open && setDeletingCustomer(null)}
+        onDeleted={onChanged}
+      />
     </section>
   );
 }

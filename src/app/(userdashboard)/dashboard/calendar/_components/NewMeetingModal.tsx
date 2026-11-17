@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, ReactNode, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -48,16 +48,54 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-export function NewMeetingModal({ children }: { children: ReactNode }) {
+type NewMeetingModalProps = {
+  children?: ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  initialInvitees?: string[];
+  initialTitle?: string;
+  onScheduled?: () => void;
+};
+
+export function NewMeetingModal({
+  children,
+  open: controlledOpen,
+  onOpenChange: setControlledOpen,
+  initialInvitees,
+  initialTitle = "",
+  onScheduled,
+}: NewMeetingModalProps) {
   const { data: session } = useSession();
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
+  const handleOpenChange = (next: boolean) => {
+    if (isControlled) {
+      setControlledOpen?.(next);
+    } else {
+      setUncontrolledOpen(next);
+    }
+  };
+
+  const [title, setTitle] = useState(initialTitle);
   const [sendBot, setSendBot] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [invitees, setInvitees] = useState<string[]>([]);
+  const [invitees, setInvitees] = useState<string[]>(() => initialInvitees || []);
   const [inviteeInput, setInviteeInput] = useState("");
   const [timezone] = useState(
     () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
   );
+
+  useEffect(() => {
+    if (open) {
+      if (initialInvitees && initialInvitees.length > 0) {
+        setInvitees(Array.from(new Set(initialInvitees.map((e) => e.trim().toLowerCase()).filter(Boolean))));
+      }
+      if (initialTitle) {
+        setTitle(initialTitle);
+      }
+    }
+  }, [open, initialInvitees, initialTitle]);
 
   const parseEmails = (value: string) =>
     value
@@ -165,8 +203,10 @@ export function NewMeetingModal({ children }: { children: ReactNode }) {
       form.reset();
       setInvitees([]);
       setInviteeInput("");
+      setTitle("");
       setSendBot(true);
-      setOpen(false);
+      handleOpenChange(false);
+      onScheduled?.();
       toast.success(getResponseMessage(result, "Meeting scheduled successfully."));
     } catch (error) {
       toast.error(
@@ -180,8 +220,8 @@ export function NewMeetingModal({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      {children ? <DialogTrigger asChild>{children}</DialogTrigger> : null}
       <DialogContent
         data-lenis-prevent
         showClose={false}
@@ -214,6 +254,8 @@ export function NewMeetingModal({ children }: { children: ReactNode }) {
                 <input
                   required
                   name="title"
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
                   placeholder="e.g. Weekly project review"
                   className={fieldClassName}
                 />
@@ -267,6 +309,7 @@ export function NewMeetingModal({ children }: { children: ReactNode }) {
                   required
                   type="date"
                   name="date"
+                  defaultValue={new Date().toISOString().split("T")[0]}
                   className={fieldClassName}
                 />
               </Field>
@@ -275,6 +318,7 @@ export function NewMeetingModal({ children }: { children: ReactNode }) {
                   required
                   type="time"
                   name="time"
+                  defaultValue="10:00"
                   className={fieldClassName}
                 />
               </Field>

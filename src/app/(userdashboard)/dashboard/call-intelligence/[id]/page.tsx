@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
@@ -14,6 +14,7 @@ import {
   Download,
   Mail,
   Play,
+  Pause,
   Search,
   SquareCheckBig,
   TriangleAlert,
@@ -40,6 +41,31 @@ function CardTitle({ children }: { children: React.ReactNode }) {
     </h2>
   );
 }
+
+function buildPlaybackUrl(playbackPath: string): string {
+  if (!playbackPath) return "";
+  if (/^https?:\/\//i.test(playbackPath)) return playbackPath;
+  const apiUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || "";
+  try {
+    const parsed = new URL(apiUrl);
+    const apiPrefix = parsed.pathname.replace(/\/+$/, "");
+    const normalized = playbackPath.startsWith("/") ? playbackPath : `/${playbackPath}`;
+    if (apiPrefix && normalized.startsWith(apiPrefix)) {
+      return `${parsed.origin}${normalized}`;
+    }
+    return `${parsed.origin}${apiPrefix}${normalized}`;
+  } catch {
+    const origin = apiUrl.replace(/\/api\/v1\/?$/, "");
+    return `${origin}${playbackPath.startsWith("/") ? "" : "/"}${playbackPath}`;
+  }
+}
+
+function formatAudioTime(seconds: number): string {
+  if (!seconds || Number.isNaN(seconds) || seconds < 0) return "00:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+}
 function CallDetailsContent() {
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
@@ -50,7 +76,23 @@ function CallDetailsContent() {
     searchParams.get("sourceType") || "",
   );
   const accessToken = session?.user.accessToken;
-  const [playing, setPlaying] = useState(false);
+  const [playbackUrl, setPlaybackUrl] = useState<string | null>(null);
+  const [playbackExpiresAt, setPlaybackExpiresAt] = useState<number | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const audioEl = audioRef.current;
+    return () => {
+      if (audioEl) {
+        audioEl.pause();
+      }
+    };
+  }, []);
+
   const [isDownloadingReport, setIsDownloadingReport] = useState(false);
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState("All");
@@ -100,6 +142,113 @@ function CallDetailsContent() {
   const confidence = Math.round((details?.analysis?.overallConfidence ?? 0) * 100);
   const occurredAt = details?.metadata.occurredAt || details?.metadata.startsAt;
   const durationMinutes = details?.metadata.durationMinutes ?? Math.round((details?.metadata.durationSeconds ?? 0) / 60);
+
+  const isMeeting = Boolean(
+    sourceType === "ZOOM_MEETING" ||
+    sourceType === "GOOGLE_MEET" ||
+    details?.source?.type === "ZOOM_MEETING" ||
+    details?.source?.type === "GOOGLE_MEET" ||
+    details?.metadata?.kind?.toUpperCase() === "MEETING" ||
+    details?.metadata?.platform?.toUpperCase() === "ZOOM" ||
+    details?.metadata?.platform?.toUpperCase() === "GOOGLE_MEET"
+  );
+
+  const isAudioCall = !isMeeting && Boolean(
+    sourceType === "CALL_AUDIO" ||
+    sourceType === "CALL_TRANSCRIPT" ||
+    details?.source?.type === "CALL_AUDIO" ||
+    details?.source?.type === "CALL_TRANSCRIPT" ||
+    details?.metadata?.kind?.toUpperCase() === "CALL" ||
+    Boolean(details?.audio?.available)
+  );
+
+  const totalAudioDuration =
+    audioDuration || (details?.metadata.durationSeconds ?? (durationMinutes * 60));
+
+  const progressRatio =
+    totalAudioDuration > 0
+      ? Math.min(1, Math.max(0, currentTime / totalAudioDuration))
+      : 0;
+
+  const activeBarCount = Math.floor(progressRatio * waveform.length);
+
+  const handleTogglePlay = async () => {
+    try {
+      if (isPlaying && audioRef.current) {
+        audioRef.current.pause();
+        return;
+      }
+
+      let url = playbackUrl;
+      const isExpired = playbackExpiresAt
+        ? Date.now() >= playbackExpiresAt - 10000
+        : true;
+
+      if (!url || isExpired) {
+        if (!accessToken || !sourceId || !sourceType) {
+          toast.error("Call information is missing.");
+          return;
+        }
+        setIsLoadingAudio(true);
+        const query = new URLSearchParams({ sourceType });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/call-intelligence/${encodeURIComponent(sourceId)}/audio/playback?${query}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = (await res.json().catch(() => ({}))) as {
+          success?: boolean;
+          message?: string | string[];
+          data?: { playbackPath: string; expiresAt?: string };
+        };
+
+        if (!res.ok || !data.success || !data.data?.playbackPath) {
+          const msg = Array.isArray(data.message)
+            ? data.message.join(", ")
+            : data.message || "Failed to load audio playback URL.";
+          throw new Error(msg);
+        }
+
+        url = buildPlaybackUrl(data.data.playbackPath);
+        const expTime = data.data.expiresAt
+          ? new Date(data.data.expiresAt).getTime()
+          : Date.now() + 15 * 60 * 1000;
+        setPlaybackUrl(url);
+        setPlaybackExpiresAt(expTime);
+      }
+
+      if (audioRef.current) {
+        if (audioRef.current.src !== url) {
+          audioRef.current.src = url;
+          audioRef.current.load();
+        }
+        await audioRef.current.play();
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Unable to play call audio.");
+    } finally {
+      setIsLoadingAudio(false);
+    }
+  };
+
+  const handleWaveformClick = (index: number) => {
+    if (!totalAudioDuration) return;
+    const ratio = (index + 0.5) / waveform.length;
+    const targetTime = ratio * totalAudioDuration;
+    if (audioRef.current) {
+      audioRef.current.currentTime = targetTime;
+      setCurrentTime(targetTime);
+      if (!isPlaying) {
+        void handleTogglePlay();
+      }
+    }
+  };
+
   const filteredTranscript = useMemo(
     () =>
       transcript.filter(
@@ -111,6 +260,102 @@ function CallDetailsContent() {
       ),
     [query, tab, transcript],
   );
+
+  const revenueImpactItems = useMemo(() => {
+    const crm = details?.extensions?.crm;
+    const revenue = crm?.revenue;
+    const commercial = crm?.commercial;
+    const isRevenueAvailable = revenue?.availability === "AVAILABLE";
+
+    if (!isRevenueAvailable) {
+      return [
+        ["Potential Upsell", "$0", "text-[#10B981]"],
+        ["Renewal Probability", "0%", "text-[#10B981]"],
+        ["Churn Risk", "0%", "text-[#EF4444]"],
+        ["Deal Stage", "0", "text-[#5B7FF0]"],
+      ] as const;
+    }
+
+    // 1. Potential Upsell / Deal Value
+    const rawUpsell =
+      (commercial?.expansionPotential?.availability === "AVAILABLE" &&
+      typeof commercial?.expansionPotential?.value === "number"
+        ? commercial.expansionPotential.value
+        : null) ??
+      (typeof revenue?.value === "number"
+        ? revenue.value
+        : typeof commercial?.dealValue?.value === "number"
+          ? commercial.dealValue.value
+          : revenue?.breakdown?.[0]?.value);
+
+    let upsellValue = "$0";
+    if (typeof rawUpsell === "number" && !Number.isNaN(rawUpsell)) {
+      if (rawUpsell > 0) {
+        upsellValue = `+$${rawUpsell.toLocaleString()}`;
+      } else if (rawUpsell === 0) {
+        upsellValue = "$0";
+      } else {
+        upsellValue = `-$${Math.abs(rawUpsell).toLocaleString()}`;
+      }
+    }
+
+    // 2. Renewal Probability / Close Probability
+    const probAvail = commercial?.closeProbability?.availability;
+    const rawProbability =
+      (probAvail === "AVAILABLE" || probAvail === "PARTIAL") &&
+      typeof commercial?.closeProbability?.value === "number"
+        ? commercial.closeProbability.value
+        : typeof revenue?.probability === "number"
+          ? revenue.probability
+          : typeof revenue?.closeProbability?.value === "number"
+            ? revenue.closeProbability.value
+            : null;
+
+    let probabilityValue = "0%";
+    if (typeof rawProbability === "number" && !Number.isNaN(rawProbability)) {
+      probabilityValue = `${Math.round(rawProbability)}%`;
+    }
+
+    // 3. Churn Risk
+    let churnRiskValue = "0%";
+    if (typeof commercial?.churnRisk === "number") {
+      churnRiskValue = `${Math.round(commercial.churnRisk)}%`;
+    } else if (typeof revenue?.churnRisk === "number") {
+      churnRiskValue = `${Math.round(revenue.churnRisk)}%`;
+    } else if (
+      typeof details?.analysis?.customerIntelligence?.healthScore === "number"
+    ) {
+      const churn = Math.max(
+        0,
+        Math.min(
+          100,
+          100 - Math.round(details.analysis.customerIntelligence.healthScore),
+        ),
+      );
+      churnRiskValue = `${churn}%`;
+    }
+
+    // 4. Deal Stage
+    const stage =
+      commercial?.dealStage ||
+      commercial?.stage ||
+      revenue?.dealStage ||
+      revenue?.stage ||
+      (crm as Record<string, unknown> | undefined)?.dealStage ||
+      (crm as Record<string, unknown> | undefined)?.stage ||
+      (details?.metadata as Record<string, unknown> | undefined)?.dealStage ||
+      (details?.metadata as Record<string, unknown> | undefined)?.stage ||
+      ((crm?.linkedDealCount ?? 0) > 0 ? "Open" : null);
+
+    const dealStageValue = stage && typeof stage === "string" ? stage : "0";
+
+    return [
+      ["Potential Upsell", upsellValue, "text-[#10B981]"],
+      ["Renewal Probability", probabilityValue, "text-[#10B981]"],
+      ["Churn Risk", churnRiskValue, "text-[#EF4444]"],
+      ["Deal Stage", dealStageValue, "text-[#5B7FF0]"],
+    ] as const;
+  }, [details]);
 
   const downloadReport = async () => {
     const reportSourceId = details?.source.id;
@@ -212,39 +457,93 @@ function CallDetailsContent() {
             <p className="mt-4 whitespace-pre-wrap text-justify text-base leading-[1.45] text-[#6B6B6B]">{details.analysis?.summary || "AI summary is not available for this call."}</p>
           </article>
           <article className="rounded-2xl bg-white p-6">
-            <CardTitle>Meeting Transcript</CardTitle>
-            <div className="mt-4 rounded-lg p-2 shadow-[0_0_4px_rgba(0,0,0,0.1)]">
-              <div className="flex items-center justify-between border-b border-[#F5F7FF] pb-2">
-                <div>
-                  <p className="font-medium">Recorded Call Audio</p>
-                  <p className="mt-2 text-xs text-[#6B6B6B]">
-                    Recorded : {occurredAt ? new Date(occurredAt).toLocaleString() : "Not available"}
-                  </p>
+            <CardTitle>{isMeeting ? "Meeting Transcript" : "Call Transcript"}</CardTitle>
+            {isAudioCall && (
+              <div className="mt-4 rounded-lg p-2.5 shadow-[0_0_4px_rgba(0,0,0,0.1)]">
+                <div className="flex items-center justify-between border-b border-[#F5F7FF] pb-2">
+                  <div>
+                    <p className="font-medium text-[#0E1224]">Recorded Call Audio</p>
+                    <p className="mt-1 text-xs text-[#6B6B6B]">
+                      Recorded : {occurredAt ? new Date(occurredAt).toLocaleString() : "Not available"}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-semibold text-[#0E1224] tabular-nums">
+                      {formatAudioTime(currentTime)} / {formatAudioTime(totalAudioDuration)}
+                    </p>
+                    <p className="mt-1 text-[11px] text-[#8B93B8]">
+                      {isLoadingAudio
+                        ? "Loading audio..."
+                        : isPlaying
+                          ? "Playing"
+                          : currentTime > 0
+                            ? "Paused"
+                            : `${durationMinutes} min`}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs text-[#6B6B6B]">
-                  <span className="text-[#0E1224]">{durationMinutes} min</span>
-                </p>
-              </div>
-              <div className="mt-2 flex h-9 items-center gap-2 rounded-lg bg-[#F5F7FF] px-2">
-                <button
-                  onClick={() => setPlaying(!playing)}
-                  className="flex size-6 items-center justify-center rounded-full bg-[#5B7FF0]/10 text-[#5B7FF0]"
-                >
-                  <Play
-                    className={`size-3 fill-current ${playing ? "animate-pulse" : ""}`}
-                  />
-                </button>
-                <div className="flex flex-1 items-end gap-px">
-                  {waveform.map((height, index) => (
-                    <i
-                      key={index}
-                      style={{ height }}
-                      className={`flex-1 rounded-sm ${index < 11 ? "bg-[#5B7FF0]" : "bg-[#D9D9D9]/40"}`}
-                    />
-                  ))}
+                <div className="mt-2.5 flex h-10 items-center gap-2.5 rounded-lg bg-[#F5F7FF] px-2.5">
+                  <button
+                    type="button"
+                    onClick={() => void handleTogglePlay()}
+                    disabled={isLoadingAudio}
+                    aria-label={isPlaying ? "Pause audio" : "Play audio"}
+                    className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#5B7FF0]/10 text-[#5B7FF0] transition hover:bg-[#5B7FF0] hover:text-white disabled:opacity-60"
+                  >
+                    {isLoadingAudio ? (
+                      <Loader2 className="size-3.5 animate-spin" />
+                    ) : isPlaying ? (
+                      <Pause className="size-3.5 fill-current" />
+                    ) : (
+                      <Play className="size-3.5 fill-current ml-0.5" />
+                    )}
+                  </button>
+                  <div className="flex flex-1 items-end gap-0.5 h-6 py-0.5 cursor-pointer">
+                    {waveform.map((height, index) => {
+                      const isActive =
+                        index <= activeBarCount && (currentTime > 0 || isPlaying);
+                      return (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => handleWaveformClick(index)}
+                          style={{ height }}
+                          aria-label={`Seek to ${Math.round(((index + 1) / waveform.length) * 100)}%`}
+                          className={`flex-1 rounded-sm transition-colors hover:bg-[#5B7FF0] cursor-pointer ${
+                            isActive ? "bg-[#5B7FF0]" : "bg-[#D9D9D9]/50"
+                          }`}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
+                <audio
+                  ref={audioRef}
+                  preload="none"
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
+                  onEnded={() => {
+                    setIsPlaying(false);
+                    setCurrentTime(0);
+                  }}
+                  onTimeUpdate={() => {
+                    if (audioRef.current) {
+                      setCurrentTime(audioRef.current.currentTime);
+                    }
+                  }}
+                  onLoadedMetadata={() => {
+                    if (audioRef.current && audioRef.current.duration) {
+                      setAudioDuration(audioRef.current.duration);
+                    }
+                  }}
+                  onError={() => {
+                    setIsPlaying(false);
+                    setIsLoadingAudio(false);
+                  }}
+                  className="hidden"
+                />
               </div>
-            </div>
+            )}
             <label className="mt-4 flex h-11 items-center gap-2 rounded-lg border border-[#8B93B8]/10 px-3">
               <Search className="size-5 text-[#8B93B8]" />
               <input
@@ -327,12 +626,7 @@ function CallDetailsContent() {
           <article className="rounded-xl bg-white p-6">
             <CardTitle>Revenue Impact</CardTitle>
             <div className="mt-4 space-y-2">
-              {[
-                ["Potential Upsell", "+$8,000", "text-[#10B981]"],
-                ["Renewal Probability", "92%", "text-[#10B981]"],
-                ["Churn Risk", "8%", "text-[#EF4444]"],
-                ["Deal Stage", "Proposal Sent", "text-[#5B7FF0]"],
-              ].map(([label, value, color]) => (
+              {revenueImpactItems.map(([label, value, color]) => (
                 <div
                   key={label}
                   className="flex h-9 items-center rounded-lg bg-[#F5F7FF] px-2 text-sm"
