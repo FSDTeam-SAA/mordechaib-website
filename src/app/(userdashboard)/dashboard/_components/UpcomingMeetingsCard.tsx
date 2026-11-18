@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, CalendarX2, RefreshCw } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
+import Link from "next/link";
 
 type UpcomingMeeting = {
   id: string;
@@ -120,9 +121,11 @@ function UpcomingMeetingsState({
           </button>
         )}
       </div>
-      <button className="mt-4 min-h-12 w-full rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white sm:min-h-[52px]">
-        Schedule Meeting
-      </button>
+      <Link href="/dashboard/calendar">
+        <button className="mt-4 min-h-12 w-full rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white sm:min-h-[52px]">
+          Schedule Meeting
+        </button>
+      </Link>
     </article>
   );
 }
@@ -205,9 +208,11 @@ export function UpcomingMeetingsCard() {
           </div>
         ))}
       </div>
-      <button className="mt-4 min-h-12 w-full rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white sm:min-h-[52px]">
-        Schedule Meeting
-      </button>
+      <Link href="/dashboard/calendar">
+        <button className="mt-4 min-h-12 w-full rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white sm:min-h-[52px]">
+          Schedule Meeting
+        </button>
+      </Link>
     </article>
   );
 }
