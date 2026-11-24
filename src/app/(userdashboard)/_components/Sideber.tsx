@@ -78,7 +78,7 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
           collapsed && "md:w-[88px]",
         )}
       >
-        <div className={cn("flex h-8 items-center justify-between border-b border-[#F5F7FF] pb-4 box-content", collapsed && "md:justify-center")}>
+        <div className={cn("flex h-8 shrink-0 items-center justify-between border-b border-[#F5F7FF] pb-4 box-content", collapsed && "md:justify-center")}>
           <Link href="/" aria-label="Go to Noltra.ai home page" className={cn(collapsed && "md:hidden")}>
             <Image
               src="/logo2.png"
@@ -117,8 +117,15 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
             ⌘K
           </kbd>
         </label> */}
-        <nav className={cn("flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", collapsed && "md:items-center")}>
-          <div className="flex flex-col gap-2 border-b border-[#E4EAF8] pb-2">
+        <nav
+          aria-label="Dashboard navigation"
+          data-lenis-prevent
+          className={cn(
+            "flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-y-contain [scrollbar-width:thin]",
+            collapsed && "md:items-center",
+          )}
+        >
+          <div className="flex shrink-0 flex-col gap-2 border-b border-[#E4EAF8] pb-2">
             {navigation.map((item) => {
               const active =
                 item.href === "/dashboard"
@@ -132,7 +139,7 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
                   aria-label={collapsed ? item.name : undefined}
                   title={collapsed ? item.name : undefined}
                   className={cn(
-                    "flex h-12 items-center gap-2 rounded-[8px] text-base font-medium transition-colors",
+                    "flex min-h-12 items-center gap-2 rounded-[8px] text-base font-medium transition-colors",
                     collapsed ? "px-4 md:w-12 md:justify-center md:px-0" : "px-4",
                     active
                       ? "border-l-2 border-[#5B7FF0] bg-[#5B7FF0]/10 text-[#5B7FF0]"
@@ -140,7 +147,7 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
                   )}
                 >
                   <item.icon className="size-6 shrink-0" strokeWidth={1.6} />
-                  <span className={cn("whitespace-nowrap", collapsed && "md:hidden")}>{item.name}</span>
+                  <span className={cn(collapsed && "md:hidden")}>{item.name}</span>
                 </Link>
               );
             })}
@@ -149,7 +156,7 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
             href="/dashboard/support"
             aria-label={collapsed ? "Help & Support" : undefined}
             title={collapsed ? "Help & Support" : undefined}
-            className={cn("flex h-12 items-center gap-2 rounded-lg text-base font-medium hover:bg-[#F5F7FF]", collapsed ? "px-4 md:w-12 md:justify-center md:px-0" : "px-4", pathname.startsWith("/dashboard/support") ? "border-l-2 border-[#5B7FF0] bg-[#5B7FF0]/10 text-[#5B7FF0]" : "text-[#6B6B6B]")}
+            className={cn("flex h-12 shrink-0 items-center gap-2 rounded-lg text-base font-medium hover:bg-[#F5F7FF]", collapsed ? "px-4 md:w-12 md:justify-center md:px-0" : "px-4", pathname.startsWith("/dashboard/support") ? "border-l-2 border-[#5B7FF0] bg-[#5B7FF0]/10 text-[#5B7FF0]" : "text-[#6B6B6B]")}
           >
             <Headphones className="size-6" strokeWidth={1.6} />
             <span className={cn("whitespace-nowrap", collapsed && "md:hidden")}>Help &amp; Support</span>
