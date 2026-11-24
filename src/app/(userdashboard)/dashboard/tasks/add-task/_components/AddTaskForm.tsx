@@ -37,6 +37,9 @@ const ReactQuill = dynamic(() => import("react-quill-new"), {
 
 const fieldClass =
   "h-14 min-w-0 rounded-xl border-0 bg-[#F5F7FF] px-4 text-base text-[#8B93B8] md:text-base shadow-none placeholder:text-[#8B93B8] focus-visible:ring-[#5B7FF0]";
+// Controls visibility on both Add Task and Edit Task.
+const showOptionalTaskFields = true;
+
 const initialDependencies = [
   "Finance to provide latest numbers",
   "Supplier pricing update",
@@ -79,9 +82,9 @@ type CreateTaskPayload = {
   priority: string;
   status: TaskStatus;
   dueDate: string;
-  estimatedDurationMinutes: number;
-  stakeholderIds: string[];
-  dependencies: Array<{ title: string; isComplete: boolean }>;
+  estimatedDurationMinutes?: number;
+  stakeholderIds?: string[];
+  dependencies?: Array<{ title: string; isComplete: boolean }>;
   attachments: Array<{
     name: string;
     url: string;
@@ -89,15 +92,15 @@ type CreateTaskPayload = {
     mimeType?: string;
     sizeBytes?: number;
   }>;
-  requiredAttachments: Array<{ name: string; isComplete: boolean }>;
-  aiAssistance: {
+  requiredAttachments?: Array<{ name: string; isComplete: boolean }>;
+  aiAssistance?: {
     generateChecklist: boolean;
     suggestNextSteps: boolean;
     recommendDeadline: boolean;
     autoCreateSubtasks: boolean;
   };
   reminder: { enabled: boolean; minutesBeforeDue: number };
-  subtasks: Array<{
+  subtasks?: Array<{
     title: string;
     isComplete: boolean;
     dueDate?: string;
@@ -220,10 +223,11 @@ function formatSelectValue(value?: string) {
     .join(" ");
 }
 
-function FieldLabel({ children }: { children: React.ReactNode }) {
+function FieldLabel({ children, required = false }: { children: React.ReactNode; required?: boolean }) {
   return (
-    <label className="mb-2 block text-base font-normal text-[#0E1224]">
+    <label className="mb-2 block text-[0.9375rem]/[1.5rem] font-normal text-[#0E1224]">
       {children}
+      {required && <span className="ml-1 font-medium text-red-600" aria-label="required">*</span>}
     </label>
   );
 }
@@ -302,7 +306,7 @@ function FormSelect({
                   onValueChange(optionValue);
                   setOpen(false);
                 }}
-                className="flex min-h-10 w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-base text-[#60708E] outline-none hover:bg-white focus:bg-white focus:text-[#0E1224]"
+                className="flex min-h-10 w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-[0.9375rem]/[1.5rem] text-[#60708E] outline-none hover:bg-white focus:bg-white focus:text-[#0E1224]"
               >
                 <span className="truncate">{optionLabel}</span>
                 {value === optionValue && (
@@ -518,8 +522,13 @@ export function AddTaskForm({
       return;
     }
 
-    if (!department || !priority || !duration || !status) {
-      toast.error("Department, priority, duration, and status are required.");
+    if (!department || !priority || !status) {
+      toast.error("Department, priority, and status are required.");
+      return;
+    }
+
+    if (showOptionalTaskFields && !duration) {
+      toast.error("Estimated duration is required.");
       return;
     }
 
@@ -543,12 +552,6 @@ export function AddTaskForm({
       priority: priority.toUpperCase(),
       status: submittedStatus,
       dueDate,
-      estimatedDurationMinutes: durationValues[duration] ?? 60,
-      stakeholderIds: initialTask?.stakeholderIds ?? [],
-      dependencies: dependencies.map((title) => ({
-        title,
-        isComplete: completedDependencies.includes(title),
-      })),
       attachments: (initialTask?.attachments ?? []).map((attachment) =>
         typeof attachment === "string"
           ? {
@@ -566,31 +569,40 @@ export function AddTaskForm({
                 : {}),
             },
       ),
-      requiredAttachments: requiredAttachments.map((name) => ({
-        name,
-        isComplete: required.includes(name),
-      })),
-      aiAssistance: {
-        generateChecklist: aiOptions.includes("Generate AI checklist"),
-        suggestNextSteps: aiOptions.includes("Suggest Next Steps"),
-        recommendDeadline: aiOptions.includes("Recommend Deadline"),
-        autoCreateSubtasks: aiOptions.includes("Auto Create Subtasks"),
-      },
       reminder: {
         enabled: reminder,
         minutesBeforeDue: reminderValues[reminderTime] ?? 60,
       },
-      subtasks: isEditing
-        ? (initialTask?.subtasks ?? [])
-        : subtasks === "03:00 PM"
-          ? [
-              {
-                title: "Complete task follow-up",
-                isComplete: false,
-                dueDate,
-              },
-            ]
-          : [],
+      // Omit hidden fields so PATCH preserves their saved values.
+      ...(showOptionalTaskFields ? {
+        estimatedDurationMinutes: durationValues[duration] ?? 60,
+        stakeholderIds: initialTask?.stakeholderIds ?? [],
+        dependencies: dependencies.map((title) => ({
+          title,
+          isComplete: completedDependencies.includes(title),
+        })),
+        requiredAttachments: requiredAttachments.map((name) => ({
+          name,
+          isComplete: required.includes(name),
+        })),
+        aiAssistance: {
+          generateChecklist: aiOptions.includes("Generate AI checklist"),
+          suggestNextSteps: aiOptions.includes("Suggest Next Steps"),
+          recommendDeadline: aiOptions.includes("Recommend Deadline"),
+          autoCreateSubtasks: aiOptions.includes("Auto Create Subtasks"),
+        },
+        subtasks: isEditing
+          ? (initialTask?.subtasks ?? [])
+          : subtasks === "03:00 PM"
+            ? [
+                {
+                  title: "Complete task follow-up",
+                  isComplete: false,
+                  dueDate,
+                },
+              ]
+            : [],
+      } : {}),
       tags: submittedTags.map((tag) => `#${tag}`),
     };
 
@@ -647,13 +659,13 @@ export function AddTaskForm({
   };
 
   return (
-    <form onSubmit={submit} className="mx-auto w-full  space-y-4 bg-white px-4 pb-4 pt-8 text-[#0E1224] [&_input[type=checkbox]]:shrink-0">
-      <header className="flex items-start justify-between border-b border-[#E4EAF8] pb-4">
+    <form onSubmit={submit} className="w-full min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5 space-y-3 sm:space-y-4 bg-white text-[#0E1224] [&_input[type=checkbox]]:shrink-0">
+      <header className="flex items-start justify-between border-b border-[#E4EAF8] pb-3.5">
         <div>
-          <h2 className="text-xl font-medium text-[#0E1224]">
+          <h2 className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
             {isEditing ? "Edit Task" : "Add New Task"}
           </h2>
-          <p className="mt-2 text-base text-[#8B93B8]">
+          <p className="mt-2 text-[0.9375rem]/[1.5rem] text-[#8B93B8]">
             {isEditing
               ? "Update task information and save your changes"
               : "Create a task manually or assign it to an AI agent"}
@@ -672,7 +684,7 @@ export function AddTaskForm({
       <section className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <FieldLabel>Task Name</FieldLabel>
+            <FieldLabel required>Task Name</FieldLabel>
             <Input
               name="title"
               required
@@ -683,7 +695,7 @@ export function AddTaskForm({
             />
           </div>
           <div>
-            <FieldLabel>Assign To</FieldLabel>
+            <FieldLabel required>Assign To</FieldLabel>
             <FormSelect
               placeholder={
                 agentsQuery.isLoading
@@ -700,7 +712,7 @@ export function AddTaskForm({
           </div>
         </div>
         <div>
-          <FieldLabel>Description</FieldLabel>
+          <FieldLabel required>Description</FieldLabel>
           <div className="support-quill overflow-hidden rounded-2xl border border-[#F5F7FF] bg-[#F5F7FF]">
             <ReactQuill
               id="task-description"
@@ -715,138 +727,140 @@ export function AddTaskForm({
         </div>
       </section>
 
-      <section className="grid gap-4 bg-[#F5F7FF] px-3 py-4 lg:grid-cols-2">
-        <div className="flex min-w-0 flex-col rounded-2xl bg-white p-4 sm:p-6">
-          <h3 className="text-xl font-medium text-[#0E1224]">Dependencies</h3>
-          <div className="my-4 flex-1 space-y-3">
-            {dependencies.map((item) => (
-              <div
-                key={item}
-                className="flex items-center gap-1.5 text-sm text-[#0E1224]"
-              >
-                <label className="flex min-w-0 flex-1 items-center gap-1.5">
-                  <input
-                    type="checkbox"
-                    checked={completedDependencies.includes(item)}
-                    onChange={() => toggleValue(item, setCompletedDependencies)}
-                    className="size-4 accent-[#5B7FF0]"
-                  />
-                  <span className="truncate">{item}</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setDependencies((items) => items.filter((entry) => entry !== item))}
-                  aria-label={`Remove ${item}`}
-                  className="rounded p-1 text-[#8B93B8] hover:bg-[#E4EAF8] hover:text-[#0E1224]"
-                >
-                  <X className="size-3" />
-                </button>
-              </div>
-            ))}
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => openAddDialog("dependency")}
-            className="mt-auto min-h-[52px] w-full whitespace-normal border-[#5B7FF0] px-2 text-base font-normal text-[#5B7FF0] shadow-none"
-          >
-            <Plus className="size-3" />
-            Add Dependency
-          </Button>
-        </div>
-        {/* <div className="flex min-w-0 flex-col rounded-2xl bg-white p-4 sm:p-6">
-          <h3 className="text-xl font-medium text-[#0E1224]">Stakeholder</h3>
-          <div className="my-4 flex-1 space-y-3">
-            {stakeholders.map((person) => (
+      {showOptionalTaskFields && (
+        <section className="grid gap-4 bg-[#F5F7FF] px-2.5 py-3.5 lg:grid-cols-2">
+          <div className="flex min-w-0 flex-col rounded-2xl bg-white p-3.5 sm:p-5">
+            <h3 className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">Dependencies</h3>
+            <div className="my-3.5 flex-1 space-y-3">
+              {dependencies.map((item) => (
                 <div
-                  className="flex h-[35px] items-center gap-2 rounded-lg bg-[#F5F7FF] pr-2 text-sm"
-                  key={person.id}
+                  key={item}
+                  className="flex items-center gap-1.5 text-sm text-[#0E1224]"
                 >
-                  <i className="h-[18px] w-1 rounded bg-[#10B981]" />
-                  <Image src={`/add-task/stakeholder-${person.image}.png`} alt={person.name} width={18} height={18} className="size-[18px] rounded-full" />
-                  <span className="flex-1 text-[#8B93B8]">
-                    {person.name}
-                  </span>
+                  <label className="flex min-w-0 flex-1 items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      checked={completedDependencies.includes(item)}
+                      onChange={() => toggleValue(item, setCompletedDependencies)}
+                      className="size-4 accent-[#5B7FF0]"
+                    />
+                    <span className="truncate">{item}</span>
+                  </label>
                   <button
                     type="button"
-                    onClick={() => setStakeholders((items) => items.filter((item) => item.id !== person.id))}
-                    aria-label={`Remove ${person.name}`}
-                    className="rounded p-1 text-[#8B93B8] hover:bg-white hover:text-[#0E1224]"
+                    onClick={() => setDependencies((items) => items.filter((entry) => entry !== item))}
+                    aria-label={`Remove ${item}`}
+                    className="rounded p-1 text-[#8B93B8] hover:bg-[#E4EAF8] hover:text-[#0E1224]"
                   >
                     <X className="size-3" />
                   </button>
                 </div>
-            ))}
+              ))}
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => openAddDialog("dependency")}
+              className="mt-auto min-h-11 w-full whitespace-normal border-[#5B7FF0] px-2 text-[0.9375rem]/[1.5rem] font-normal text-[#5B7FF0] shadow-none"
+            >
+              <Plus className="size-3" />
+              Add Dependency
+            </Button>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => openAddDialog("stakeholder")}
-            className="mt-auto min-h-[52px] w-full whitespace-normal border-[#5B7FF0] px-2 text-base font-normal text-[#5B7FF0] shadow-none"
-          >
-            <Plus className="size-3" />
-            Add Stakeholder
-          </Button>
-        </div> */}
-        <div className="flex min-w-0 flex-col rounded-2xl bg-white p-4 sm:p-6">
-          <h3 className="text-xl font-medium text-[#0E1224]">
-            Required Attachments
-          </h3>
-          <div className="my-4 flex-1 space-y-3">
-            {requiredAttachments.map((item) => (
-              <div
-                className="flex items-center gap-1.5 text-sm text-[#0E1224]"
-                key={item}
-              >
-                <label className="flex min-w-0 flex-1 items-center gap-1.5">
-                  <input
-                    type="checkbox"
-                    checked={required.includes(item)}
-                    onChange={() => toggleValue(item, setRequired)}
-                    className="size-4 accent-[#5B7FF0]"
-                  />
-                  <span className="truncate">{item}</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setRequiredAttachments((items) => items.filter((entry) => entry !== item));
-                    setRequired((items) => items.filter((entry) => entry !== item));
-                  }}
-                  aria-label={`Remove ${item}`}
-                  className="rounded p-1 text-[#8B93B8] hover:bg-[#E4EAF8] hover:text-[#0E1224]"
+          {/* <div className="flex min-w-0 flex-col rounded-2xl bg-white p-4 sm:p-6">
+            <h3 className="text-xl font-medium text-[#0E1224]">Stakeholder</h3>
+            <div className="my-4 flex-1 space-y-3">
+              {stakeholders.map((person) => (
+                  <div
+                    className="flex h-[35px] items-center gap-2 rounded-lg bg-[#F5F7FF] pr-2 text-sm"
+                    key={person.id}
+                  >
+                    <i className="h-[18px] w-1 rounded bg-[#10B981]" />
+                    <Image src={`/add-task/stakeholder-${person.image}.png`} alt={person.name} width={18} height={18} className="size-[18px] rounded-full" />
+                    <span className="flex-1 text-[#8B93B8]">
+                      {person.name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setStakeholders((items) => items.filter((item) => item.id !== person.id))}
+                      aria-label={`Remove ${person.name}`}
+                      className="rounded p-1 text-[#8B93B8] hover:bg-white hover:text-[#0E1224]"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </div>
+              ))}
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => openAddDialog("stakeholder")}
+              className="mt-auto min-h-11 w-full whitespace-normal border-[#5B7FF0] px-2 text-base font-normal text-[#5B7FF0] shadow-none"
+            >
+              <Plus className="size-3" />
+              Add Stakeholder
+            </Button>
+          </div> */}
+          <div className="flex min-w-0 flex-col rounded-2xl bg-white p-3.5 sm:p-5">
+            <h3 className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
+              Required Attachments
+            </h3>
+            <div className="my-3.5 flex-1 space-y-3">
+              {requiredAttachments.map((item) => (
+                <div
+                  className="flex items-center gap-1.5 text-sm text-[#0E1224]"
+                  key={item}
                 >
-                  <X className="size-3" />
-                </button>
-              </div>
-            ))}
+                  <label className="flex min-w-0 flex-1 items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      checked={required.includes(item)}
+                      onChange={() => toggleValue(item, setRequired)}
+                      className="size-4 accent-[#5B7FF0]"
+                    />
+                    <span className="truncate">{item}</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRequiredAttachments((items) => items.filter((entry) => entry !== item));
+                      setRequired((items) => items.filter((entry) => entry !== item));
+                    }}
+                    aria-label={`Remove ${item}`}
+                    className="rounded p-1 text-[#8B93B8] hover:bg-[#E4EAF8] hover:text-[#0E1224]"
+                  >
+                    <X className="size-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => openAddDialog("attachment")}
+              className="mt-auto min-h-11 w-full whitespace-normal border-[#5B7FF0] px-2 text-[0.9375rem]/[1.5rem] font-normal text-[#5B7FF0] shadow-none"
+            >
+              <Plus className="size-3" />
+              Add Required Attachment
+            </Button>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => openAddDialog("attachment")}
-            className="mt-auto min-h-[52px] w-full whitespace-normal border-[#5B7FF0] px-2 text-base font-normal text-[#5B7FF0] shadow-none"
-          >
-            <Plus className="size-3" />
-            Add Required Attachment
-          </Button>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="bg-[#F5F7FF] px-3 py-4">
-        <div className="flex min-w-0 flex-col rounded-2xl bg-white p-4 sm:p-6">
-          <h3 className="text-xl font-medium text-[#0E1224]">
+      <section className="bg-[#F5F7FF] px-2.5 py-3.5">
+        <div className="flex min-w-0 flex-col rounded-2xl bg-white p-3.5 sm:p-5">
+          <h3 className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
             Attachments &amp; Links
           </h3>
-          <label className="mt-4 flex min-h-[188px] cursor-pointer flex-col items-center justify-center rounded-xl bg-[#F5F7FF] p-4 text-center">
+          <label className="mt-3.5 flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-xl bg-[#F5F7FF] p-3.5 text-center">
             <CloudUpload className="size-10 text-[#0E1224]" />
-            <span className="mt-4 text-base text-[#8B93B8]">
+            <span className="mt-3.5 text-[0.9375rem]/[1.5rem] text-[#8B93B8]">
               Drag &amp; drop files here or
             </span>
-            <span className="text-base font-medium text-[#5B7FF0]">
+            <span className="text-[0.9375rem]/[1.5rem] font-medium text-[#5B7FF0]">
               Browse File
             </span>
-            <span className="mt-1 text-base text-[#8B93B8]">
+            <span className="mt-1 text-[0.9375rem]/[1.5rem] text-[#8B93B8]">
               Support: PDF, JPG, PNG
             </span>
             <input type="file" disabled={createTask.isPending} className="sr-only" />
@@ -854,9 +868,9 @@ export function AddTaskForm({
         </div>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="grid gap-4 sm:grid-cols-2">
         <div>
-          <FieldLabel>Department</FieldLabel>
+          <FieldLabel required>Department</FieldLabel>
           <FormSelect
             placeholder="Department"
             options={[
@@ -873,7 +887,7 @@ export function AddTaskForm({
           />
         </div>
         <div>
-          <FieldLabel>Priority</FieldLabel>
+          <FieldLabel required>Priority</FieldLabel>
           <FormSelect
             placeholder="Priority"
             options={["Low", "Medium", "High"]}
@@ -881,26 +895,17 @@ export function AddTaskForm({
             onValueChange={setPriority}
           />
         </div>
-        <div>
-          <FieldLabel>Estimated Duration</FieldLabel>
-          <FormSelect
-            placeholder="Duration"
-            options={["1 Hour", "30 Minutes", "2 Hours"]}
-            value={duration}
-            onValueChange={setDuration}
-          />
-        </div>
       </section>
       <section>
-        <FieldLabel>Status</FieldLabel>
-        <div className="grid max-w-[754px] grid-cols-2 gap-4 sm:grid-cols-5">
+        <FieldLabel required>Status</FieldLabel>
+        <div data-lenis-prevent className="grid grid-cols-[repeat(6,minmax(5.5rem,1fr))] gap-2 overflow-x-auto overscroll-x-contain pb-1 sm:gap-3">
           {["Draft", "To Do", "In Progress", "Waiting", "Blocked", "Completed"].map(
             (item) => (
               <button
                 type="button"
                 onClick={() => setStatus(item)}
                 key={item}
-                className={`min-h-9 rounded-[8px] px-2 py-2 text-base transition-colors ${status === item ? "bg-[#5B7FF0] text-white" : "bg-[#F5F7FF] text-[#64748B]"}`}
+                className={`min-h-9 whitespace-nowrap rounded-[8px] px-2 py-2 text-sm transition-colors ${status === item ? "bg-[#5B7FF0] text-white" : "bg-[#F5F7FF] text-[#64748B]"}`}
               >
                 {item}
               </button>
@@ -908,9 +913,9 @@ export function AddTaskForm({
           )}
         </div>
       </section>
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section className={`grid gap-4 sm:grid-cols-2${showOptionalTaskFields ? " lg:grid-cols-3" : ""}`}>
         <div>
-          <FieldLabel>Due Date</FieldLabel>
+          <FieldLabel required>Due Date</FieldLabel>
           <div className="relative">
             <Input
               name="dueDate"
@@ -918,50 +923,58 @@ export function AddTaskForm({
               defaultValue={initialTask?.dueDate?.slice(0, 10) ?? ""}
               required
               disabled={createTask.isPending}
-              className={`${fieldClass} pr-10`}
+              className={`${fieldClass} pr-[2.25rem]`}
             />
             <CalendarDays className="pointer-events-none absolute right-4 top-3.5 size-5 text-[#8B93B8]" />
           </div>
         </div>
-        <div>
-          <FieldLabel>Estimated Duration</FieldLabel>
-          <FormSelect
-            placeholder="Duration"
-            options={["1 Hour", "30 Minutes", "2 Hours"]}
-            value={duration}
-            onValueChange={setDuration}
-          />
-        </div>
-        <div>
-          <FieldLabel>AI Assistance</FieldLabel>
-          <FormSelect
-            placeholder="AI Assistance"
-            options={["May 16, 2026", "No assistance"]}
-            value={aiAssistance}
-            onValueChange={setAiAssistance}
-          />
-        </div>
-        <div>
-          <FieldLabel>Stakeholder</FieldLabel>
-          <FormSelect
-            placeholder="Stakeholder"
-            options={["Marketing director", "Finance lead"]}
-            value={stakeholder}
-            onValueChange={setStakeholder}
-          />
-        </div>
-        <div>
-          <FieldLabel>Subtasks</FieldLabel>
-          <FormSelect
-            placeholder="Subtasks"
-            options={["03:00 PM", "No subtasks"]}
-            value={subtasks}
-            onValueChange={setSubtasks}
-          />
-        </div>
+        {showOptionalTaskFields && (
+          <div>
+            <FieldLabel required>Estimated Duration</FieldLabel>
+            <FormSelect
+              placeholder="Duration"
+              options={["1 Hour", "30 Minutes", "2 Hours"]}
+              value={duration}
+              onValueChange={setDuration}
+            />
+          </div>
+        )}
+        {showOptionalTaskFields && (
+          <div>
+            <FieldLabel>AI Assistance</FieldLabel>
+            <FormSelect
+              placeholder="AI Assistance"
+              options={["May 16, 2026", "No assistance"]}
+              value={aiAssistance}
+              onValueChange={setAiAssistance}
+            />
+          </div>
+        )}
+        {showOptionalTaskFields && (
+          <div>
+            <FieldLabel>Stakeholder</FieldLabel>
+            <FormSelect
+              placeholder="Stakeholder"
+              options={["Marketing director", "Finance lead"]}
+              value={stakeholder}
+              onValueChange={setStakeholder}
+            />
+          </div>
+        )}
+        {showOptionalTaskFields && (
+          <div>
+            <FieldLabel>Subtasks</FieldLabel>
+            <FormSelect
+              placeholder="Subtasks"
+              options={["03:00 PM", "No subtasks"]}
+              value={subtasks}
+              onValueChange={setSubtasks}
+            />
+          </div>
+        )}
         <div>
           <FieldLabel>Tags</FieldLabel>
-          <div className="flex min-h-14 flex-wrap items-center gap-2 rounded-xl bg-[#F5F7FF] px-3 py-2">
+          <div className="flex min-h-14 flex-wrap items-center gap-2 rounded-xl bg-[#F5F7FF] px-2.5 py-2">
             {tags.map((tag) => (
               <span
                 key={tag}
@@ -1009,37 +1022,39 @@ export function AddTaskForm({
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <div className="min-w-0 bg-white px-3 py-2">
-          <div className="flex items-center gap-2">
-            <Sparkles className="size-5 text-[#5B7FF0]" />
-            <p className="text-xl font-medium text-[#0E1224]">
-              Ai Context{" "}
-              <span className="text-xs font-normal">
-                (Let ai help you execute better)
-              </span>
-            </p>
+      <section className={showOptionalTaskFields ? "grid gap-4 lg:grid-cols-2" : undefined}>
+        {showOptionalTaskFields && (
+          <div className="min-w-0 bg-white px-2.5 py-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="size-5 text-[#5B7FF0]" />
+              <p className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
+                Ai Context{" "}
+                <span className="text-xs font-normal">
+                  (Let ai help you execute better)
+                </span>
+              </p>
+            </div>
+            <div className="mt-5 space-y-4">
+              {assistance.map((item) => (
+                <label
+                  className="flex items-center gap-1.5 text-sm text-[#0E1224]"
+                  key={item}
+                >
+                  <input
+                    type="checkbox"
+                    checked={aiOptions.includes(item)}
+                    onChange={() => toggleValue(item, setAiOptions)}
+                    className="size-4 accent-[#5B7FF0]"
+                  />
+                  {item}
+                </label>
+              ))}
+            </div>
           </div>
-          <div className="mt-6 space-y-4">
-            {assistance.map((item) => (
-              <label
-                className="flex items-center gap-1.5 text-sm text-[#0E1224]"
-                key={item}
-              >
-                <input
-                  type="checkbox"
-                  checked={aiOptions.includes(item)}
-                  onChange={() => toggleValue(item, setAiOptions)}
-                  className="size-4 accent-[#5B7FF0]"
-                />
-                {item}
-              </label>
-            ))}
-          </div>
-        </div>
-        <div className="min-w-0 bg-white px-3 py-2">
+        )}
+        <div className="min-w-0 bg-white px-2.5 py-2">
           <div className="flex items-center justify-between">
-            <p className="flex items-center gap-2 text-base font-medium text-[#0E1224]"><Bell className="size-6 text-[#5B7FF0]" strokeWidth={1.25} />Reminder</p>
+            <p className="flex items-center gap-2 text-[0.9375rem]/[1.5rem] font-medium text-[#0E1224]"><Bell className="size-6 text-[#5B7FF0]" strokeWidth={1.25} />Reminder</p>
             <button
               type="button"
               onClick={() => setReminder((value) => !value)}
@@ -1053,7 +1068,8 @@ export function AddTaskForm({
               />
             </button>
           </div>
-          <div className="mt-6">
+          <div className="mt-5">
+            <FieldLabel required={reminder}>Reminder Time</FieldLabel>
             <FormSelect
               placeholder="Reminder time"
               options={["1 Hour", "30 Minutes", "1 Day"]}
@@ -1071,7 +1087,7 @@ export function AddTaskForm({
           variant="outline"
           onClick={onCancel}
           disabled={createTask.isPending}
-          className="h-[52px] border-[#5B7FF0] text-base text-[#5B7FF0] shadow-none"
+          className="h-11 border-[#5B7FF0] text-[0.9375rem]/[1.5rem] text-[#5B7FF0] shadow-none"
         >
           Cancel
         </Button>
@@ -1081,7 +1097,7 @@ export function AddTaskForm({
             value="DRAFT"
             variant="outline"
             disabled={createTask.isPending}
-            className="h-[52px] border-[#5B7FF0] text-base text-[#5B7FF0] shadow-none"
+            className="h-11 border-[#5B7FF0] text-[0.9375rem]/[1.5rem] text-[#5B7FF0] shadow-none"
           >
             {createTask.isPending ? "Saving..." : "Save Draft"}
           </Button>
@@ -1090,7 +1106,7 @@ export function AddTaskForm({
           type="submit"
           value="CREATE"
           disabled={createTask.isPending}
-          className="h-[52px] bg-[#5B7FF0] text-base shadow-none hover:bg-[#4E6FDE] text-white"
+          className="h-11 bg-[#5B7FF0] text-[0.9375rem]/[1.5rem] shadow-none hover:bg-[#4E6FDE] text-white"
         >
           {createTask.isPending
             ? isEditing
@@ -1109,13 +1125,13 @@ export function AddTaskForm({
         <DialogContent
           nonModalOverlay
           overlayClassName="bg-black/10 backdrop-blur-[5px]"
-          className="max-h-[calc(100dvh-32px)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-xl border-[#E4EAF8] bg-white p-6"
+          className="max-h-[calc(100dvh-32px)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-xl border-[#E4EAF8] bg-white p-5"
         >
           <DialogHeader>
-            <DialogTitle className="text-xl font-medium text-[#0E1224]">
+            <DialogTitle className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
               {addTarget ? dialogCopy[addTarget].title : "Add item"}
             </DialogTitle>
-            <DialogDescription className="text-base text-[#8B93B8]">
+            <DialogDescription className="text-[0.9375rem]/[1.5rem] text-[#8B93B8]">
               Enter the item you want to add to this task.
             </DialogDescription>
           </DialogHeader>

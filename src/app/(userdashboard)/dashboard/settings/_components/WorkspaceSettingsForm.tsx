@@ -410,7 +410,7 @@ export function WorkspaceSettingsForm() {
   ) =>
     fields.map(([name, label, placeholder, type, readOnly]) => (
       <label key={name} className="min-w-0">
-        <span className="mb-2 block text-base leading-[1.2] text-[#8B93B8]">
+        <span className="mb-2 block text-[0.9375rem]/[1.5rem] leading-[1.2] text-[#8B93B8]">
           {label}
         </span>
         {isLoading ? (
@@ -433,27 +433,27 @@ export function WorkspaceSettingsForm() {
 
   return (
     <section className="overflow-hidden rounded-lg bg-white">
-      <header className="border-b border-[#E4EAF8] p-4">
-        <h2 className="text-xl font-medium text-[#0E1224]">
+      <header className="border-b border-[#E4EAF8] p-3.5">
+        <h2 className="text-base font-medium text-[#0E1224]">
           Company Details
         </h2>
       </header>
 
       <form onSubmit={submit}>
-        <div className="p-4">
+        <div className="p-3.5">
           <div className="grid gap-4 sm:grid-cols-2">
             {renderFields(companyFields)}
           </div>
 
-          <h3 className="mb-3 mt-6 text-xl font-medium text-[#0E1224]">
+          <h3 className="mb-2.5 mt-5 text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
             Workspace Preferences
           </h3>
           <div className="grid gap-4 sm:grid-cols-2">
             {renderFields(workspaceFields)}
           </div>
-          <div className="mt-4 flex min-h-[62px] items-center justify-between gap-4 rounded-xl bg-[#F5F7FF] px-4 py-3">
+          <div className="mt-3.5 flex min-h-[62px] items-center justify-between gap-4 rounded-xl bg-[#F5F7FF] px-3.5 py-2.5">
             <div className="min-w-0">
-              <h4 className="text-base font-medium text-[#0E1224]">
+              <h4 className="text-[0.9375rem]/[1.5rem] font-medium text-[#0E1224]">
                 Maintenance Mode
               </h4>
               <p className="mt-1 text-xs text-[#8B93B8]">
@@ -485,14 +485,14 @@ export function WorkspaceSettingsForm() {
             )}
           </div>
 
-          <h3 className="mb-3 mt-6 text-xl font-medium text-[#0E1224]">
+          <h3 className="mb-2.5 mt-5 text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
             Service Address
           </h3>
           <div className="grid gap-4 sm:grid-cols-2">
             {renderFields(addressFields)}
           </div>
 
-          <h3 className="mb-4 mt-6 text-xl font-medium text-[#0E1224]">
+          <h3 className="mb-3.5 mt-5 text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
             Company Logo
           </h3>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -527,14 +527,14 @@ export function WorkspaceSettingsForm() {
                 type="button"
                 onClick={() => fileInput.current?.click()}
                 disabled={updateOrganization.isPending}
-                className="flex min-h-[107px] w-full flex-col items-center justify-center gap-2 rounded-xl bg-[#F5F7FF] p-4 text-[#264AFF] outline-none transition-colors hover:bg-[#EEF2FF] focus-visible:ring-2 focus-visible:ring-[#5B7FF0] disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex min-h-[107px] w-full flex-col items-center justify-center gap-2 rounded-xl bg-[#F5F7FF] p-3.5 text-[#264AFF] outline-none transition-colors hover:bg-[#EEF2FF] focus-visible:ring-2 focus-visible:ring-[#5B7FF0] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <CloudUpload
                   className="size-10"
                   strokeWidth={1.15}
                   aria-hidden="true"
                 />
-                <span className="max-w-full truncate text-base leading-[1.2]">
+                <span className="max-w-full truncate text-[0.9375rem]/[1.5rem] leading-[1.2]">
                   {logoFile?.name || "Choose logo"}
                 </span>
                 <span className="text-xs text-[#8B93B8]">
@@ -548,7 +548,7 @@ export function WorkspaceSettingsForm() {
               type="button"
               onClick={() => setLogoFile(null)}
               disabled={updateOrganization.isPending}
-              className="mt-2 inline-flex h-9 items-center gap-2 rounded-lg px-3 text-sm text-[#8B93B8] transition hover:bg-[#F5F7FF] hover:text-[#0E1224] disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 inline-flex h-9 items-center gap-2 rounded-lg px-2.5 text-sm text-[#8B93B8] transition hover:bg-[#F5F7FF] hover:text-[#0E1224] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <X className="size-4" />
               Remove selected logo
@@ -556,7 +556,7 @@ export function WorkspaceSettingsForm() {
           )}
         </div>
 
-        <footer className="border-t border-[#E4EAF8] p-4">
+        <footer className="border-t border-[#E4EAF8] p-3.5">
           <Button
             type="submit"
             disabled={
@@ -565,7 +565,7 @@ export function WorkspaceSettingsForm() {
               updateMaintenanceMode.isPending ||
               !hasChanges
             }
-            className="h-[51px] w-full rounded-[12px] bg-[#5B7FF0] px-8 text-sm font-normal text-white shadow-none hover:bg-[#4E6FDE] sm:w-auto"
+            className="h-[51px] w-full rounded-[12px] bg-[#5B7FF0] px-7 text-sm font-normal text-white shadow-none hover:bg-[#4E6FDE] sm:w-auto"
           >
             {updateOrganization.isPending ? "Saving..." : "Save Changes"}
           </Button>

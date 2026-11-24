@@ -40,7 +40,7 @@ function getResponseMessage(result: MeetingResponse, fallback: string) {
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="block min-w-0">
-      <span className="mb-2 block text-base leading-[1.2] text-[#8B93B8]">
+      <span className="mb-2 block text-[0.9375rem]/[1.5rem] leading-[1.2] text-[#8B93B8]">
         {label}
       </span>
       {children}
@@ -228,9 +228,9 @@ export function NewMeetingModal({
         overlayClassName="bg-[#0E1224]/30 backdrop-blur-[6px] "
         className="flex max-h-[calc(100dvh-64px)] w-[calc(100%-24px)] max-w-[780px] flex-col gap-0 overflow-hidden !rounded-[12px] border-0 bg-white p-0 shadow-[0_24px_80px_rgba(14,18,36,0.24)] sm:max-h-[760px]"
       >
-        <header className="flex shrink-0 items-start justify-between border-b border-[#E4EAF8] bg-white px-5 py-4 sm:px-7 sm:py-5">
+        <header className="flex shrink-0 items-start justify-between border-b border-[#E4EAF8] bg-white px-[1.125rem] py-3.5 sm:px-6 sm:py-[1.125rem]">
           <div>
-            <DialogTitle className="text-xl font-semibold leading-normal text-[#0E1224] sm:text-2xl">
+            <DialogTitle className="text-[1.1875rem]/[1.75rem] font-semibold leading-normal text-[#0E1224] sm:text-[1.375rem]/[2rem]">
               Schedule Meeting
             </DialogTitle>
             <p className="mt-1 text-sm text-[#8B93B8]">
@@ -247,7 +247,7 @@ export function NewMeetingModal({
         <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
           <div
             data-lenis-prevent
-            className="min-h-0 flex-1 touch-pan-y space-y-4 overflow-y-auto overscroll-contain px-5 py-5 [scrollbar-color:#B8C4EE_transparent] [scrollbar-width:thin] sm:px-7 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#B8C4EE] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+            className="min-h-0 flex-1 touch-pan-y space-y-4 overflow-y-auto overscroll-contain px-[1.125rem] py-[1.125rem] [scrollbar-color:#B8C4EE_transparent] [scrollbar-width:thin] sm:px-6 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#B8C4EE] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Meeting Title*">
@@ -261,7 +261,7 @@ export function NewMeetingModal({
                 />
               </Field>
               <Field label={`Invitee emails*${invitees.length ? ` (${invitees.length})` : ""}`}>
-                <div className="flex min-h-[51px] w-full flex-wrap items-center gap-1.5 rounded-[12px] bg-[#F5F7FF] px-3 py-2 focus-within:ring-1 focus-within:ring-[#5B7FF0]">
+                <div className="flex min-h-[51px] w-full flex-wrap items-center gap-1.5 rounded-[12px] bg-[#F5F7FF] px-2.5 py-2 focus-within:ring-1 focus-within:ring-[#5B7FF0]">
                   {invitees.map((email) => (
                     <span key={email} className="flex max-w-full items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-xs font-medium text-[#44506F] shadow-sm ring-1 ring-[#E4EAF8]">
                       <span className="max-w-[180px] truncate">{email}</span>
@@ -300,7 +300,7 @@ export function NewMeetingModal({
                 required
                 name="agenda"
                 placeholder="Review progress and agree next steps"
-                className={`${fieldClassName} min-h-[92px] resize-none py-3`}
+                className={`${fieldClassName} min-h-[92px] resize-none py-2.5`}
               />
             </Field>
             <div className="grid gap-2 sm:grid-cols-2">
@@ -378,9 +378,9 @@ export function NewMeetingModal({
                 />
               </Field>
             </div>
-            <label className="flex items-center justify-between gap-4 rounded-[12px] bg-[#F5F7FF] px-4 py-3">
+            <label className="flex items-center justify-between gap-4 rounded-[12px] bg-[#F5F7FF] px-3.5 py-2.5">
               <span>
-                <span className="block text-base text-[#0E1224]">
+                <span className="block text-[0.9375rem]/[1.5rem] text-[#0E1224]">
                   Send AI Notetaker
                 </span>
                 <span className="mt-1 block text-xs text-[#8B93B8]">
@@ -405,17 +405,17 @@ export function NewMeetingModal({
               </Field>
             )}
           </div>
-          <footer className="grid shrink-0 gap-3 border-t border-[#E4EAF8] bg-white px-5 py-4 sm:grid-cols-2 sm:gap-4 sm:px-7">
+          <footer className="grid shrink-0 gap-3 border-t border-[#E4EAF8] bg-white px-[1.125rem] py-3.5 sm:grid-cols-2 sm:gap-4 sm:px-6">
             <DialogClose
               type="button"
-              className="h-[52px] rounded-[8px] border border-[#5B7FF0] text-base font-medium text-[#5B7FF0] transition-colors hover:bg-[#5B7FF0]/5"
+              className="h-[52px] rounded-[8px] border border-[#5B7FF0] text-[0.9375rem]/[1.5rem] font-medium text-[#5B7FF0] transition-colors hover:bg-[#5B7FF0]/5"
             >
               Cancel
             </DialogClose>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="h-[52px] rounded-[8px] bg-[#5B7FF0] text-base font-medium text-white transition-colors hover:bg-[#4E6FDE] disabled:cursor-not-allowed disabled:opacity-70"
+              className="h-[52px] rounded-[8px] bg-[#5B7FF0] text-[0.9375rem]/[1.5rem] font-medium text-white transition-colors hover:bg-[#4E6FDE] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isSubmitting ? "Scheduling..." : "Schedule"}
             </button>

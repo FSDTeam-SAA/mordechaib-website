@@ -209,13 +209,13 @@ export default function NotificationPanel({
       <section
         aria-label="Notifications"
         aria-modal="true"
-        className="fixed right-3 top-[74px] z-50 flex w-[calc(100vw-1.5rem)] max-w-[390px] flex-col overflow-hidden rounded-2xl bg-white p-4 shadow-[0_24px_64px_rgba(15,23,42,0.22)] sm:right-6 sm:top-[74px]"
+        className="fixed right-3 top-[74px] z-50 flex w-[calc(100vw-1.5rem)] max-w-[390px] flex-col overflow-hidden rounded-2xl bg-white p-3.5 shadow-[0_24px_64px_rgba(15,23,42,0.22)] sm:right-6 sm:top-[74px]"
         id="notifications-panel"
         role="dialog"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-[#0E1224]">
+            <h2 className="text-[1.0625rem]/[1.75rem] font-semibold text-[#0E1224]">
               Notifications
             </h2>
             <p className="mt-0.5 text-sm text-[#8B93B8]">
@@ -242,7 +242,7 @@ export default function NotificationPanel({
           </div>
         </div>
 
-        <div className="mt-4 flex gap-1 overflow-x-auto border-y border-[#EDF0FB] py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mt-3.5 flex gap-1 overflow-x-auto border-y border-[#EDF0FB] py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {filters.map((filter) => {
             const isActive = activeFilter === filter.label;
             const label =
@@ -252,7 +252,7 @@ export default function NotificationPanel({
 
             return (
               <button
-                className={`shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition ${
+                className={`shrink-0 rounded-md px-2.5 py-1.5 text-xs font-medium transition ${
                   isActive
                     ? "bg-[#5B7FF0] text-white shadow-sm"
                     : "text-[#8B93B8] hover:bg-[#F5F7FF] hover:text-[#4F73E8]"
@@ -268,14 +268,14 @@ export default function NotificationPanel({
         </div>
 
         {errorMessage && (
-          <p className="mt-3 rounded-md bg-[#FFF1F2] px-3 py-2 text-xs text-[#C2414C]">
+          <p className="mt-2.5 rounded-md bg-[#FFF1F2] px-2.5 py-2 text-xs text-[#C2414C]">
             {errorMessage}
           </p>
         )}
 
         <div className="mt-2 max-h-[min(54vh,360px)] space-y-2 overflow-y-auto pr-1">
           {notificationsQuery.isLoading ? (
-            <div className="py-10 text-center text-sm text-[#8B93B8]">
+            <div className="py-[2.25rem] text-center text-sm text-[#8B93B8]">
               Loading notifications...
             </div>
           ) : notifications.length > 0 ? (
@@ -285,7 +285,7 @@ export default function NotificationPanel({
 
               return (
                 <article
-                  className={`relative cursor-pointer overflow-hidden rounded-lg border border-[#EEF1FA] bg-[#F8F9FE] py-2.5 pl-3 pr-8 transition hover:bg-[#F4F6FD] ${
+                  className={`relative cursor-pointer overflow-hidden rounded-lg border border-[#EEF1FA] bg-[#F8F9FE] py-2.5 pl-2.5 pr-7 transition hover:bg-[#F4F6FD] ${
                     isRead ? "opacity-75" : ""
                   }`}
                   key={notification.id}
@@ -339,7 +339,7 @@ export default function NotificationPanel({
               );
             })
           ) : (
-            <div className="py-10 text-center text-sm text-[#8B93B8]">
+            <div className="py-[2.25rem] text-center text-sm text-[#8B93B8]">
               No notifications to show.
             </div>
           )}
@@ -347,7 +347,7 @@ export default function NotificationPanel({
 
         {notificationsQuery.hasNextPage && (
           <button
-            className="mt-3 flex items-center justify-center gap-1 rounded-md py-2 text-xs font-medium text-[#4F73E8] transition hover:bg-[#F5F7FF] disabled:opacity-60"
+            className="mt-2.5 flex items-center justify-center gap-1 rounded-md py-2 text-xs font-medium text-[#4F73E8] transition hover:bg-[#F5F7FF] disabled:opacity-60"
             disabled={notificationsQuery.isFetchingNextPage}
             onClick={() => notificationsQuery.fetchNextPage()}
             type="button"

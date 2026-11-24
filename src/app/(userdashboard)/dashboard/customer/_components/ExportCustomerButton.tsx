@@ -87,7 +87,7 @@ export function ExportCustomerButton({ customers }: ExportCustomerButtonProps) {
       type="button"
       onClick={handleExport}
       title="Export customer contacts as CSV"
-      className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] border border-[#DCE6FA] bg-white px-3.5 text-sm font-medium text-[#246BFD] transition hover:bg-[#EEF3FF] hover:border-[#B8C4EE]"
+      className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] border border-[#DCE6FA] bg-white px-3 text-sm font-medium text-[#246BFD] transition hover:bg-[#EEF3FF] hover:border-[#B8C4EE]"
     >
       <Download className="size-4" /> Export Customer
     </button>

@@ -39,7 +39,7 @@ export function MeetingActionConfirmationModal({
     >
       <DialogContent
         overlayClassName="bg-[#0E1224]/40 backdrop-blur-[4px]"
-        className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-6 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
+        className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-5 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
       >
         <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#EF4444]/10 text-[#EF4444]">
           {isCancel ? (
@@ -48,7 +48,7 @@ export function MeetingActionConfirmationModal({
             <Trash2 className="size-5" />
           )}
         </span>
-        <DialogTitle className="mt-4 text-xl font-semibold text-[#0E1224]">
+        <DialogTitle className="mt-3.5 text-[1.1875rem]/[1.75rem] font-semibold text-[#0E1224]">
           {actionLabel}?
         </DialogTitle>
         <DialogDescription className="mt-2 text-sm leading-6 text-[#73809B]">
@@ -58,7 +58,7 @@ export function MeetingActionConfirmationModal({
           </strong>
           ?{!isCancel && " This action cannot be undone."}
         </DialogDescription>
-        <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="mt-5 grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={() => onOpenChange(false)}

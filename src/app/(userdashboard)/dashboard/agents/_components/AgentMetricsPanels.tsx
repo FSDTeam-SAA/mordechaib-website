@@ -1,7 +1,7 @@
 import { Check, Play } from "lucide-react";
 import { formatDuration, formatMetric, type AgentDashboardData } from "./agentDashboardTypes";
 const rows = (items: readonly (readonly [string, string])[]) => (
-  <div className="mt-4 space-y-2">
+  <div className="mt-3.5 space-y-2">
     {items.map(([label, value]) => (
       <div
         key={label}
@@ -20,11 +20,11 @@ export function AgentMetricsPanels({ data }: { data: AgentDashboardData }) {
   const revenue = data.items.find((agent) => agent.revenueAttribution.availability === "AVAILABLE")?.revenueAttribution;
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <section className="rounded-2xl bg-white p-6">
-        <h2 className="border-b border-[#E4EAF8] pb-4 text-xl font-medium">
+      <section className="rounded-2xl bg-white p-5">
+        <h2 className="border-b border-[#E4EAF8] pb-3.5 text-[1.1875rem]/[1.75rem] font-medium">
           Agent Capacity &amp; Load
         </h2>
-        <div className="mt-4 flex flex-col items-center gap-5 sm:flex-row">
+        <div className="mt-3.5 flex flex-col items-center gap-5 sm:flex-row">
           <div
             className="flex size-[160px] shrink-0 items-center justify-center rounded-full"
             style={{
@@ -32,7 +32,7 @@ export function AgentMetricsPanels({ data }: { data: AgentDashboardData }) {
             }}
           >
             <div className="flex size-[134px] flex-col items-center justify-center rounded-full bg-white">
-              <strong className="text-2xl">{capacity.utilizationPercent === null ? "—" : `${capacity.utilizationPercent}%`}</strong>
+              <strong className="text-[1.375rem]/[2rem]">{capacity.utilizationPercent === null ? "—" : `${capacity.utilizationPercent}%`}</strong>
               <span className="text-xs">Utilization</span>
             </div>
           </div>
@@ -55,11 +55,11 @@ export function AgentMetricsPanels({ data }: { data: AgentDashboardData }) {
           </div>
         </div>
       </section>
-      <section className="rounded-2xl bg-white p-6">
-        <h2 className="border-b border-[#E4EAF8] pb-4 text-xl font-medium">
+      <section className="rounded-2xl bg-white p-5">
+        <h2 className="border-b border-[#E4EAF8] pb-3.5 text-[1.1875rem]/[1.75rem] font-medium">
           Agent Compliance &amp; Audit
         </h2>
-        <div className="mt-4 space-y-2">
+        <div className="mt-3.5 space-y-2">
           {[
             ["Compliance Score", compliance ? formatMetric(compliance) : "Unavailable"],
             ["Approval Required", String(data.items.filter((agent) => agent.organizationSettings.approvalRequired).length)],
@@ -79,8 +79,8 @@ export function AgentMetricsPanels({ data }: { data: AgentDashboardData }) {
           ))}
         </div>
       </section>
-      <section className="rounded-2xl bg-white p-6">
-        <h2 className="border-b border-[#E4EAF8] pb-4 text-xl font-medium">
+      <section className="rounded-2xl bg-white p-5">
+        <h2 className="border-b border-[#E4EAF8] pb-3.5 text-[1.1875rem]/[1.75rem] font-medium">
           Revenue Attribution
         </h2>
         {rows([
@@ -90,8 +90,8 @@ export function AgentMetricsPanels({ data }: { data: AgentDashboardData }) {
           ["Executed", String(data.items.reduce((sum, agent) => sum + agent.performance.proposals.executed, 0))],
         ])}
       </section>
-      <section className="rounded-2xl bg-white p-6">
-        <h2 className="border-b border-[#E4EAF8] pb-4 text-xl font-medium">
+      <section className="rounded-2xl bg-white p-5">
+        <h2 className="border-b border-[#E4EAF8] pb-3.5 text-[1.1875rem]/[1.75rem] font-medium">
           Agent Health &amp; Diagnostics
         </h2>
         {rows([

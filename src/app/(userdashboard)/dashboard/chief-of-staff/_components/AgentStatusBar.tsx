@@ -44,12 +44,12 @@ function statusStyle(status: string) {
 
 function AgentStatusSkeleton() {
   return (
-    <div className="mt-4 rounded-lg border border-[#E4EAF8] bg-[#FAFBFF] p-3" aria-busy="true" aria-label="Loading agent status">
+    <div className="mt-3.5 rounded-lg border border-[#E4EAF8] bg-[#FAFBFF] p-2.5" aria-busy="true" aria-label="Loading agent status">
       <div className="flex items-center gap-2 text-xs text-[#667085]">
         <Loader2 className="size-4 animate-spin text-[#5B7FF0]" />
         Checking your AI workforce...
       </div>
-      <div className="mt-3 flex gap-3 overflow-hidden">
+      <div className="mt-2.5 flex gap-3 overflow-hidden">
         {Array.from({ length: 6 }, (_, index) => (
           <div key={index} className="h-8 w-36 shrink-0 animate-pulse rounded-lg bg-[#EAF0FF]" />
         ))}
@@ -87,13 +87,13 @@ export function AgentStatusBar() {
     : "Please check your connection and try again.";
 
   return (
-    <section className="rounded-lg bg-white p-3" aria-label="Agent status">
-      <h2 className="border-b border-[#E4EAF8] pb-4 text-base font-medium">Agent Status</h2>
+    <section className="rounded-lg bg-white p-2.5" aria-label="Agent status">
+      <h2 className="border-b border-[#E4EAF8] pb-3.5 text-[0.9375rem]/[1.5rem] font-medium">Agent Status</h2>
 
       {sessionStatus === "loading" || workforceQuery.isLoading ? <AgentStatusSkeleton /> : null}
 
       {workforceQuery.isError ? (
-        <div className="mt-4 flex min-h-[76px] flex-col items-stretch gap-3 rounded-lg border border-[#FECACA] bg-[#FEF2F2] p-3 sm:flex-row sm:items-center sm:justify-between" role="alert">
+        <div className="mt-3.5 flex min-h-[76px] flex-col items-stretch gap-3 rounded-lg border border-[#FECACA] bg-[#FEF2F2] p-2.5 sm:flex-row sm:items-center sm:justify-between" role="alert">
           <div className="flex min-w-0 items-start gap-2">
             <AlertCircle className="mt-0.5 size-4 shrink-0 text-[#EF4444]" />
             <div className="min-w-0">
@@ -109,11 +109,15 @@ export function AgentStatusBar() {
 
       {!workforceQuery.isLoading && !workforceQuery.isError && sessionStatus !== "loading" ? (
         agents.length ? (
-          <div className="mt-4 flex gap-3 overflow-x-auto overscroll-x-contain pb-1" aria-live="polite">
+          <div
+            data-lenis-prevent
+            className="mt-2.5 flex gap-2 overflow-x-auto overscroll-x-contain pb-1"
+            aria-live="polite"
+          >
             {agents.map((agent) => {
               const status = agent.runtimeStatus || agent.status || "UNKNOWN";
               return (
-                <div key={agent.id} className="flex shrink-0 items-center rounded-lg bg-[#F5F7FF] px-3 py-2 text-xs">
+                <div key={agent.id} className="flex shrink-0 items-center rounded-lg bg-[#F5F7FF] px-2.5 py-2 text-xs">
                   <span>{labelOf(agent.type)} Agent</span>
                   <span className={`ml-[18px] inline-flex items-center gap-1.5 before:size-1.5 before:rounded-full ${statusStyle(status)}`}>
                     {labelOf(status)}
@@ -122,7 +126,7 @@ export function AgentStatusBar() {
               );
             })}
           </div>
-        ) : <div className="mt-4 flex min-h-[76px] items-center gap-3 rounded-lg border border-dashed border-[#CBD5EE] bg-[#FAFBFF] p-3"><span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#EAF0FF] text-[#5B7FF0]"><UsersRound className="size-5" /></span><div><p className="text-sm font-medium text-[#252B48]">No agents found</p><p className="mt-0.5 text-xs text-[#8B93B8]">AI agents will appear here once they are available for your workspace.</p></div></div>
+        ) : <div className="mt-3.5 flex min-h-[76px] items-center gap-3 rounded-lg border border-dashed border-[#CBD5EE] bg-[#FAFBFF] p-2.5"><span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#EAF0FF] text-[#5B7FF0]"><UsersRound className="size-5" /></span><div><p className="text-sm font-medium text-[#252B48]">No agents found</p><p className="mt-0.5 text-xs text-[#8B93B8]">AI agents will appear here once they are available for your workspace.</p></div></div>
       ) : null}
     </section>
   );

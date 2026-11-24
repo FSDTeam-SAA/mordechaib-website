@@ -3,7 +3,7 @@ import { SettingsNavigation } from "./SettingsNavigation";
 
 export function SettingsPageLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="grid items-start gap-4 p-4 pb-10 lg:grid-cols-[364px_minmax(0,1fr)]">
+    <div className="grid items-start gap-3 min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5 lg:grid-cols-[minmax(208px,24%)_minmax(0,1fr)]">
       <SettingsNavigation />
       {children}
     </div>

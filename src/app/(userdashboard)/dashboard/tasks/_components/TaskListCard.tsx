@@ -20,11 +20,11 @@ export function TaskListCard({
   onDelete,
 }: TaskListCardProps) {
   return (
-    <section className="rounded-xl bg-white p-6">
-      <header className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
+    <section className="rounded-xl bg-white p-5">
+      <header className="flex items-center justify-between border-b border-[#E4EAF8] pb-3.5">
         <div className="flex items-center gap-2">
           <i className={`h-7 w-1 rounded-full ${accent}`} />
-          <h2 className="text-xl font-medium text-[#0E1224]">{title}</h2>
+          <h2 className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">{title}</h2>
           <span className="rounded-lg bg-[#F5F7FF] px-2 py-1 text-sm text-[#8B93B8]">
             {tasks.length}
           </span>
@@ -34,7 +34,7 @@ export function TaskListCard({
           <span>Action</span>
         </div>
       </header>
-      <div className="mt-4 space-y-2">
+      <div className="mt-3.5 space-y-2">
         {tasks.length ? (
           tasks.map((task) => (
             <TaskItem
@@ -47,7 +47,7 @@ export function TaskListCard({
             />
           ))
         ) : (
-          <p className="py-4 text-center text-sm text-[#8B93B8]">
+          <p className="py-3.5 text-center text-sm text-[#8B93B8]">
             No tasks found.
           </p>
         )}

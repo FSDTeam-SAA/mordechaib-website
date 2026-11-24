@@ -54,7 +54,10 @@ export function CustomerTable({
   const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null);
   return (
     <section className="overflow-hidden rounded-lg bg-white">
-      <div className="overflow-x-auto">
+      <div
+        data-lenis-prevent
+        className="overflow-x-auto overscroll-x-contain"
+      >
         <table className="w-full min-w-[1260px] table-fixed text-sm">
           <colgroup>
             <col className="w-[260px]" />
@@ -68,14 +71,14 @@ export function CustomerTable({
           </colgroup>
           <thead>
             <tr className="h-[52px] border-b border-[#E4EAF8] text-left text-[#0E1224]">
-              <th className="px-5 font-normal">Customer</th>
-              <th className="px-5 font-normal">Location</th>
-              <th className="px-5 font-normal">Links</th>
-              <th className="px-5 font-normal">Lead Status</th>
-              <th className="px-5 font-normal">Phone</th>
-              <th className="px-5 font-normal">Company</th>
-              <th className="px-5 text-center font-normal">Status</th>
-              <th className="px-5 text-center font-normal">Action</th>
+              <th className="px-[1.125rem] font-normal">Customer</th>
+              <th className="px-[1.125rem] font-normal">Location</th>
+              <th className="px-[1.125rem] font-normal">Links</th>
+              <th className="px-[1.125rem] font-normal">Lead Status</th>
+              <th className="px-[1.125rem] font-normal">Phone</th>
+              <th className="px-[1.125rem] font-normal">Company</th>
+              <th className="px-[1.125rem] text-center font-normal">Status</th>
+              <th className="px-[1.125rem] text-center font-normal">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -84,7 +87,7 @@ export function CustomerTable({
                 key={customer.id}
                 className="h-[76px] border-b border-[#E4EAF8]/50 text-[#141936] transition-colors last:border-0 hover:bg-[#FAFBFF]"
               >
-                <td className="px-5">
+                <td className="px-[1.125rem]">
                   <div className="flex min-w-0 items-center gap-3">
                     <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#5B7FF0]/10 text-xs font-semibold text-[#5B7FF0]">
                       {customer.avatarUrl ? (
@@ -104,28 +107,28 @@ export function CustomerTable({
                     </div>
                   </div>
                 </td>
-                <td className="px-5">
+                <td className="px-[1.125rem]">
                   <span className="flex items-start gap-2 text-[#44506F]">
                     <MapPin className="mt-0.5 size-4 shrink-0 text-[#8B93B8]" />
                     <span className="line-clamp-2" title={customer.location ?? ""}>{customer.location || "—"}</span>
                   </span>
                 </td>
-                <td className="px-5">
+                <td className="px-[1.125rem]">
                   <div className="space-y-2 text-xs">
                     {customer.website ? <a href={customer.website} target="_blank" rel="noreferrer" title={customer.website} className="flex items-center gap-2 text-[#5B7FF0] hover:underline"><ExternalLink className="size-3.5 shrink-0" /><span className="truncate">{customer.website}</span></a> : <span className="text-[#8B93B8]">No website</span>}
                     {customer.linkedinUrl ? <a href={customer.linkedinUrl} target="_blank" rel="noreferrer" title={customer.linkedinUrl} className="flex items-center gap-2 text-[#3974C6] hover:underline"><Linkedin className="size-3.5 shrink-0" /><span className="truncate">{customer.linkedinUrl}</span></a> : <p className="text-[#8B93B8]">No LinkedIn</p>}
                   </div>
                 </td>
-                <td className="px-5">
+                <td className="px-[1.125rem]">
                   <span className="inline-flex rounded-full bg-[#F59E0B]/10 px-2.5 py-1 text-xs font-medium text-[#D48605]">{label(customer.leadStatus ?? undefined)}</span>
                 </td>
-                <td className="px-5">
+                <td className="px-[1.125rem]">
                   <span className="flex items-center gap-2 text-[#44506F]">
                     <Phone className="size-4 shrink-0 text-[#8B93B8]" />
                     {customer.phone || "—"}
                   </span>
                 </td>
-                <td className="px-5">
+                <td className="px-[1.125rem]">
                   <p
                     className="flex items-center gap-2 truncate font-medium"
                     title={customer.company ?? ""}
@@ -134,24 +137,24 @@ export function CustomerTable({
                     <span className="truncate">{customer.company || "—"}</span>
                   </p>
                   <p
-                    className="mt-1 truncate pl-6 text-xs text-[#8B93B8]"
+                    className="mt-1 truncate pl-5 text-xs text-[#8B93B8]"
                     title={customer.jobTitle ?? ""}
                   >
                     {customer.jobTitle || "No job title"}
                   </p>
                 </td>
-                <td className="px-5 text-center">
+                <td className="px-[1.125rem] text-center">
                   <span
                     className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${statusStyles[customer.status ?? ""] ?? "bg-[#8B93B8]/10 text-[#64748B]"}`}
                   >
                     {label(customer.status)}
                   </span>
                 </td>
-                <td className="px-5">
+                <td className="px-[1.125rem]">
                   <div className="flex items-center justify-center gap-2">
                     <Link
                       href={`/dashboard/crm/${customer.id}`}
-                      className="inline-flex h-8 items-center gap-1.5 rounded-full border border-[#84A9FF] bg-[#EEF3FF] px-3.5 text-xs font-medium text-[#2563EB] transition hover:bg-[#DCE6FA]"
+                      className="inline-flex h-8 items-center gap-1.5 rounded-full border border-[#84A9FF] bg-[#EEF3FF] px-3 text-xs font-medium text-[#2563EB] transition hover:bg-[#DCE6FA]"
                     >
                       <Eye className="size-3.5 shrink-0 text-[#2563EB]" />
                       <span className="underline underline-offset-2">Details</span>
@@ -175,7 +178,7 @@ export function CustomerTable({
             <span className="flex size-11 items-center justify-center rounded-full bg-[#5B7FF0]/10 text-[#5B7FF0]">
               <Users className="size-5" />
             </span>
-            <p className="mt-3 text-sm font-medium text-[#44506F]">
+            <p className="mt-2.5 text-sm font-medium text-[#44506F]">
               No customers found
             </p>
             <p className="mt-1 text-xs text-[#8B93B8]">

@@ -123,14 +123,14 @@ export function SecurityForm() {
 
   return (
     <section className="overflow-hidden rounded-lg bg-white">
-      <header className="border-b border-[#E4EAF8] p-4">
-        <h2 className="text-xl font-medium text-[#0E1224]">Change Password</h2>
+      <header className="border-b border-[#E4EAF8] p-3.5">
+        <h2 className="text-base font-medium text-[#0E1224]">Change Password</h2>
       </header>
       <form onSubmit={submit}>
-        <div className="space-y-2 p-4">
+        <div className="space-y-2 p-3.5">
           {fields.map(([name, label, placeholder]) => (
             <label key={name} className="block">
-              <span className="mb-2 block text-base leading-[1.2] text-[#8B93B8]">
+              <span className="mb-2 block text-[0.9375rem]/[1.5rem] leading-[1.2] text-[#8B93B8]">
                 {label}
               </span>
               <div className="relative">
@@ -148,7 +148,7 @@ export function SecurityForm() {
                   minLength={name === "currentPassword" ? undefined : 8}
                   required
                   disabled={changePassword.isPending}
-                  className="h-[51px] rounded-xl border-0 bg-[#F5F7FF] p-4 pr-12 text-base text-[#0E1224] shadow-none placeholder:text-[#8B93B8] focus-visible:ring-1 focus-visible:ring-[#5B7FF0] md:text-base"
+                  className="h-[51px] rounded-xl border-0 bg-[#F5F7FF] p-3.5 pr-10 text-base text-[#0E1224] shadow-none placeholder:text-[#8B93B8] focus-visible:ring-1 focus-visible:ring-[#5B7FF0] md:text-base"
                 />
                 <button
                   type="button"
@@ -177,13 +177,13 @@ export function SecurityForm() {
             </label>
           ))}
         </div>
-        <footer className="border-t border-[#E4EAF8] p-4">
+        <footer className="border-t border-[#E4EAF8] p-3.5">
           <Button
             type="submit"
             disabled={
               sessionStatus !== "authenticated" || changePassword.isPending
             }
-            className="h-[51px] w-full rounded-[12px] bg-[#5B7FF0] px-8 text-sm font-normal text-white shadow-none hover:bg-[#4E6FDE] sm:w-auto"
+            className="h-[51px] w-full rounded-[12px] bg-[#5B7FF0] px-7 text-sm font-normal text-white shadow-none hover:bg-[#4E6FDE] sm:w-auto"
           >
             {changePassword.isPending ? "Saving..." : "Save Changes"}
           </Button>

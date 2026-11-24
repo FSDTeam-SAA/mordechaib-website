@@ -61,13 +61,13 @@ function UpcomingMeetingsSkeleton() {
     <article
       aria-busy="true"
       aria-label="Loading upcoming meetings"
-      className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6"
+      className="min-w-0 overflow-hidden rounded-2xl bg-white p-3 sm:p-4"
     >
-      <div className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
+      <div className="flex items-center justify-between border-b border-[#E4EAF8] pb-2">
         <div className="h-7 w-44 animate-pulse rounded bg-[#F5F7FF]" />
         <div className="h-5 w-28 animate-pulse rounded bg-[#F5F7FF]" />
       </div>
-      <div className="mt-4 space-y-2">
+      <div className="mt-2.5 space-y-2">
         {Array.from({ length: 4 }, (_, index) => (
           <div key={index} className="flex animate-pulse gap-2 py-1">
             <span className="w-1.5 rounded-full bg-[#F5F7FF]" />
@@ -78,7 +78,7 @@ function UpcomingMeetingsSkeleton() {
           </div>
         ))}
       </div>
-      <div className="mt-4 h-12 w-full animate-pulse rounded-lg bg-[#F5F7FF] sm:h-[52px]" />
+      <div className="mt-2.5 h-10 w-full animate-pulse rounded-lg bg-[#F5F7FF]" />
     </article>
   );
 }
@@ -94,27 +94,27 @@ function UpcomingMeetingsState({
   const Icon = isError ? AlertCircle : CalendarX2;
 
   return (
-    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
-      <DashboardSectionHeader action="View Calendar" href="/dashboard/calendar">
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-3 sm:p-4">
+      <DashboardSectionHeader compact action="View Calendar" href="/dashboard/calendar">
         Upcoming Meetings
       </DashboardSectionHeader>
-      <div className="flex min-h-[166px] w-full flex-col items-center justify-center px-1 text-center">
+      <div className="flex min-h-28 w-full flex-col items-center justify-center px-1 py-3 text-center">
         <Icon
-          className={`size-8 ${isError ? "text-[#EF4444]" : "text-[#8B93B8]"}`}
+          className={`size-6 ${isError ? "text-[#EF4444]" : "text-[#8B93B8]"}`}
         />
-        <p className="mt-2 max-w-full break-words text-sm font-medium text-[#0E1224]">
+        <p className="mt-2 max-w-full break-words text-xs font-medium text-[#0E1224]">
           {isError
             ? "Upcoming meetings could not be loaded"
             : "No upcoming meetings"}
         </p>
-        <p className="mt-1 max-w-full break-words text-sm text-[#8B93B8]">
+        <p className="mt-1 max-w-full break-words text-xs text-[#8B93B8]">
           {error || "There are no upcoming meetings scheduled yet."}
         </p>
         {onRetry && (
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
+            className="mt-2.5 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-3.5 text-xs font-medium text-white"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -122,7 +122,7 @@ function UpcomingMeetingsState({
         )}
       </div>
       <Link href="/dashboard/calendar">
-        <button className="mt-4 min-h-12 w-full rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white sm:min-h-[52px]">
+        <button className="mt-2.5 min-h-10 w-full rounded-lg bg-[#5B7FF0] px-3.5 text-xs font-medium text-white">
           Schedule Meeting
         </button>
       </Link>
@@ -185,23 +185,23 @@ export function UpcomingMeetingsCard() {
   }
 
   return (
-    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
-      <DashboardSectionHeader action="View Calendar" href="/dashboard/calendar">
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-3 sm:p-4">
+      <DashboardSectionHeader compact action="View Calendar" href="/dashboard/calendar">
         Upcoming Meetings
       </DashboardSectionHeader>
-      <div className="mt-4 space-y-2">
+      <div className="mt-2.5 space-y-2">
         {meetings.map((meeting, index) => (
           <div key={meeting.id} className="flex min-w-0 gap-2 py-1">
             <span
               className={`w-1.5 rounded-full ${meetingAccents[index % meetingAccents.length]}`}
             />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-[#0E1224]">
+              <p className="truncate text-xs font-medium text-[#0E1224]">
                 {meeting.title}
               </p>
-              <p className="mt-1 text-sm leading-5 text-[#8B93B8]">
+              <p className="mt-0.5 text-xs leading-4 text-[#8B93B8]">
                 {formatMeetingTime(meeting.startsAt, meeting.timezone)}
-                <span className="mx-3">•</span>
+                <span className="mx-2.5">•</span>
                 {formatDuration(meeting.durationMinutes)}
               </p>
             </div>
@@ -209,7 +209,7 @@ export function UpcomingMeetingsCard() {
         ))}
       </div>
       <Link href="/dashboard/calendar">
-        <button className="mt-4 min-h-12 w-full rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white sm:min-h-[52px]">
+        <button className="mt-2.5 min-h-10 w-full rounded-lg bg-[#5B7FF0] px-3.5 text-xs font-medium text-white">
           Schedule Meeting
         </button>
       </Link>

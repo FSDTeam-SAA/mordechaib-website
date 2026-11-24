@@ -12,7 +12,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F5F7FF]">
+    <div data-user-dashboard className="min-h-screen bg-[#F5F7FF]">
       <Sidebar collapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
       <Suspense fallback={<HeaderFallback />}>
         <Header sidebarCollapsed={sidebarCollapsed} />

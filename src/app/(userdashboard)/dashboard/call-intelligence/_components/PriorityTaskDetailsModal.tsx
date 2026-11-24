@@ -70,7 +70,7 @@ const formatDate = (value?: string | null) =>
 
 function LoadingState() {
   return (
-    <div className="space-y-4 p-5 sm:p-6">
+    <div className="space-y-4 p-[1.125rem] sm:p-5">
       {["h-8 w-2/3", "h-20 w-full", "h-28 w-full", "h-16 w-full"].map((size) => (
         <div key={size} className={`animate-pulse rounded-[12px] bg-[#F5F7FF] ${size}`} />
       ))}
@@ -191,9 +191,9 @@ export function PriorityTaskDetailsModal({ proposalId, open, onOpenChange }: Pri
         overlayClassName="bg-black/30 backdrop-blur-[3px]"
         className="flex max-h-[calc(100dvh-32px)] w-[calc(100%-24px)] max-w-[720px] flex-col gap-0 overflow-hidden !rounded-[16px] border-0 bg-white p-0 shadow-xl"
       >
-        <header className="flex items-center justify-between border-b border-[#E4EAF8] px-5 py-4 sm:px-6">
+        <header className="flex items-center justify-between border-b border-[#E4EAF8] px-[1.125rem] py-3.5 sm:px-5">
           <div>
-            <DialogTitle className="text-xl font-medium text-[#0E1224]">{isMeeting ? "Meeting Schedule Details" : "Priority Task Details"}</DialogTitle>
+            <DialogTitle className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">{isMeeting ? "Meeting Schedule Details" : "Priority Task Details"}</DialogTitle>
             <DialogDescription className="mt-1 text-sm text-[#8B93B8]">AI-generated proposal information</DialogDescription>
           </div>
           <DialogClose asChild>
@@ -207,14 +207,14 @@ export function PriorityTaskDetailsModal({ proposalId, open, onOpenChange }: Pri
           {proposalQuery.isPending ? (
             <LoadingState />
           ) : proposalQuery.isError || !proposal ? (
-            <div className="flex min-h-72 flex-col items-center justify-center p-6 text-center">
+            <div className="flex min-h-72 flex-col items-center justify-center p-5 text-center">
               <p className="text-sm text-[#8B93B8]">{proposalQuery.error instanceof Error ? proposalQuery.error.message : "Unable to load proposal details."}</p>
-              <button type="button" onClick={() => void proposalQuery.refetch()} className="mt-4 inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#5B7FF0] px-4 text-sm text-white">
+              <button type="button" onClick={() => void proposalQuery.refetch()} className="mt-3.5 inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#5B7FF0] px-3.5 text-sm text-white">
                 <RefreshCw className="size-4" /> Try Again
               </button>
             </div>
           ) : (
-            <div className="space-y-6 p-5 sm:p-6">
+            <div className="space-y-6 p-[1.125rem] sm:p-5">
               {isEditing ? (
                 <section className="space-y-4">
                   <label className="block text-sm font-medium text-[#0E1224]">Title<input value={form.title || ""} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} className={inputClass} /></label>
@@ -226,23 +226,23 @@ export function PriorityTaskDetailsModal({ proposalId, open, onOpenChange }: Pri
                   <div>
                     <label htmlFor="proposal-tag" className="block text-sm font-medium text-[#0E1224]">Tags</label>
                     <div className="mt-1.5 flex gap-2">
-                      <input id="proposal-tag" value={tagInput} onChange={(event) => setTagInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === ",") { event.preventDefault(); addTag(); } }} placeholder="Type a tag and press Enter" className="min-w-0 flex-1 rounded-[8px] border border-[#E4EAF8] bg-white px-3 py-2.5 text-sm text-[#0E1224] outline-none focus:border-[#5B7FF0] focus:ring-2 focus:ring-[#5B7FF0]/10" />
-                      <button type="button" onClick={addTag} disabled={!tagInput.trim()} className="inline-flex h-[42px] items-center gap-1 rounded-[8px] bg-[#5B7FF0] px-4 text-sm font-medium text-white disabled:opacity-50"><Plus className="size-4" /> Add</button>
+                      <input id="proposal-tag" value={tagInput} onChange={(event) => setTagInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === ",") { event.preventDefault(); addTag(); } }} placeholder="Type a tag and press Enter" className="min-w-0 flex-1 rounded-[8px] border border-[#E4EAF8] bg-white px-2.5 py-2.5 text-sm text-[#0E1224] outline-none focus:border-[#5B7FF0] focus:ring-2 focus:ring-[#5B7FF0]/10" />
+                      <button type="button" onClick={addTag} disabled={!tagInput.trim()} className="inline-flex h-[42px] items-center gap-1 rounded-[8px] bg-[#5B7FF0] px-3.5 text-sm font-medium text-white disabled:opacity-50"><Plus className="size-4" /> Add</button>
                     </div>
-                    {(form.tags || []).length ? <div className="mt-3 flex flex-wrap gap-2">{form.tags?.map((tag) => <span key={tag} className="inline-flex items-center gap-1.5 rounded-[999px] bg-[#5B7FF0]/10 px-3 py-1.5 text-sm text-[#5B7FF0]">#{tag}<button type="button" aria-label={`Remove ${tag} tag`} onClick={() => setForm((current) => ({ ...current, tags: current.tags?.filter((item) => item !== tag) }))} className="flex size-4 items-center justify-center rounded-[999px] hover:bg-[#5B7FF0]/15"><X className="size-3" /></button></span>)}</div> : <p className="mt-2 text-xs text-[#8B93B8]">No tags added yet.</p>}
+                    {(form.tags || []).length ? <div className="mt-2.5 flex flex-wrap gap-2">{form.tags?.map((tag) => <span key={tag} className="inline-flex items-center gap-1.5 rounded-[999px] bg-[#5B7FF0]/10 px-2.5 py-1.5 text-sm text-[#5B7FF0]">#{tag}<button type="button" aria-label={`Remove ${tag} tag`} onClick={() => setForm((current) => ({ ...current, tags: current.tags?.filter((item) => item !== tag) }))} className="flex size-4 items-center justify-center rounded-[999px] hover:bg-[#5B7FF0]/15"><X className="size-3" /></button></span>)}</div> : <p className="mt-2 text-xs text-[#8B93B8]">No tags added yet.</p>}
                   </div>
                   <div>
                     <div className="flex items-center justify-between"><h3 className="text-sm font-medium">Subtasks</h3><button type="button" onClick={() => setForm((current) => ({ ...current, subtasks: [...(current.subtasks || []), { title: "", isComplete: false, dueDate: null }] }))} className="inline-flex items-center gap-1 text-sm text-[#5B7FF0]"><Plus className="size-4" /> Add subtask</button></div>
-                    <div className="mt-2 space-y-2">{(form.subtasks || []).map((subtask, index) => <div key={index} className="grid gap-2 rounded-[8px] bg-[#F5F7FF] p-3 sm:grid-cols-[auto_1fr_160px_auto] sm:items-center"><input type="checkbox" checked={Boolean(subtask.isComplete)} onChange={(event) => setForm((current) => ({ ...current, subtasks: current.subtasks?.map((item, itemIndex) => itemIndex === index ? { ...item, isComplete: event.target.checked } : item) }))} className="size-4 accent-[#5B7FF0]" /><input aria-label={`Subtask ${index + 1} title`} value={subtask.title || ""} onChange={(event) => setForm((current) => ({ ...current, subtasks: current.subtasks?.map((item, itemIndex) => itemIndex === index ? { ...item, title: event.target.value } : item) }))} className="rounded-[8px] border border-[#E4EAF8] bg-white px-3 py-2 text-sm outline-none focus:border-[#5B7FF0]" /><input aria-label={`Subtask ${index + 1} due date`} type="date" value={subtask.dueDate?.slice(0, 10) || ""} onChange={(event) => setForm((current) => ({ ...current, subtasks: current.subtasks?.map((item, itemIndex) => itemIndex === index ? { ...item, dueDate: event.target.value || null } : item) }))} className="rounded-[8px] border border-[#E4EAF8] bg-white px-3 py-2 text-sm outline-none focus:border-[#5B7FF0]" /><button type="button" aria-label={`Remove subtask ${index + 1}`} onClick={() => setForm((current) => ({ ...current, subtasks: current.subtasks?.filter((_, itemIndex) => itemIndex !== index) }))} className="text-[#EF4444]"><Trash2 className="size-4" /></button></div>)}</div>
+                    <div className="mt-2 space-y-2">{(form.subtasks || []).map((subtask, index) => <div key={index} className="grid gap-2 rounded-[8px] bg-[#F5F7FF] p-2.5 sm:grid-cols-[auto_1fr_160px_auto] sm:items-center"><input type="checkbox" checked={Boolean(subtask.isComplete)} onChange={(event) => setForm((current) => ({ ...current, subtasks: current.subtasks?.map((item, itemIndex) => itemIndex === index ? { ...item, isComplete: event.target.checked } : item) }))} className="size-4 accent-[#5B7FF0]" /><input aria-label={`Subtask ${index + 1} title`} value={subtask.title || ""} onChange={(event) => setForm((current) => ({ ...current, subtasks: current.subtasks?.map((item, itemIndex) => itemIndex === index ? { ...item, title: event.target.value } : item) }))} className="rounded-[8px] border border-[#E4EAF8] bg-white px-2.5 py-2 text-sm outline-none focus:border-[#5B7FF0]" /><input aria-label={`Subtask ${index + 1} due date`} type="date" value={subtask.dueDate?.slice(0, 10) || ""} onChange={(event) => setForm((current) => ({ ...current, subtasks: current.subtasks?.map((item, itemIndex) => itemIndex === index ? { ...item, dueDate: event.target.value || null } : item) }))} className="rounded-[8px] border border-[#E4EAF8] bg-white px-2.5 py-2 text-sm outline-none focus:border-[#5B7FF0]" /><button type="button" aria-label={`Remove subtask ${index + 1}`} onClick={() => setForm((current) => ({ ...current, subtasks: current.subtasks?.filter((_, itemIndex) => itemIndex !== index) }))} className="text-[#EF4444]"><Trash2 className="size-4" /></button></div>)}</div>
                   </div>
                 </section>
               ) : <section>
                 <div className="flex flex-wrap gap-2">
-                  <span className="rounded-[999px] bg-[#5B7FF0]/10 px-3 py-1 text-xs font-medium text-[#5B7FF0]">{formatLabel(proposal.status)}</span>
-                  <span className={`rounded-[999px] px-3 py-1 text-xs font-medium ${priority === "HIGH" ? "bg-[#EF4444]/10 text-[#EF4444]" : priority === "LOW" ? "bg-[#10B981]/10 text-[#10B981]" : "bg-[#F59E0B]/15 text-[#F59E0B]"}`}>{formatLabel(priority)} priority</span>
-                  {typeof proposal.confidence === "number" && <span className="rounded-[999px] bg-[#10B981]/10 px-3 py-1 text-xs font-medium text-[#10B981]">{Math.round(proposal.confidence * 100)}% confidence</span>}
+                  <span className="rounded-[999px] bg-[#5B7FF0]/10 px-2.5 py-1 text-xs font-medium text-[#5B7FF0]">{formatLabel(proposal.status)}</span>
+                  <span className={`rounded-[999px] px-2.5 py-1 text-xs font-medium ${priority === "HIGH" ? "bg-[#EF4444]/10 text-[#EF4444]" : priority === "LOW" ? "bg-[#10B981]/10 text-[#10B981]" : "bg-[#F59E0B]/15 text-[#F59E0B]"}`}>{formatLabel(priority)} priority</span>
+                  {typeof proposal.confidence === "number" && <span className="rounded-[999px] bg-[#10B981]/10 px-2.5 py-1 text-xs font-medium text-[#10B981]">{Math.round(proposal.confidence * 100)}% confidence</span>}
                 </div>
-                <h2 className="mt-4 break-words text-2xl font-semibold text-[#0E1224]">{proposal.payload?.title || "Untitled task"}</h2>
+                <h2 className="mt-3.5 break-words text-[1.375rem]/[2rem] font-semibold text-[#0E1224]">{proposal.payload?.title || "Untitled task"}</h2>
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-[#64748B]">{proposal.payload?.description || "No description provided."}</p>
               </section>}
 
@@ -253,7 +253,7 @@ export function PriorityTaskDetailsModal({ proposalId, open, onOpenChange }: Pri
                   [<Bot key="agent" className="size-4" />, "Proposed by", proposal.proposedByAgent?.name || "Not specified"],
                   [<CheckCircle2 key="action" className="size-4" />, "Action", formatLabel(proposal.actionType)],
                 ].map(([icon, label, value]) => (
-                  <div key={String(label)} className="rounded-[12px] bg-[#F5F7FF] p-4">
+                  <div key={String(label)} className="rounded-[12px] bg-[#F5F7FF] p-3.5">
                     <div className="flex items-center gap-2 text-xs text-[#8B93B8]">{icon}{label}</div>
                     <p className="mt-2 break-words text-sm font-medium text-[#0E1224]">{value}</p>
                   </div>
@@ -266,39 +266,39 @@ export function PriorityTaskDetailsModal({ proposalId, open, onOpenChange }: Pri
                   ["End time", formatDate(proposal.payload?.endTime)],
                   ["Duration", proposal.payload?.durationMinutes ? `${proposal.payload.durationMinutes} minutes` : "Not specified"],
                   ["Platform", formatLabel(proposal.payload?.platform)],
-                ].map(([label, value]) => <div key={label} className="rounded-[12px] bg-[#F5F7FF] p-4"><p className="text-xs text-[#8B93B8]">{label}</p><p className="mt-2 break-words text-sm font-medium text-[#0E1224]">{value}</p></div>)}
-                {(proposal.payload?.attendees?.length || proposal.payload?.invitees?.length) ? <div className="rounded-[12px] bg-[#F5F7FF] p-4 sm:col-span-2"><p className="text-xs text-[#8B93B8]">Invitees</p><div className="mt-2 flex flex-wrap gap-2">{(proposal.payload.attendees || proposal.payload.invitees || []).map((email) => <span key={email} className="rounded-[999px] bg-white px-3 py-1 text-sm text-[#5B7FF0]">{email}</span>)}</div></div> : null}
+                ].map(([label, value]) => <div key={label} className="rounded-[12px] bg-[#F5F7FF] p-3.5"><p className="text-xs text-[#8B93B8]">{label}</p><p className="mt-2 break-words text-sm font-medium text-[#0E1224]">{value}</p></div>)}
+                {(proposal.payload?.attendees?.length || proposal.payload?.invitees?.length) ? <div className="rounded-[12px] bg-[#F5F7FF] p-3.5 sm:col-span-2"><p className="text-xs text-[#8B93B8]">Invitees</p><div className="mt-2 flex flex-wrap gap-2">{(proposal.payload.attendees || proposal.payload.invitees || []).map((email) => <span key={email} className="rounded-[999px] bg-white px-2.5 py-1 text-sm text-[#5B7FF0]">{email}</span>)}</div></div> : null}
               </section>}
 
               <section>
                 <h3 className="font-medium text-[#0E1224]">Subtasks</h3>
-                <div className="mt-3 space-y-2">
+                <div className="mt-2.5 space-y-2">
                   {proposal.payload?.subtasks?.length ? proposal.payload.subtasks.map((subtask, index) => (
-                    <div key={`${subtask.title}-${index}`} className="flex items-start gap-3 rounded-[8px] bg-[#F5F7FF] p-3">
+                    <div key={`${subtask.title}-${index}`} className="flex items-start gap-3 rounded-[8px] bg-[#F5F7FF] p-2.5">
                       <CheckCircle2 className={`mt-0.5 size-4 shrink-0 ${subtask.isComplete ? "text-[#10B981]" : "text-[#8B93B8]"}`} />
                       <div className="min-w-0"><p className="text-sm text-[#0E1224]">{subtask.title || `Subtask ${index + 1}`}</p><p className="mt-1 text-xs text-[#8B93B8]">Due: {formatDate(subtask.dueDate)}</p></div>
                     </div>
-                  )) : <p className="rounded-[8px] bg-[#F5F7FF] p-3 text-sm text-[#8B93B8]">No subtasks available.</p>}
+                  )) : <p className="rounded-[8px] bg-[#F5F7FF] p-2.5 text-sm text-[#8B93B8]">No subtasks available.</p>}
                 </div>
               </section>
 
-              {proposal.payload?.tags?.length ? <section><h3 className="flex items-center gap-2 font-medium"><Tag className="size-4 text-[#5B7FF0]" />Tags</h3><div className="mt-3 flex flex-wrap gap-2">{proposal.payload.tags.map((tag) => <span key={tag} className="rounded-[8px] bg-[#5B7FF0]/10 px-3 py-1.5 text-sm text-[#5B7FF0]">#{tag}</span>)}</div></section> : null}
+              {proposal.payload?.tags?.length ? <section><h3 className="flex items-center gap-2 font-medium"><Tag className="size-4 text-[#5B7FF0]" />Tags</h3><div className="mt-2.5 flex flex-wrap gap-2">{proposal.payload.tags.map((tag) => <span key={tag} className="rounded-[8px] bg-[#5B7FF0]/10 px-2.5 py-1.5 text-sm text-[#5B7FF0]">#{tag}</span>)}</div></section> : null}
 
-              {proposal.evidence?.length ? <section><h3 className="font-medium">Evidence</h3><div className="mt-3 space-y-2">{proposal.evidence.map((item, index) => <blockquote key={index} className="rounded-[8px] border-l-4 border-[#5B7FF0] bg-[#F5F7FF] p-3 text-sm italic leading-6 text-[#64748B]">“{item.text}”</blockquote>)}</div></section> : null}
+              {proposal.evidence?.length ? <section><h3 className="font-medium">Evidence</h3><div className="mt-2.5 space-y-2">{proposal.evidence.map((item, index) => <blockquote key={index} className="rounded-[8px] border-l-4 border-[#5B7FF0] bg-[#F5F7FF] p-2.5 text-sm italic leading-6 text-[#64748B]">“{item.text}”</blockquote>)}</div></section> : null}
               </>}
 
-              <footer className="grid gap-2 border-t border-[#E4EAF8] pt-4 text-xs text-[#8B93B8] sm:grid-cols-2"><p>Created: {formatDate(proposal.createdAt)}</p><p className="sm:text-right">Updated: {formatDate(proposal.updatedAt)}</p></footer>
+              <footer className="grid gap-2 border-t border-[#E4EAF8] pt-3.5 text-xs text-[#8B93B8] sm:grid-cols-2"><p>Created: {formatDate(proposal.createdAt)}</p><p className="sm:text-right">Updated: {formatDate(proposal.updatedAt)}</p></footer>
             </div>
           )}
         </div>
-        {proposal && !proposalQuery.isError ? <footer className="flex shrink-0 flex-wrap justify-end gap-3 border-t border-[#E4EAF8] bg-white px-5 py-4 sm:px-6">
+        {proposal && !proposalQuery.isError ? <footer className="flex shrink-0 flex-wrap justify-end gap-3 border-t border-[#E4EAF8] bg-white px-[1.125rem] py-3.5 sm:px-5">
           {isEditing ? <>
-            <button type="button" disabled={saveMutation.isPending} onClick={() => { setForm(structuredClone(proposal.payload || {})); setIsEditing(false); }} className="h-10 rounded-[8px] border border-[#E4EAF8] px-5 text-sm font-medium text-[#64748B] disabled:opacity-50">Cancel</button>
-            <button type="button" disabled={saveMutation.isPending || !form.title?.trim()} onClick={() => saveMutation.mutate()} className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#5B7FF0] px-5 text-sm font-medium text-white disabled:opacity-50">{saveMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Save Changes</button>
+            <button type="button" disabled={saveMutation.isPending} onClick={() => { setForm(structuredClone(proposal.payload || {})); setIsEditing(false); }} className="h-10 rounded-[8px] border border-[#E4EAF8] px-[1.125rem] text-sm font-medium text-[#64748B] disabled:opacity-50">Cancel</button>
+            <button type="button" disabled={saveMutation.isPending || !form.title?.trim()} onClick={() => saveMutation.mutate()} className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#5B7FF0] px-[1.125rem] text-sm font-medium text-white disabled:opacity-50">{saveMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Save Changes</button>
           </> : <>
-            <button type="button" disabled={actionMutation.isPending} onClick={() => setIsEditing(true)} className="inline-flex h-10 items-center gap-2 rounded-[8px] border border-[#5B7FF0] px-5 text-sm font-medium text-[#5B7FF0] disabled:opacity-50"><Pencil className="size-4" /> Edit</button>
-            <button type="button" disabled={actionMutation.isPending || proposal.status === "APPROVED" || proposal.status === "REJECTED"} onClick={() => actionMutation.mutate("REJECT")} className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#EF4444] px-5 text-sm font-medium text-white disabled:opacity-50">{actionMutation.isPending && actionMutation.variables === "REJECT" ? <Loader2 className="size-4 animate-spin" /> : <XCircle className="size-4" />} {proposal.status === "REJECTED" ? "Rejected" : "Reject"}</button>
-            <button type="button" disabled={actionMutation.isPending || proposal.status === "APPROVED" || proposal.status === "REJECTED"} onClick={() => actionMutation.mutate("APPROVE")} className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#10B981] px-5 text-sm font-medium text-white disabled:opacity-50">{actionMutation.isPending && actionMutation.variables === "APPROVE" ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} {proposal.status === "APPROVED" ? "Approved" : "Approve"}</button>
+            <button type="button" disabled={actionMutation.isPending} onClick={() => setIsEditing(true)} className="inline-flex h-10 items-center gap-2 rounded-[8px] border border-[#5B7FF0] px-[1.125rem] text-sm font-medium text-[#5B7FF0] disabled:opacity-50"><Pencil className="size-4" /> Edit</button>
+            <button type="button" disabled={actionMutation.isPending || proposal.status === "APPROVED" || proposal.status === "REJECTED"} onClick={() => actionMutation.mutate("REJECT")} className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#EF4444] px-[1.125rem] text-sm font-medium text-white disabled:opacity-50">{actionMutation.isPending && actionMutation.variables === "REJECT" ? <Loader2 className="size-4 animate-spin" /> : <XCircle className="size-4" />} {proposal.status === "REJECTED" ? "Rejected" : "Reject"}</button>
+            <button type="button" disabled={actionMutation.isPending || proposal.status === "APPROVED" || proposal.status === "REJECTED"} onClick={() => actionMutation.mutate("APPROVE")} className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#10B981] px-[1.125rem] text-sm font-medium text-white disabled:opacity-50">{actionMutation.isPending && actionMutation.variables === "APPROVE" ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} {proposal.status === "APPROVED" ? "Approved" : "Approve"}</button>
           </>}
         </footer> : null}
       </DialogContent>

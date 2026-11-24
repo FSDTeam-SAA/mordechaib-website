@@ -60,7 +60,7 @@ export function TaskActionMenu({
             type="button"
             role="menuitem"
             onClick={() => closeAfter(onViewDetails)}
-            className="flex h-5 w-full items-center gap-1 whitespace-nowrap text-left font-sans text-base font-normal leading-normal text-[#64748B]"
+            className="flex h-5 w-full items-center gap-1 whitespace-nowrap text-left font-sans text-[0.9375rem]/[1.5rem] font-normal leading-normal text-[#64748B]"
           >
             <Image src="/task-actions/view-details.svg" alt="" width={20} height={20} unoptimized />
             View Details
@@ -69,7 +69,7 @@ export function TaskActionMenu({
             type="button"
             role="menuitem"
             onClick={() => closeAfter(onEdit)}
-            className="flex h-5 w-full items-center gap-1 whitespace-nowrap text-left font-sans text-base font-normal leading-normal text-[#5B7FF0]"
+            className="flex h-5 w-full items-center gap-1 whitespace-nowrap text-left font-sans text-[0.9375rem]/[1.5rem] font-normal leading-normal text-[#5B7FF0]"
           >
             <Image src="/task-actions/edit-task.svg" alt="" width={20} height={20} unoptimized />
             Edit Task
@@ -78,7 +78,7 @@ export function TaskActionMenu({
             type="button"
             role="menuitem"
             onClick={() => closeAfter(onMarkComplete)}
-            className="flex h-5 w-full items-center gap-1 whitespace-nowrap text-left font-sans text-base font-normal leading-normal text-[#10B981]"
+            className="flex h-5 w-full items-center gap-1 whitespace-nowrap text-left font-sans text-[0.9375rem]/[1.5rem] font-normal leading-normal text-[#10B981]"
           >
             <Image src="/task-actions/mark-complete.svg" alt="" width={20} height={20} unoptimized />
             {isComplete ? "Mark as Incomplete" : "Mark as Complete"}
@@ -87,7 +87,7 @@ export function TaskActionMenu({
             type="button"
             role="menuitem"
             onClick={() => closeAfter(onDelete)}
-            className="flex h-5 w-full items-center gap-1 whitespace-nowrap text-left font-sans text-base font-normal leading-normal text-[#EF4444]"
+            className="flex h-5 w-full items-center gap-1 whitespace-nowrap text-left font-sans text-[0.9375rem]/[1.5rem] font-normal leading-normal text-[#EF4444]"
           >
             <Image src="/task-actions/delete-task.svg" alt="" width={20} height={20} unoptimized />
             Delete Task

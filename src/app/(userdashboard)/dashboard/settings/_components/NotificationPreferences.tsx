@@ -212,19 +212,19 @@ export function NotificationPreferences() {
 
   return (
     <section className="overflow-hidden rounded-lg bg-white">
-      <header className="border-b border-[#E4EAF8] p-4">
-        <h2 className="text-xl font-medium text-[#0E1224]">
+      <header className="border-b border-[#E4EAF8] p-3.5">
+        <h2 className="text-base font-medium text-[#0E1224]">
           Notification Preferences
         </h2>
       </header>
-      <div className="px-4 py-4">
+      <div className="px-3.5 py-3.5">
         {preferences.map(([key, title, description]) => (
           <div
             key={key}
-            className="flex min-h-[62px] items-center justify-between gap-4 py-3"
+            className="flex min-h-[62px] items-center justify-between gap-4 py-2.5"
           >
             <div className="min-w-0">
-              <h3 className="text-base font-medium text-[#0E1224]">{title}</h3>
+              <h3 className="text-[0.9375rem]/[1.5rem] font-medium text-[#0E1224]">{title}</h3>
               <p className="mt-1 text-xs text-[#8B93B8]">{description}</p>
             </div>
             {isLoading ? (

@@ -4,12 +4,12 @@ export function CrmStatCardsSkeleton() {
   return (
     <section
       aria-label="CRM summary loading"
-      className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+      className="grid gap-3 sm:grid-cols-2 min-[1200px]:grid-cols-4"
     >
       {[0, 1, 2, 3].map((index) => (
         <article
           key={index}
-          className="relative h-[156px] min-w-0 overflow-hidden rounded-[12px] bg-white p-4"
+          className="relative min-h-32 min-w-0 overflow-hidden rounded-[12px] bg-white p-3"
         >
           <div className="flex size-10 animate-pulse items-center justify-center rounded-xl bg-[#F0F3FA]" />
           <div className="mt-2 min-w-0 pr-[104px]">

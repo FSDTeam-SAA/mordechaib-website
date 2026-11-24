@@ -2,16 +2,16 @@ import { agentColor, formatDuration, roleLabel, type AgentDashboardItem } from "
 import { ActiveBadge } from "./AgentMetricsPanels";
 export function AgentPerformanceTable({ agents, range }: { agents: AgentDashboardItem[]; range: { from: string; to: string } }) {
   return (
-    <section className="rounded-2xl bg-white p-4 sm:p-6">
-      <h2 className="text-xl font-medium">Agent Performance</h2>
+    <section className="rounded-2xl bg-white p-3.5 sm:p-5">
+      <h2 className="text-[1.1875rem]/[1.75rem] font-medium">Agent Performance</h2>
       <p className="mt-2 text-xs text-[#8B93B8]">
         {new Date(range.from).toLocaleString()} – {new Date(range.to).toLocaleString()}
       </p>
-      <div className="mt-4 overflow-x-auto">
+      <div data-lenis-prevent className="mt-2.5 overflow-x-auto overscroll-x-contain">
         <table className="w-full min-w-[680px] table-fixed text-sm">
           <thead>
             <tr className="border-b border-[#E4EAF8] text-left">
-              <th className="py-3 font-normal">Agent</th>
+              <th className="py-2.5 font-normal">Agent</th>
               {[
                 "Jobs Run",
                 "Success Rate",
@@ -19,7 +19,7 @@ export function AgentPerformanceTable({ agents, range }: { agents: AgentDashboar
                 "Tasks Created",
                 "Status",
               ].map((h) => (
-                <th key={h} className="py-3 text-center font-normal">
+                <th key={h} className="py-2.5 text-center font-normal">
                   {h}
                 </th>
               ))}
@@ -29,7 +29,7 @@ export function AgentPerformanceTable({ agents, range }: { agents: AgentDashboar
             {agents.map((agent, index) => (
               <tr key={agent.id} className="h-[55px]">
                 <td>
-                  <strong className="block text-base font-medium">
+                  <strong className="block text-[0.9375rem]/[1.5rem] font-medium">
                     {agent.name}
                   </strong>
                   <span className="text-xs" style={{ color: agentColor(index) }}>

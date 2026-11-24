@@ -284,7 +284,7 @@ export function ImportCustomerModal({ onImported }: ImportCustomerModalProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] border border-[#5B7FF0] bg-white px-3.5 text-sm font-medium text-[#5B7FF0] transition hover:bg-[#5B7FF0]/5 hover:border-[#4E6FDE]"
+        className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] border border-[#5B7FF0] bg-white px-3 text-sm font-medium text-[#5B7FF0] transition hover:bg-[#5B7FF0]/5 hover:border-[#4E6FDE]"
       >
         <Upload className="size-4" /> Import Customer
       </button>
@@ -294,9 +294,9 @@ export function ImportCustomerModal({ onImported }: ImportCustomerModalProps) {
         overlayClassName="bg-[#17203A]/30 backdrop-blur-[5px]"
         className="max-h-[calc(100dvh-28px)] w-[calc(100%-28px)] max-w-[620px] gap-0 overflow-y-auto !rounded-[14px] border-0 bg-white p-0 shadow-[0_24px_80px_rgba(14,18,36,0.2)]"
       >
-        <header className="flex items-center justify-between border-b border-[#EDF0F8] px-5 py-4">
+        <header className="flex items-center justify-between border-b border-[#EDF0F8] px-[1.125rem] py-3.5">
           <div>
-            <DialogTitle className="text-base font-semibold text-[#20263A]">
+            <DialogTitle className="text-[0.9375rem]/[1.5rem] font-semibold text-[#20263A]">
               Import Customer Contacts
             </DialogTitle>
             <DialogDescription className="text-xs text-[#8390B5]">
@@ -313,9 +313,9 @@ export function ImportCustomerModal({ onImported }: ImportCustomerModalProps) {
           </button>
         </header>
 
-        <div className="p-5 space-y-4">
+        <div className="p-[1.125rem] space-y-4">
           {/* Template Download Option */}
-          <div className="flex items-center justify-between rounded-xl border border-[#DCE6FA] bg-[#F7F9FE] p-3 text-xs text-[#27304A]">
+          <div className="flex items-center justify-between rounded-xl border border-[#DCE6FA] bg-[#F7F9FE] p-2.5 text-xs text-[#27304A]">
             <div className="flex items-center gap-2.5">
               <FileSpreadsheet className="size-5 text-[#5B7FF0]" />
               <div>
@@ -328,7 +328,7 @@ export function ImportCustomerModal({ onImported }: ImportCustomerModalProps) {
             <button
               type="button"
               onClick={downloadSampleTemplate}
-              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-[#B8C4EE] bg-white px-3 text-xs font-medium text-[#246BFD] transition hover:bg-[#EEF3FF]"
+              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-[#B8C4EE] bg-white px-2.5 text-xs font-medium text-[#246BFD] transition hover:bg-[#EEF3FF]"
             >
               <Download className="size-3.5" /> Template
             </button>
@@ -336,22 +336,22 @@ export function ImportCustomerModal({ onImported }: ImportCustomerModalProps) {
 
           {/* Result Summary */}
           {summary ? (
-            <div className="rounded-xl border border-[#10B981]/30 bg-[#10B981]/5 p-4 space-y-3">
+            <div className="rounded-xl border border-[#10B981]/30 bg-[#10B981]/5 p-3.5 space-y-3">
               <div className="flex items-center gap-2 text-sm font-semibold text-[#10B981]">
                 <CheckCircle2 className="size-5" />
                 <span>Import Completed</span>
               </div>
               <div className="grid grid-cols-3 gap-2 text-center text-xs">
                 <div className="rounded-lg bg-white p-2.5 shadow-2xs border border-[#E4EAF8]">
-                  <p className="text-lg font-bold text-[#0E1224]">{summary.received}</p>
+                  <p className="text-[1.0625rem]/[1.75rem] font-bold text-[#0E1224]">{summary.received}</p>
                   <p className="text-[#8B93B8]">Total Rows</p>
                 </div>
                 <div className="rounded-lg bg-white p-2.5 shadow-2xs border border-[#E4EAF8]">
-                  <p className="text-lg font-bold text-[#10B981]">{summary.created}</p>
+                  <p className="text-[1.0625rem]/[1.75rem] font-bold text-[#10B981]">{summary.created}</p>
                   <p className="text-[#8B93B8]">Created</p>
                 </div>
                 <div className="rounded-lg bg-white p-2.5 shadow-2xs border border-[#E4EAF8]">
-                  <p className="text-lg font-bold text-[#F59E0B]">{summary.skipped}</p>
+                  <p className="text-[1.0625rem]/[1.75rem] font-bold text-[#F59E0B]">{summary.skipped}</p>
                   <p className="text-[#8B93B8]">Skipped</p>
                 </div>
               </div>
@@ -373,14 +373,14 @@ export function ImportCustomerModal({ onImported }: ImportCustomerModalProps) {
                 <button
                   type="button"
                   onClick={reset}
-                  className="rounded-lg border border-[#DCE6FA] bg-white px-3.5 py-2 text-xs font-medium text-[#27304A] hover:bg-[#F4F6FD]"
+                  className="rounded-lg border border-[#DCE6FA] bg-white px-3 py-2 text-xs font-medium text-[#27304A] hover:bg-[#F4F6FD]"
                 >
                   Upload Another File
                 </button>
                 <button
                   type="button"
                   onClick={() => handleOpenChange(false)}
-                  className="rounded-lg bg-[#5B7FF0] px-4 py-2 text-xs font-medium text-white hover:bg-[#4E6FDE]"
+                  className="rounded-lg bg-[#5B7FF0] px-3.5 py-2 text-xs font-medium text-white hover:bg-[#4E6FDE]"
                 >
                   Done
                 </button>
@@ -397,7 +397,7 @@ export function ImportCustomerModal({ onImported }: ImportCustomerModalProps) {
                 onDragLeave={() => setIsDragging(false)}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition ${
+                className={`relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-5 text-center transition ${
                   isDragging
                     ? "border-[#5B7FF0] bg-[#5B7FF0]/5"
                     : file
@@ -449,7 +449,7 @@ export function ImportCustomerModal({ onImported }: ImportCustomerModalProps) {
               </div>
 
               {/* Supported Columns Guide */}
-              <div className="rounded-xl bg-[#F4F6FD] p-3 text-[11px] leading-relaxed text-[#64748B]">
+              <div className="rounded-xl bg-[#F4F6FD] p-2.5 text-[11px] leading-relaxed text-[#64748B]">
                 <p className="font-semibold text-[#20263A] mb-1">CSV Format Guidelines:</p>
                 <p>
                   • <strong>Required:</strong> <code className="text-[#246BFD]">name</code>, and at least one of{" "}
@@ -466,7 +466,7 @@ export function ImportCustomerModal({ onImported }: ImportCustomerModalProps) {
 
               {/* Error Message */}
               {error && (
-                <div className="flex items-start gap-2 rounded-lg bg-[#EF4444]/10 p-3 text-xs text-[#EF4444]">
+                <div className="flex items-start gap-2 rounded-lg bg-[#EF4444]/10 p-2.5 text-xs text-[#EF4444]">
                   <AlertCircle className="size-4 shrink-0 mt-0.5" />
                   <span>{error}</span>
                 </div>
@@ -478,14 +478,14 @@ export function ImportCustomerModal({ onImported }: ImportCustomerModalProps) {
                   type="button"
                   onClick={() => handleOpenChange(false)}
                   disabled={isSubmitting}
-                  className="h-10 rounded-[10px] border border-[#DCE6FA] bg-white px-4 text-xs font-medium text-[#27304A] transition hover:bg-[#F4F6FD] disabled:opacity-60"
+                  className="h-10 rounded-[10px] border border-[#DCE6FA] bg-white px-3.5 text-xs font-medium text-[#27304A] transition hover:bg-[#F4F6FD] disabled:opacity-60"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!file || isSubmitting}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] bg-[#5B7FF0] px-5 text-xs font-medium text-white shadow-[0_4px_12px_rgba(91,127,240,0.22)] transition hover:bg-[#4E6FDE] disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] bg-[#5B7FF0] px-[1.125rem] text-xs font-medium text-white shadow-[0_4px_12px_rgba(91,127,240,0.22)] transition hover:bg-[#4E6FDE] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <>

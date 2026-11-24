@@ -29,7 +29,7 @@ export function IntegrationCard({
   const isConnected = controlledConnected ?? initiallyConnected;
 
   return (
-    <article className="relative flex min-h-[70px] flex-col gap-3 overflow-hidden rounded-[10px] bg-white py-3 pl-4 pr-3 shadow-[0_0_2px_rgba(0,0,0,0.1)] sm:flex-row sm:items-center">
+    <article className="relative flex min-h-[70px] flex-col gap-3 overflow-hidden rounded-[10px] bg-white py-2.5 pl-3.5 pr-2.5 shadow-[0_0_2px_rgba(0,0,0,0.1)] sm:flex-row sm:items-center">
       <span className="absolute inset-y-3 left-0 w-1 rounded-r-full bg-[#5B7FF0]" />
       <Image
         src={icon}
@@ -40,7 +40,7 @@ export function IntegrationCard({
         className="size-6 shrink-0 object-contain"
       />
       <div className="min-w-0 flex-1">
-        <h3 className="truncate text-base font-medium text-[#0E1224]">
+        <h3 className="truncate text-[0.9375rem]/[1.5rem] font-medium text-[#0E1224]">
           {name}
         </h3>
         <p className="mt-1 text-xs leading-normal text-[#8B93B8]">
@@ -62,7 +62,7 @@ export function IntegrationCard({
           type="button"
           onClick={onConnect}
           disabled={isLoading || isConnected || !onConnect}
-          className={`h-9 shrink-0 rounded-[12px] border px-4 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
+          className={`h-9 shrink-0 rounded-[12px] border px-3.5 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
             isConnected
               ? "border-[#5B7FF0] bg-[#5B7FF0] text-white"
               : "border-[#5B7FF0] bg-white text-[#5B7FF0] hover:bg-[#5B7FF0]/5"
@@ -75,7 +75,7 @@ export function IntegrationCard({
             type="button"
             onClick={onDisconnect}
             disabled={isLoading}
-            className="h-9 shrink-0 rounded-[12px] border border-[#EF4444] bg-white px-4 text-sm text-[#EF4444] transition-colors hover:bg-[#EF4444]/5 disabled:cursor-not-allowed disabled:opacity-70"
+            className="h-9 shrink-0 rounded-[12px] border border-[#EF4444] bg-white px-3.5 text-sm text-[#EF4444] transition-colors hover:bg-[#EF4444]/5 disabled:cursor-not-allowed disabled:opacity-70"
           >
             Disconnect
           </button>

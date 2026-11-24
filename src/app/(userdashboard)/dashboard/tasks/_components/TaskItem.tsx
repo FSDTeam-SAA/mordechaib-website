@@ -66,7 +66,7 @@ export function TaskItem({ task, onViewDetails, onEdit, onToggle, onDelete }: Ta
       </div>
       <div className="flex shrink-0 items-start gap-2 sm:gap-6">
         <span
-          className={`hidden rounded-lg px-3 py-1 text-xs sm:inline-flex ${priorityClasses[task.priority]}`}
+          className={`hidden rounded-lg px-2.5 py-1 text-xs sm:inline-flex ${priorityClasses[task.priority]}`}
         >
           {task.priority.toUpperCase()}
         </span>

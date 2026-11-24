@@ -4,7 +4,7 @@ import { useRoiDashboard } from "./RoiDashboardClient";
 type ChartShellProps = { title: string; subtitle?: string; controls?: ReactNode; children: ReactNode; className?: string };
 
 export function ChartShell({ title, subtitle, controls, children, className = "" }: ChartShellProps) {
-  return <article className={`min-w-0 rounded-xl bg-white p-4 sm:p-6 ${className}`}><header className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-xl font-medium text-[#0E1224]">{title}</h2>{subtitle && <p className="mt-1 text-xs text-[#8B93B8]">{subtitle}</p>}</div>{controls}</header>{children}</article>;
+  return <article className={`min-w-0 rounded-xl bg-white p-3.5 sm:p-5 ${className}`}><header className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">{title}</h2>{subtitle && <p className="mt-1 text-xs text-[#8B93B8]">{subtitle}</p>}</div>{controls}</header>{children}</article>;
 }
 
 export function PeriodTabs() {

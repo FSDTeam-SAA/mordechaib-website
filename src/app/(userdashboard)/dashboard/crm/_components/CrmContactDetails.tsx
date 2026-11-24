@@ -255,12 +255,12 @@ function initials(name?: string): string {
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-xl font-medium text-[#0E1224]">{children}</h2>;
+  return <h2 className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">{children}</h2>;
 }
 
 function AccentRow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-10 items-center gap-2 rounded-[10px] bg-[#F5F7FF] py-2 pr-3 before:self-stretch before:w-1 before:shrink-0 before:rounded-sm before:bg-[#10B981]">
+    <div className="flex min-h-10 items-center gap-2 rounded-[10px] bg-[#F5F7FF] py-2 pr-2.5 before:self-stretch before:w-1 before:shrink-0 before:rounded-sm before:bg-[#10B981]">
       {children}
     </div>
   );
@@ -394,8 +394,8 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
   // Error state
   if (isError || !profile) {
     return (
-      <main className="min-h-[calc(100vh-83px)] p-4 text-[#0E1224]">
-        <div className="mb-4">
+      <main className="min-h-[calc(100vh-83px)] min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5 text-[#0E1224]">
+        <div className="mb-3.5">
           <Link
             href="/dashboard/crm"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-[#7B89AA] transition hover:text-[#0E1224]"
@@ -404,14 +404,14 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
             Back to Customers
           </Link>
         </div>
-        <section className="flex min-h-64 flex-col items-center justify-center rounded-2xl bg-white p-6 text-center">
-          <p className="text-base font-medium text-[#C24152]">
+        <section className="flex min-h-64 flex-col items-center justify-center rounded-2xl bg-white p-5 text-center">
+          <p className="text-[0.9375rem]/[1.5rem] font-medium text-[#C24152]">
             {error instanceof Error ? error.message : "Failed to load customer details."}
           </p>
           <button
             type="button"
             onClick={() => refetch()}
-            className="mt-4 inline-flex h-10 items-center gap-2 rounded-lg border border-[#5B7FF0] px-4 text-sm font-medium text-[#5B7FF0] transition hover:bg-[#5B7FF0]/5"
+            className="mt-3.5 inline-flex h-10 items-center gap-2 rounded-lg border border-[#5B7FF0] px-3.5 text-sm font-medium text-[#5B7FF0] transition hover:bg-[#5B7FF0]/5"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -473,7 +473,7 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
   };
 
   return (
-    <main className="min-h-[calc(100vh-83px)] space-y-4 p-4 text-[#0E1224]">
+    <main className="min-h-[calc(100vh-83px)] min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5 space-y-3 sm:space-y-4 text-[#0E1224]">
       {/* Back button */}
       <div>
         <Link
@@ -486,9 +486,9 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
       </div>
 
       {/* Header Profile Section */}
-      <section className="flex flex-col gap-6 rounded-xl bg-white p-4 sm:p-6 xl:flex-row xl:items-start xl:justify-between">
+      <section className="flex flex-col gap-6 rounded-xl bg-white p-3.5 sm:p-5 xl:flex-row xl:items-start xl:justify-between">
         <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
-          <div className="relative size-[96px] shrink-0 overflow-hidden rounded-full bg-[#5B7FF0]/10 text-xl font-bold text-[#5B7FF0] sm:size-[120px]">
+          <div className="relative size-[96px] shrink-0 overflow-hidden rounded-full bg-[#5B7FF0]/10 text-[1.1875rem]/[1.75rem] font-bold text-[#5B7FF0] sm:size-[120px]">
             {profile.avatarUrl ? (
               <Image
                 src={profile.avatarUrl}
@@ -505,7 +505,7 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
           </div>
           <div className="min-w-0 space-y-3">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-bold">{profile.name}</h1>
+              <h1 className="text-[1.375rem]/[2rem] font-bold">{profile.name}</h1>
               {profile.leadStatus && (
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
@@ -605,7 +605,7 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
           <button
             type="button"
             onClick={handleCallClick}
-            className="flex h-[52px] items-center gap-2 rounded-[10px] border border-[#5B7FF0] px-5 text-base font-medium text-[#5B7FF0] transition hover:bg-[#5B7FF0]/5"
+            className="flex h-[52px] items-center gap-2 rounded-[10px] border border-[#5B7FF0] px-[1.125rem] text-[0.9375rem]/[1.5rem] font-medium text-[#5B7FF0] transition hover:bg-[#5B7FF0]/5"
           >
             <Image src="/crm/details/call.svg" alt="" width={18} height={18} />
             Call
@@ -613,7 +613,7 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
           <button
             type="button"
             onClick={handleEmailClick}
-            className="flex h-[52px] items-center gap-2 rounded-[10px] border border-[#5B7FF0] px-5 text-base font-medium text-[#5B7FF0] transition hover:bg-[#5B7FF0]/5"
+            className="flex h-[52px] items-center gap-2 rounded-[10px] border border-[#5B7FF0] px-[1.125rem] text-[0.9375rem]/[1.5rem] font-medium text-[#5B7FF0] transition hover:bg-[#5B7FF0]/5"
           >
             <Image src="/crm/details/send-email.svg" alt="" width={18} height={18} />
             Email
@@ -621,7 +621,7 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
           <button
             type="button"
             onClick={handleScheduleClick}
-            className="flex h-[52px] items-center gap-2 rounded-[10px] border border-[#5B7FF0] px-5 text-base font-medium text-[#5B7FF0] transition hover:bg-[#5B7FF0]/5"
+            className="flex h-[52px] items-center gap-2 rounded-[10px] border border-[#5B7FF0] px-[1.125rem] text-[0.9375rem]/[1.5rem] font-medium text-[#5B7FF0] transition hover:bg-[#5B7FF0]/5"
           >
             <Image src="/crm/details/schedule.svg" alt="" width={18} height={18} />
             Schedule
@@ -629,7 +629,7 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
           <button
             type="button"
             onClick={() => setIsEditModalOpen(true)}
-            className="flex h-[52px] items-center gap-2 rounded-[10px] bg-[#5B7FF0] px-5 text-base font-medium text-white transition hover:bg-[#4a6ee0]"
+            className="flex h-[52px] items-center gap-2 rounded-[10px] bg-[#5B7FF0] px-[1.125rem] text-[0.9375rem]/[1.5rem] font-medium text-white transition hover:bg-[#4a6ee0]"
           >
             <Pencil className="size-4" />
             Edit
@@ -638,15 +638,15 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
       </section>
 
       {/* Main Grid: Commercial Metrics & Details */}
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.46fr)_minmax(360px,1fr)]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.46fr)_minmax(280px,1fr)]">
         {/* Left Column: Metrics & Activity Timeline */}
         <div className="flex min-w-0 flex-col gap-4">
           {/* Commercial Metric Cards */}
-          <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <section className="grid grid-cols-2 gap-2 lg:grid-cols-4">
             {/* Expansion Potential */}
-            <article className="flex min-h-[82px] flex-col items-center justify-center gap-2 rounded-lg bg-white p-3 text-center">
+            <article className="flex min-h-[82px] flex-col items-center justify-center gap-2 rounded-lg bg-white p-2.5 text-center">
               <p className="text-sm text-[#8B93B8]">Expansion Potential</p>
-              <div className="flex items-center justify-center gap-2 text-lg font-bold text-[#10B981]">
+              <div className="flex items-center justify-center gap-2 text-[1.0625rem]/[1.75rem] font-bold text-[#10B981]">
                 {expansionScore && (
                   <span className="flex size-8 items-center justify-center rounded-full border border-[#10B981] bg-[#10B981]/10 text-sm">
                     {expansionScore}
@@ -657,34 +657,34 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
             </article>
 
             {/* Deal Value */}
-            <article className="flex min-h-[82px] flex-col items-center justify-center gap-2 rounded-lg bg-white p-3 text-center">
+            <article className="flex min-h-[82px] flex-col items-center justify-center gap-2 rounded-lg bg-white p-2.5 text-center">
               <p className="text-sm text-[#8B93B8]">Deal Value</p>
-              <div className="flex items-center justify-center gap-2 text-lg font-bold text-[#D946EF]">
+              <div className="flex items-center justify-center gap-2 text-[1.0625rem]/[1.75rem] font-bold text-[#D946EF]">
                 {dealValueStr}
               </div>
             </article>
 
             {/* Close Probability */}
-            <article className="flex min-h-[82px] flex-col items-center justify-center gap-2 rounded-lg bg-white p-3 text-center">
+            <article className="flex min-h-[82px] flex-col items-center justify-center gap-2 rounded-lg bg-white p-2.5 text-center">
               <p className="text-sm text-[#8B93B8]">Close Probability</p>
-              <div className="flex items-center justify-center gap-2 text-lg font-bold text-[#F59E0B]">
+              <div className="flex items-center justify-center gap-2 text-[1.0625rem]/[1.75rem] font-bold text-[#F59E0B]">
                 {closeProbabilityStr}
               </div>
             </article>
 
             {/* Expected Close */}
-            <article className="flex min-h-[82px] flex-col items-center justify-center gap-2 rounded-lg bg-white p-3 text-center">
+            <article className="flex min-h-[82px] flex-col items-center justify-center gap-2 rounded-lg bg-white p-2.5 text-center">
               <p className="text-sm text-[#8B93B8]">Expected Close</p>
-              <div className="flex items-center justify-center gap-2 text-lg font-bold text-[#EF4444]">
+              <div className="flex items-center justify-center gap-2 text-[1.0625rem]/[1.75rem] font-bold text-[#EF4444]">
                 {expectedCloseStr}
               </div>
             </article>
           </section>
 
           {/* Activity Timeline */}
-          <section className="min-h-[520px] rounded-2xl bg-white p-4">
+          <section className="min-h-60 rounded-2xl bg-white p-3">
             <SectionTitle>Activity Timeline</SectionTitle>
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-2">
               {timelineActivities.length > 0 ? (
                 timelineActivities.map((act) => (
                   <div
@@ -718,13 +718,13 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
         {/* Right Column: Ai Insight, Open Task, Files */}
         <aside className="flex min-w-0 flex-col gap-4">
           {/* Ai Insight */}
-          <section className="rounded-2xl bg-white p-4">
+          <section className="rounded-2xl bg-white p-3.5">
             <SectionTitle>Ai Insight</SectionTitle>
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-2">
               {/* Qualification */}
               <AccentRow>
                 <span className="min-w-0 flex-1 text-sm text-[#8B93B8]">Qualification</span>
-                <strong className="text-right text-base text-[#10B981] sm:text-lg">
+                <strong className="text-right text-[0.9375rem]/[1.5rem] text-[#10B981] sm:text-[1.0625rem]/[1.75rem]">
                   {insights?.qualification?.value ? formatLabel(insights.qualification.value) : "—"}
                 </strong>
               </AccentRow>
@@ -732,7 +732,7 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
               {/* Next Best Action */}
               <AccentRow>
                 <span className="min-w-0 flex-1 text-sm text-[#8B93B8]">Next Best Action</span>
-                <strong className="text-right text-base text-[#F59E0B] sm:text-lg">
+                <strong className="text-right text-[0.9375rem]/[1.5rem] text-[#F59E0B] sm:text-[1.0625rem]/[1.75rem]">
                   {insights?.nextBestAction?.value || insights?.nextBestAction?.action || "—"}
                 </strong>
               </AccentRow>
@@ -740,7 +740,7 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
               {/* Risk Level */}
               <AccentRow>
                 <span className="min-w-0 flex-1 text-sm text-[#8B93B8]">Risk Level</span>
-                <strong className="text-right text-base text-[#EF4444] sm:text-lg">
+                <strong className="text-right text-[0.9375rem]/[1.5rem] text-[#EF4444] sm:text-[1.0625rem]/[1.75rem]">
                   {insights?.risk?.level ? `${formatLabel(insights.risk.level)} Risk` : "—"}
                 </strong>
               </AccentRow>
@@ -748,7 +748,7 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
               {/* Predicted Close */}
               <AccentRow>
                 <span className="min-w-0 flex-1 text-sm text-[#8B93B8]">Predicted Close</span>
-                <strong className="text-right text-base text-[#D946EF] sm:text-lg">
+                <strong className="text-right text-[0.9375rem]/[1.5rem] text-[#D946EF] sm:text-[1.0625rem]/[1.75rem]">
                   {insights?.predictedClose?.value ? formatDate(insights.predictedClose.value) : "—"}
                 </strong>
               </AccentRow>
@@ -756,7 +756,7 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
               {/* LTV Estimate */}
               <AccentRow>
                 <span className="min-w-0 flex-1 text-sm text-[#8B93B8]">LTV Estimate</span>
-                <strong className="text-right text-base text-[#0E1224] sm:text-lg">
+                <strong className="text-right text-[0.9375rem]/[1.5rem] text-[#0E1224] sm:text-[1.0625rem]/[1.75rem]">
                   {commercial?.lifetimeValue?.value != null
                     ? formatMoney(commercial.lifetimeValue.value)
                     : "—"}
@@ -766,9 +766,9 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
           </section>
 
           {/* Open Task */}
-          <section className="rounded-2xl bg-white p-4">
+          <section className="rounded-2xl bg-white p-3.5">
             <SectionTitle>Open Task</SectionTitle>
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-2">
               {workspace.tasks?.items && workspace.tasks.items.length > 0 ? (
                 workspace.tasks.items.map((task) => (
                   <AccentRow key={task.id}>
@@ -793,7 +793,7 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
                   </AccentRow>
                 ))
               ) : (
-                <div className="py-4 text-center text-sm text-[#8B93B8]">
+                <div className="py-3.5 text-center text-sm text-[#8B93B8]">
                   No open tasks for this contact
                 </div>
               )}
@@ -801,9 +801,9 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
           </section>
 
           {/* Files */}
-          <section className="rounded-2xl bg-white p-4">
+          <section className="rounded-2xl bg-white p-3.5">
             <SectionTitle>Files</SectionTitle>
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-2">
               {workspace.files?.items && workspace.files.items.length > 0 ? (
                 workspace.files.items.map((file) => {
                   const fileName = file.fileName || file.name || "File";
@@ -834,7 +834,7 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
                   );
                 })
               ) : (
-                <div className="py-4 text-center text-sm text-[#8B93B8]">
+                <div className="py-3.5 text-center text-sm text-[#8B93B8]">
                   No files uploaded for this contact
                 </div>
               )}
@@ -844,17 +844,17 @@ export function CrmContactDetails({ contactId: propContactId }: { contactId?: st
       </div>
 
       {/* Notes Section */}
-      <section className="rounded-2xl bg-white p-4">
+      <section className="rounded-2xl bg-white p-3.5">
         <SectionTitle>Notes</SectionTitle>
-        <div className="mt-4 rounded-lg bg-[#F4F5FE] p-4 text-sm text-[#44506F]">
+        <div className="mt-3.5 rounded-lg bg-[#F4F5FE] p-3.5 text-sm text-[#44506F]">
           {profile.notes ? (
-            <p className="whitespace-pre-line pl-4 before:mr-2 before:content-['•']">
+            <p className="whitespace-pre-line pl-3.5 before:mr-2 before:content-['•']">
               {profile.notes}
             </p>
           ) : null}
 
           {workspace.notes?.items && workspace.notes.items.length > 0 ? (
-            <div className="mt-3 space-y-2">
+            <div className="mt-2.5 space-y-2">
               {workspace.notes.items.map((note) => (
                 <div
                   key={note.id}

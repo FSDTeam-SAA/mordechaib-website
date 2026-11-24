@@ -428,10 +428,10 @@ export function CrmContactsTable() {
 
   return (
     <section
-      className="mt-4 space-y-3 text-[#102A62]"
+      className="mt-3.5 space-y-3 text-[#102A62]"
       aria-label={`${activePlatform} CRM contacts`}
     >
-      <div className="flex flex-col gap-4 rounded-[10px] border border-[#DCE7F8] bg-white px-4 py-3 shadow-[0_4px_18px_rgba(45,85,150,0.04)] sm:px-5 lg:min-h-[51px] lg:flex-row lg:items-center lg:justify-between lg:py-2">
+      <div className="flex flex-col gap-4 rounded-[10px] border border-[#DCE7F8] bg-white px-3.5 py-2.5 shadow-[0_4px_18px_rgba(45,85,150,0.04)] sm:px-[1.125rem] lg:min-h-[51px] lg:flex-row lg:items-center lg:justify-between lg:py-2">
         <div className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-3 text-xs">
           <div
             className="flex items-center gap-1 rounded-[8px] bg-[#F5F8FE] p-1"
@@ -469,7 +469,7 @@ export function CrmContactsTable() {
             type="button"
             onClick={() => syncMutation.mutate(provider)}
             disabled={syncMutation.isPending || !accessToken}
-            className="inline-flex h-9 flex-1 items-center justify-center gap-2 rounded-[7px] border border-[#D5E2F6] px-4 text-xs font-semibold text-[#2872F5] transition hover:bg-[#F7FAFF] disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none"
+            className="inline-flex h-9 flex-1 items-center justify-center gap-2 rounded-[7px] border border-[#D5E2F6] px-3.5 text-xs font-semibold text-[#2872F5] transition hover:bg-[#F7FAFF] disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none"
           >
             <RefreshCw
               className={cn("size-4", syncMutation.isPending && "animate-spin")}
@@ -485,7 +485,7 @@ export function CrmContactsTable() {
           className="overflow-x-auto border-b border-[#DCE7F8] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           aria-label="CRM record types"
         >
-          <div className="flex min-w-max items-stretch px-2 sm:px-4">
+          <div className="flex min-w-max items-stretch px-2 sm:px-3.5">
             {visibleObjects.map((object) => {
               const Icon = objectIcon(object.objectType);
               return (
@@ -494,7 +494,7 @@ export function CrmContactsTable() {
                 key={object.objectType}
                 onClick={() => setActiveEntity(object.objectType)}
                 className={cn(
-                  "relative flex h-11 items-center gap-2 px-3 text-xs font-medium text-[#6379A8] transition-colors hover:text-[#246BEE] sm:px-4",
+                  "relative flex h-11 items-center gap-2 px-2.5 text-xs font-medium text-[#6379A8] transition-colors hover:text-[#246BEE] sm:px-3.5",
                   activeEntity === object.objectType && "text-[#246BEE]",
                 )}
               >
@@ -523,7 +523,7 @@ export function CrmContactsTable() {
                     setMoreOpen((open) => !open);
                   }}
                   className={cn(
-                    "relative flex h-11 items-center gap-1 px-4 text-xs font-medium text-[#6379A8] hover:text-[#246BEE]",
+                    "relative flex h-11 items-center gap-1 px-3.5 text-xs font-medium text-[#6379A8] hover:text-[#246BEE]",
                     moreObjects.some((object) => object.objectType === activeEntity) &&
                       "text-[#246BEE]",
                   )}
@@ -557,7 +557,7 @@ export function CrmContactsTable() {
                             setMoreOpen(false);
                           }}
                           className={cn(
-                            "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-medium text-[#6379A8] hover:bg-[#F4F7FE] hover:text-[#246BEE]",
+                            "flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs font-medium text-[#6379A8] hover:bg-[#F4F7FE] hover:text-[#246BEE]",
                             activeEntity === object.objectType && "bg-[#EDF3FF] text-[#246BEE]",
                           )}
                         >
@@ -571,7 +571,7 @@ export function CrmContactsTable() {
               </div>
             )}
             {crmObjects.length > 1 && (
-              <label className="ml-2 flex h-11 items-center gap-2 border-l border-[#DCE7F8] pl-3 text-xs font-medium text-[#6379A8]">
+              <label className="ml-2 flex h-11 items-center gap-2 border-l border-[#DCE7F8] pl-2.5 text-xs font-medium text-[#6379A8]">
                 Show
                 <input
                   type="number"
@@ -589,14 +589,14 @@ export function CrmContactsTable() {
               </label>
             )}
             {objectsQuery.isPending && (
-              <span className="my-3 ml-3 h-5 w-40 animate-pulse rounded bg-[#EDF3FF]" />
+              <span className="my-2.5 ml-2.5 h-5 w-40 animate-pulse rounded bg-[#EDF3FF]" />
             )}
             {objectsQuery.isError && (
               <button
                 type="button"
                 onClick={() => objectsQuery.refetch()}
                 title={objectsQuery.error.message}
-                className="h-11 px-4 text-xs font-medium text-red-500 hover:text-red-600"
+                className="h-11 px-3.5 text-xs font-medium text-red-500 hover:text-red-600"
               >
                 Could not load tabs — Retry
               </button>
@@ -604,9 +604,9 @@ export function CrmContactsTable() {
           </div>
         </nav>
 
-        <div className="flex flex-col gap-3 border-b border-[#E5ECF8] p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 border-b border-[#E5ECF8] p-2.5 sm:p-3.5 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row">
-            <label className="flex h-9 w-full max-w-[330px] items-center gap-3 rounded-[7px] border border-[#D6E2F5] px-3 text-[#6A82B2] focus-within:border-[#70A0FA] focus-within:ring-2 focus-within:ring-[#2F73F6]/10">
+            <label className="flex h-9 w-full max-w-[330px] items-center gap-3 rounded-[7px] border border-[#D6E2F5] px-2.5 text-[#6A82B2] focus-within:border-[#70A0FA] focus-within:ring-2 focus-within:ring-[#2F73F6]/10">
               <Search className="size-4 shrink-0" />
               <input
                 value={query}
@@ -631,7 +631,7 @@ export function CrmContactsTable() {
           >
             <button
               type="button"
-              className="inline-flex h-9 items-center justify-center gap-2 rounded-[7px] bg-[#2F6FF2] px-4 text-xs font-semibold text-white shadow-[0_5px_12px_rgba(47,111,242,0.24)] transition hover:bg-[#2362DE]"
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-[7px] bg-[#2F6FF2] px-3.5 text-xs font-semibold text-white shadow-[0_5px_12px_rgba(47,111,242,0.24)] transition hover:bg-[#2362DE]"
             >
               <UserPlus className="size-4" /> Add Record
             </button>
@@ -639,24 +639,24 @@ export function CrmContactsTable() {
         </div>
 
         {objectsQuery.isError && !activeEntity ? (
-          <div className="mx-3 flex h-40 items-center justify-center border-x border-b border-[#E0E9F7] text-center text-sm text-[#7187B2] sm:mx-4">
+          <div className="mx-2.5 flex h-40 items-center justify-center border-x border-b border-[#E0E9F7] text-center text-sm text-[#7187B2] sm:mx-3.5">
             CRM objects could not be loaded. Retry from the tabs above.
           </div>
         ) : recordsQuery.isPending ? (
           <CrmRecordsTableSkeleton />
         ) : recordsQuery.isError ? (
-          <div className="mx-3 flex h-40 flex-col items-center justify-center border-x border-b border-[#E0E9F7] text-center sm:mx-4">
+          <div className="mx-2.5 flex h-40 flex-col items-center justify-center border-x border-b border-[#E0E9F7] text-center sm:mx-3.5">
             <p className="text-sm text-red-500">{recordsQuery.error.message}</p>
             <button
               type="button"
               onClick={() => recordsQuery.refetch()}
-              className="mt-3 rounded-md border border-[#2F73F6] px-3 py-1.5 text-xs font-semibold text-[#2F73F6] hover:bg-[#F4F7FE]"
+              className="mt-2.5 rounded-md border border-[#2F73F6] px-2.5 py-1.5 text-xs font-semibold text-[#2F73F6] hover:bg-[#F4F7FE]"
             >
               Try again
             </button>
           </div>
         ) : (
-          <div className="mx-3 overflow-x-auto border-x border-[#E0E9F7] sm:mx-4">
+          <div data-lenis-prevent className="mx-2.5 overflow-x-auto overscroll-x-contain border-x border-[#E0E9F7] sm:mx-3.5">
             <table
               className="w-full table-fixed text-left text-sm"
               style={{ minWidth: Math.max(1050, columns.length * 180 + 90) }}
@@ -666,12 +666,12 @@ export function CrmContactsTable() {
                   {columns.map((column) => (
                     <th
                       key={column}
-                      className="w-[180px] px-4 font-semibold"
+                      className="w-[180px] px-3.5 font-semibold"
                     >
                       {columnLabel(column)}
                     </th>
                   ))}
-                  <th className="w-[8%] px-4 font-semibold">Action</th>
+                  <th className="w-[8%] px-3.5 font-semibold">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -689,7 +689,7 @@ export function CrmContactsTable() {
                           <td
                             key={column}
                             title={formatCellValue(values[column], column)}
-                            className="truncate px-4"
+                            className="truncate px-3.5"
                           >
                             {imageUrl ? (
                               <span className="flex items-center gap-2">
@@ -709,7 +709,7 @@ export function CrmContactsTable() {
                           </td>
                         );
                       })}
-                      <td className="px-4">
+                      <td className="px-3.5">
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             type="button"
@@ -750,7 +750,7 @@ export function CrmContactsTable() {
           </div>
         )}
 
-        <div className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-[#17346F]">
             Showing{" "}
             <strong>
@@ -818,7 +818,7 @@ function FilterButton({ label, icon }: { label: string; icon?: ReactNode }) {
   return (
     <button
       type="button"
-      className="inline-flex h-9 items-center justify-center gap-2 rounded-[7px] border border-[#D6E2F5] px-3 text-xs font-medium text-[#274375] transition hover:border-[#A9C2EE] hover:bg-[#F8FAFF]"
+      className="inline-flex h-9 items-center justify-center gap-2 rounded-[7px] border border-[#D6E2F5] px-2.5 text-xs font-medium text-[#274375] transition hover:border-[#A9C2EE] hover:bg-[#F8FAFF]"
     >
       {icon}
       {label}
@@ -846,7 +846,7 @@ function PlatformButton({
       aria-checked={isActive}
       onClick={() => onSelect(platform)}
       className={cn(
-        "inline-flex h-8 items-center gap-2 rounded-[6px] px-3 text-sm font-semibold transition",
+        "inline-flex h-8 items-center gap-2 rounded-[6px] px-2.5 text-sm font-semibold transition",
         isActive
           ? "bg-white text-[#142D60] shadow-[0_2px_7px_rgba(39,73,132,0.12)] ring-1 ring-[#DCE7F8]"
           : "text-[#7187B2] hover:text-[#315C9E]",

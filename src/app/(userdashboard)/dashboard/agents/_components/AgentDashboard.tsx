@@ -73,10 +73,10 @@ function AgentDashboardError({
   onRetry?: () => void;
 }) {
   return (
-    <main className="flex min-h-[calc(100vh-83px)] items-center justify-center bg-[#F5F7FF] p-4">
-      <div className="max-w-md rounded-2xl bg-white p-8 text-center">
+    <main className="flex min-h-[calc(100vh-83px)] items-center justify-center bg-[#F5F7FF] p-3.5">
+      <div className="max-w-md rounded-2xl bg-white p-7 text-center">
         <AlertCircle className="mx-auto size-10 text-red-500" />
-        <h1 className="mt-3 text-xl font-semibold">
+        <h1 className="mt-2.5 text-[1.1875rem]/[1.75rem] font-semibold">
           Could not load agent dashboard
         </h1>
         <p className="mt-2 text-sm text-[#8B93B8]">{message}</p>
@@ -84,7 +84,7 @@ function AgentDashboardError({
           <button
             type="button"
             onClick={onRetry}
-            className="mx-auto mt-5 flex items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 py-2 text-sm font-medium text-white"
+            className="mx-auto mt-[1.125rem] flex items-center gap-2 rounded-lg bg-[#5B7FF0] px-3.5 py-2 text-sm font-medium text-white"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -96,5 +96,5 @@ function AgentDashboardError({
 }
 
 function AgentDashboardSkeleton() {
-  return <main className="min-h-[calc(100vh-83px)] space-y-4 bg-[#F5F7FF] p-3 sm:p-4" aria-busy="true"><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-[132px] animate-pulse rounded-lg bg-white" />)}</div><div className="grid gap-4 lg:grid-cols-[396px_1fr]"><div className="h-[600px] animate-pulse rounded-2xl bg-white" /><div className="h-[780px] animate-pulse rounded-2xl bg-white" /></div></main>;
+  return <main className="min-h-[calc(100vh-83px)] min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5 space-y-3 sm:space-y-4 bg-[#F5F7FF]" aria-busy="true"><div className="grid gap-3 sm:grid-cols-2 min-[1200px]:grid-cols-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="min-h-28 animate-pulse rounded-lg bg-white" />)}</div><div className="grid gap-3 min-[1200px]:grid-cols-[minmax(248px,30%)_minmax(0,1fr)]"><div className="h-60 animate-pulse rounded-2xl bg-white" /><div className="h-80 animate-pulse rounded-2xl bg-white" /></div></main>;
 }

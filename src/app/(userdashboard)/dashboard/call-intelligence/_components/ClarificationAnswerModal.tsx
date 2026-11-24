@@ -75,25 +75,25 @@ export function ClarificationAnswerModal({ open, proposalId, question, onOpenCha
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showClose={false} overlayClassName="bg-black/30 backdrop-blur-[3px]" className="w-[calc(100%-24px)] max-w-[560px] gap-0 overflow-hidden !rounded-[16px] border-0 bg-white p-0 shadow-xl">
-        <header className="flex items-start justify-between border-b border-[#E4EAF8] px-5 py-4 sm:px-6">
-          <div className="min-w-0 pr-4">
-            <DialogTitle className="text-xl font-medium text-[#0E1224]">Answer Clarification</DialogTitle>
+        <header className="flex items-start justify-between border-b border-[#E4EAF8] px-[1.125rem] py-3.5 sm:px-5">
+          <div className="min-w-0 pr-3.5">
+            <DialogTitle className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">Answer Clarification</DialogTitle>
             <DialogDescription className="mt-1 text-sm text-[#8B93B8]">Provide the missing information for this proposal.</DialogDescription>
           </div>
           <DialogClose asChild><button type="button" aria-label="Close clarification modal" className="flex size-9 shrink-0 items-center justify-center rounded-[999px] bg-[#F5F7FF] text-[#64748B] hover:bg-[#E4EAF8]"><X className="size-5" /></button></DialogClose>
         </header>
 
-        <form onSubmit={(event) => { event.preventDefault(); answerMutation.mutate(); }} className="p-5 sm:p-6">
-          <div className="rounded-[8px] bg-[#F5F7FF] p-4">
+        <form onSubmit={(event) => { event.preventDefault(); answerMutation.mutate(); }} className="p-[1.125rem] sm:p-5">
+          <div className="rounded-[8px] bg-[#F5F7FF] p-3.5">
             <p className="text-xs font-medium uppercase tracking-wide text-[#8B93B8]">Question</p>
             <p className="mt-2 text-sm font-medium leading-6 text-[#0E1224]">{question?.question}</p>
           </div>
-          <label htmlFor="clarification-answer" className="mt-5 block text-sm font-medium text-[#0E1224]">Your answer {question?.required !== false && <span className="text-[#EF4444]">*</span>}</label>
-          <input id="clarification-answer" type={inputType} value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder={inputType === "email" ? "name@example.com" : "Enter your answer"} required={question?.required !== false} className="mt-2 h-11 w-full rounded-[8px] border border-[#E4EAF8] px-3 text-sm outline-none focus:border-[#5B7FF0] focus:ring-2 focus:ring-[#5B7FF0]/10" />
-          {answerMutation.isError && <p className="mt-3 flex items-start gap-2 text-sm text-[#EF4444]"><AlertCircle className="mt-0.5 size-4 shrink-0" />{answerMutation.error instanceof Error ? answerMutation.error.message : "Unable to submit answer."}</p>}
-          <div className="mt-6 flex justify-end gap-3 border-t border-[#E4EAF8] pt-4">
-            <DialogClose asChild><button type="button" disabled={answerMutation.isPending} className="h-10 rounded-[8px] border border-[#E4EAF8] px-5 text-sm font-medium text-[#64748B] disabled:opacity-50">Cancel</button></DialogClose>
-            <button type="submit" disabled={answerMutation.isPending || !answer.trim()} className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#5B7FF0] px-5 text-sm font-medium text-white disabled:opacity-50">{answerMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />} Submit Answer</button>
+          <label htmlFor="clarification-answer" className="mt-[1.125rem] block text-sm font-medium text-[#0E1224]">Your answer {question?.required !== false && <span className="text-[#EF4444]">*</span>}</label>
+          <input id="clarification-answer" type={inputType} value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder={inputType === "email" ? "name@example.com" : "Enter your answer"} required={question?.required !== false} className="mt-2 h-11 w-full rounded-[8px] border border-[#E4EAF8] px-2.5 text-sm outline-none focus:border-[#5B7FF0] focus:ring-2 focus:ring-[#5B7FF0]/10" />
+          {answerMutation.isError && <p className="mt-2.5 flex items-start gap-2 text-sm text-[#EF4444]"><AlertCircle className="mt-0.5 size-4 shrink-0" />{answerMutation.error instanceof Error ? answerMutation.error.message : "Unable to submit answer."}</p>}
+          <div className="mt-5 flex justify-end gap-3 border-t border-[#E4EAF8] pt-3.5">
+            <DialogClose asChild><button type="button" disabled={answerMutation.isPending} className="h-10 rounded-[8px] border border-[#E4EAF8] px-[1.125rem] text-sm font-medium text-[#64748B] disabled:opacity-50">Cancel</button></DialogClose>
+            <button type="submit" disabled={answerMutation.isPending || !answer.trim()} className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#5B7FF0] px-[1.125rem] text-sm font-medium text-white disabled:opacity-50">{answerMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />} Submit Answer</button>
           </div>
         </form>
       </DialogContent>

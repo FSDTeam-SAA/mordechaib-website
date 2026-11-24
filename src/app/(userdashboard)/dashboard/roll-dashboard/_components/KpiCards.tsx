@@ -12,17 +12,17 @@ export function KpiCards() {
     { value:cash(data.cards.moneySaved.amount,data.cards.moneySaved.currency), label:"Total Money Saved", chart:"/roi-dashboard/money-sparkline.svg", iconBg:"bg-[#10B981]/10" },
   ];
   return (
-    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <section className="grid gap-3 sm:grid-cols-2 min-[1200px]:grid-cols-4">
       {cards.map((card) => (
-        <article key={card.label} className="relative min-h-[112px] overflow-hidden rounded-lg bg-white p-4">
+        <article key={card.label} className="relative min-h-[112px] overflow-hidden rounded-lg bg-white p-3">
           <div className={`flex size-10 items-center justify-center rounded-xl ${card.iconBg}`}>
-            {card.icon ? <Image src={card.icon} alt="" width={20} height={20} unoptimized className="size-5" /> : <span className="text-2xl font-medium text-[#10B981]">$</span>}
+            {card.icon ? <Image src={card.icon} alt="" width={20} height={20} unoptimized className="size-5" /> : <span className="text-[1.375rem]/[2rem] font-medium text-[#10B981]">$</span>}
           </div>
-          <div className="relative z-10 mt-2">
-            <p className="text-2xl font-bold leading-none text-[#0E1224]">{card.value}</p>
-            <p className="mt-2 text-sm leading-none text-[#8B93B8]">{card.label}</p>
+          <div className="relative z-10 mt-2 pr-[66px] 2xl:pr-[86px]">
+            <p className="text-lg font-bold leading-none text-[#0E1224]">{card.value}</p>
+            <p className="mt-1 text-xs leading-4 text-[#8B93B8]">{card.label}</p>
           </div>
-          <Image src={card.chart} alt="" width={108} height={65} unoptimized className="absolute bottom-3 right-3 h-[65px] w-[108px]" />
+          <Image src={card.chart} alt="" width={108} height={65} unoptimized className="absolute bottom-3 right-3 h-10 w-[66px] 2xl:h-[52px] 2xl:w-[86px]" />
         </article>
       ))}
     </section>

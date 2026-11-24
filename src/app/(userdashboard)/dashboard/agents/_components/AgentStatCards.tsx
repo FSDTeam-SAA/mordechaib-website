@@ -37,27 +37,27 @@ export function AgentStatCards({ data }: { data: AgentDashboardData }) {
 ] as const;
   return (
     <section
-      className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+      className="grid gap-3 sm:grid-cols-2 min-[1200px]:grid-cols-4"
       aria-label="Agent summary"
     >
       {stats.map(([value, label, icon, chart, bg]) => (
         <article
           key={label}
-          className="relative h-[132px] overflow-hidden rounded-lg bg-white p-4"
+          className="relative min-h-28 overflow-hidden rounded-lg bg-white p-3"
         >
           <span
             className={`flex size-10 items-center justify-center rounded-xl ${bg}`}
           >
             <Image src={icon} alt="" width={24} height={24} />
           </span>
-          <p className="mt-2 text-2xl font-bold">{value}</p>
-          <p className="text-sm text-[#8B93B8]">{label}</p>
+          <p className="mt-2 text-lg font-bold">{value}</p>
+          <p className="relative z-10 pr-[66px] text-xs text-[#8B93B8] 2xl:pr-[86px]">{label}</p>
           <Image
             src={chart}
             alt=""
             width={108}
             height={65}
-            className="absolute bottom-0 right-4 h-[65px] w-[108px]"
+            className="absolute bottom-0 right-4 h-10 w-[66px] 2xl:h-[52px] 2xl:w-[86px]"
           />
         </article>
       ))}

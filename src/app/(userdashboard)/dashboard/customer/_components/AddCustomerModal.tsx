@@ -160,14 +160,14 @@ export function AddCustomerModal({ onCreated }: AddCustomerModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <button type="button" onClick={() => setOpen(true)} className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] bg-[#5B7FF0] px-4 text-sm font-medium text-white shadow-[0_4px_12px_rgba(91,127,240,0.22)] transition hover:bg-[#4E6FDE]">
+      <button type="button" onClick={() => setOpen(true)} className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] bg-[#5B7FF0] px-3.5 text-sm font-medium text-white shadow-[0_4px_12px_rgba(91,127,240,0.22)] transition hover:bg-[#4E6FDE]">
         <UserPlus className="size-[18px]" /> Add Customer
       </button>
       <DialogContent
         overlayClassName="bg-[#17203A]/30 backdrop-blur-[5px]"
         className="max-h-[calc(100dvh-28px)] w-[calc(100%-28px)] max-w-[664px] gap-0 overflow-y-auto !rounded-[14px] border-0 bg-white p-0 shadow-[0_24px_80px_rgba(14,18,36,0.2)]"
       >
-        <header className="border-b border-[#EDF0F8] px-[18px] py-4 pr-14">
+        <header className="border-b border-[#EDF0F8] px-[18px] py-3.5 pr-12">
           <DialogTitle className="text-[15px] font-semibold text-[#20263A]">Add New Contact</DialogTitle>
           <DialogDescription className="sr-only">Create a new customer contact.</DialogDescription>
         </header>
@@ -201,7 +201,7 @@ export function AddCustomerModal({ onCreated }: AddCustomerModalProps) {
             <label>
               <span className={labelClass}>Lead Status</span>
               <span className="relative block">
-                <select value={form.leadStatus} onChange={(e) => updateField("leadStatus", e.target.value)} disabled={isSubmitting} className={`${fieldClass} appearance-none pr-9`}>
+                <select value={form.leadStatus} onChange={(e) => updateField("leadStatus", e.target.value)} disabled={isSubmitting} className={`${fieldClass} appearance-none pr-8`}>
                   {leadStatuses.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}
                 </select>
                 <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-[#8CA0D2]" />
@@ -234,7 +234,7 @@ export function AddCustomerModal({ onCreated }: AddCustomerModalProps) {
                     <X className="size-3.5" /> Remove
                   </button>
                 ) : (
-                  <label className="inline-flex h-8 cursor-pointer items-center rounded-md bg-white px-3 text-[11px] font-medium text-[#5675DB] shadow-sm ring-1 ring-[#D8E0F5] hover:bg-[#F9FAFF]">
+                  <label className="inline-flex h-8 cursor-pointer items-center rounded-md bg-white px-2.5 text-[11px] font-medium text-[#5675DB] shadow-sm ring-1 ring-[#D8E0F5] hover:bg-[#F9FAFF]">
                     Browse
                     <input type="file" accept="image/jpeg,image/png,image/webp" disabled={isSubmitting} onChange={(e) => { selectAvatar(e.target.files?.[0]); e.target.value = ""; }} className="sr-only" />
                   </label>
@@ -270,8 +270,8 @@ export function AddCustomerModal({ onCreated }: AddCustomerModalProps) {
             </label>
           </div>
 
-          {error && <p role="alert" className="mt-3 text-xs text-[#C24152]">{error}</p>}
-          <div className="mt-3 grid grid-cols-2 gap-3">
+          {error && <p role="alert" className="mt-2.5 text-xs text-[#C24152]">{error}</p>}
+          <div className="mt-2.5 grid grid-cols-2 gap-3">
             <button type="button" onClick={() => handleOpenChange(false)} disabled={isSubmitting} className="h-[39px] rounded-[7px] border border-[#5B7FF0] text-xs font-medium text-[#5276EA] transition hover:bg-[#F5F7FF] disabled:opacity-60">Cancel</button>
             <button type="submit" disabled={isSubmitting} className="inline-flex h-[39px] items-center justify-center gap-2 rounded-[7px] bg-[#5B7FF0] text-xs font-medium text-white transition hover:bg-[#4E6FDE] disabled:opacity-60">
               {isSubmitting && <LoaderCircle className="size-4 animate-spin" />}
