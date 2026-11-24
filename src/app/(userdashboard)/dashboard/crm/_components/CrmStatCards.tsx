@@ -221,26 +221,26 @@ export function CrmStatCards() {
   return (
     <section
       aria-label="CRM summary"
-      className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+      className="grid gap-3 sm:grid-cols-2 min-[1200px]:grid-cols-4"
     >
       {stats.map((stat) => (
         <article
           key={stat.label}
-          className="relative h-[156px] min-w-0 overflow-hidden rounded-[12px] bg-white p-4"
+          className="relative min-h-32 min-w-0 overflow-hidden rounded-[12px] bg-white p-3"
         >
           <div
             className={`flex size-10 items-center justify-center rounded-xl ${stat.iconBg}`}
           >
             <Image src={stat.icon} alt="" width={20} height={20} />
           </div>
-          <div className="mt-2 min-w-0 pr-[104px]">
-            <p className="whitespace-nowrap text-2xl font-bold leading-normal">
+          <div className="mt-2 min-w-0 relative z-10 pr-[68px] 2xl:pr-[88px]">
+            <p className="whitespace-nowrap text-lg font-bold leading-normal">
               {stat.value}
             </p>
-            <p className="whitespace-nowrap text-sm text-[#ADAAAA]">
+            <p className="break-words text-xs text-[#ADAAAA]">
               {stat.label}
             </p>
-            <div className="mt-[3px] flex items-center gap-0.5 whitespace-nowrap">
+            <div className="mt-[3px] flex flex-wrap items-center gap-1">
               <span
                 className={`rounded-lg px-1 py-1 text-[10px] font-bold leading-[13px] ${stat.noteClass}`}
               >
@@ -256,7 +256,7 @@ export function CrmStatCards() {
             alt=""
             width={108}
             height={65}
-            className="absolute bottom-4 right-4 h-[65px] w-[108px]"
+            className="absolute bottom-4 right-4 h-10 w-[66px] 2xl:h-[52px] 2xl:w-[86px]"
           />
         </article>
       ))}

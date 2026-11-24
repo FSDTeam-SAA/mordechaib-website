@@ -264,7 +264,7 @@ function streamActivityLabel(value: unknown) {
 function AssistantMessageContent({ content }: { content: string }) {
   return (
     <div
-      className="break-words text-sm leading-6 text-[#252B48] [&_a]:text-[#4F71E8] [&_a]:underline [&_a]:underline-offset-2 [&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:border-[#B8C8F8] [&_blockquote]:pl-3 [&_code]:rounded [&_code]:bg-[#EAF0FF] [&_code]:px-1 [&_code]:py-0.5 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_p]:m-0 [&_p+p]:mt-2 [&_pre]:my-2 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-[#EAF0FF] [&_pre]:p-3 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5"
+      className="break-words text-sm leading-6 text-[#252B48] [&_a]:text-[#4F71E8] [&_a]:underline [&_a]:underline-offset-2 [&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:border-[#B8C8F8] [&_blockquote]:pl-2.5 [&_code]:rounded [&_code]:bg-[#EAF0FF] [&_code]:px-1 [&_code]:py-0.5 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-[1.125rem] [&_p]:m-0 [&_p+p]:mt-2 [&_pre]:my-2 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-[#EAF0FF] [&_pre]:p-2.5 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-[1.125rem]"
       dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
     />
   );
@@ -390,7 +390,7 @@ function UserAvatar({
     .trim()
     .toUpperCase() || "U";
   return (
-    <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-xl font-medium text-[#5B7FF0] shadow-[0_0_4px_rgba(0,0,0,.25)]">
+    <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[1.1875rem]/[1.75rem] font-medium text-[#5B7FF0] shadow-[0_0_4px_rgba(0,0,0,.25)]">
       {initials}
     </span>
   );
@@ -444,7 +444,7 @@ function LauraMessage({
   return (
     <div className="flex w-full max-w-[520px] items-start gap-3 self-start">
       <LauraAvatar name={agent?.name} imageUrl={agent?.imageUrl} />
-      <div className="min-w-0 flex-1 rounded-bl-2xl rounded-br-2xl rounded-tr-2xl border border-[#F5F7FF] bg-[#F5F7FF] p-3 text-sm leading-normal">
+      <div className="min-w-0 flex-1 rounded-bl-2xl rounded-br-2xl rounded-tr-2xl border border-[#F5F7FF] bg-[#F5F7FF] p-2.5 text-sm leading-normal">
         {children}
       </div>
     </div>
@@ -460,7 +460,7 @@ function UserMessage({
 }) {
   return (
     <div className="flex max-w-[520px] items-end gap-3 self-end">
-      <div className="rounded-bl-2xl rounded-tl-2xl rounded-tr-2xl bg-[#5B7FF0] p-3 text-sm text-white">
+      <div className="rounded-bl-2xl rounded-tl-2xl rounded-tr-2xl bg-[#5B7FF0] p-2.5 text-sm text-white">
         {children}
       </div>
       <UserAvatar {...user} />
@@ -481,7 +481,7 @@ function LauraThinking({
       aria-live="polite"
     >
       <LauraAvatar name={agent?.name} imageUrl={agent?.imageUrl} />
-      <div className="rounded-bl-2xl rounded-br-2xl rounded-tr-2xl border border-[#F5F7FF] bg-[#F5F7FF] px-4 py-3">
+      <div className="rounded-bl-2xl rounded-br-2xl rounded-tr-2xl border border-[#F5F7FF] bg-[#F5F7FF] px-3.5 py-2.5">
         <div className="flex items-center gap-2 text-sm text-[#667085]">
           <span>{label}</span>
           <span className="flex items-center gap-1" aria-label="Loading">
@@ -536,7 +536,7 @@ function HistoricalProposalPreview({
           {isExecuted ? "Completed" : status.replace(/_/g, " ")}
         </span>
       </div>
-      <div className="mt-2 rounded-xl border border-[#E3E9FA] bg-white p-3 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.06)]">
+      <div className="mt-2 rounded-xl border border-[#E3E9FA] bg-white p-2.5 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.06)]">
         <h3 className="flex items-center gap-2 text-sm font-semibold text-[#5B7FF0]">
           {isMeeting ? (
             <CalendarDays className="size-4" />
@@ -546,7 +546,7 @@ function HistoricalProposalPreview({
           {isMeeting ? "Meeting Preview" : "Task Preview"}
         </h3>
         {isMeeting ? (
-          <dl className="mt-3 grid grid-cols-[72px_1fr] gap-y-2 text-[#555577]">
+          <dl className="mt-2.5 grid grid-cols-[72px_1fr] gap-y-2 text-[#555577]">
             <dt className="text-[#8B93B8]">Title</dt>
             <dd className="font-medium text-[#252B48]">{title}</dd>
             <dt className="text-[#8B93B8]">When</dt>
@@ -559,7 +559,7 @@ function HistoricalProposalPreview({
             </dd>
           </dl>
         ) : (
-          <dl className="mt-3 grid grid-cols-[72px_1fr] gap-y-2 text-[#555577]">
+          <dl className="mt-2.5 grid grid-cols-[72px_1fr] gap-y-2 text-[#555577]">
             <dt className="text-[#8B93B8]">Title</dt>
             <dd className="font-medium text-[#252B48]">{title}</dd>
             <dt className="text-[#8B93B8]">Priority</dt>
@@ -582,7 +582,7 @@ function HistoricalProposalPreview({
           <button
             type="button"
             onClick={() => onOpen(proposal)}
-            className="mt-3 w-full rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm font-medium text-[#5B7FF0] transition-colors hover:bg-[#F5F7FF]"
+            className="mt-2.5 w-full rounded-lg border border-[#B9C5E7] px-2.5 py-2 text-sm font-medium text-[#5B7FF0] transition-colors hover:bg-[#F5F7FF]"
           >
             Review &amp; edit draft
           </button>
@@ -2326,11 +2326,11 @@ export function LauraConversation({
       <div
         ref={chatScrollRef}
         onWheel={handleChatWheel}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain rounded-xl bg-white p-4 pr-2 shadow-[0_1px_2px_rgba(32,53,112,0.02)] sm:p-6 sm:pr-4"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain rounded-xl bg-white p-3.5 pr-2 shadow-[0_1px_2px_rgba(32,53,112,0.02)] sm:p-5 sm:pr-3.5"
       >
         <div className="flex min-h-full flex-col gap-4">
           {!conversationId && messages.length === 0 ? (
-            <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-[#DCE3F5] p-8 text-center text-sm text-[#8B93B8]">
+            <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-[#DCE3F5] p-7 text-center text-sm text-[#8B93B8]">
               Start a new chat with {agentName} from the message box below.
             </div>
           ) : isLoadingMessages && messages.length === 0 ? (
@@ -2432,7 +2432,7 @@ export function LauraConversation({
                         <p>
                           This meeting preview is still available for review.
                         </p>
-                        <div className="mt-3 rounded-xl border border-[#E3E9FA] bg-white p-3 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.08)]">
+                        <div className="mt-2.5 rounded-xl border border-[#E3E9FA] bg-white p-2.5 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.08)]">
                           <div className="flex items-center justify-between gap-3">
                             <h3 className="flex items-center gap-2 text-sm font-semibold text-[#5B7FF0]">
                               <CalendarDays className="size-4" /> Meeting
@@ -2444,7 +2444,7 @@ export function LauraConversation({
                                 : proposal.status?.replace(/_/g, " ")}
                             </span>
                           </div>
-                          <dl className="mt-3 grid grid-cols-[82px_1fr] gap-y-2 text-[#555577]">
+                          <dl className="mt-2.5 grid grid-cols-[82px_1fr] gap-y-2 text-[#555577]">
                             <dt className="text-[#8B93B8]">Title</dt>
                             <dd className="font-medium text-[#252B48]">
                               {proposal.payload?.title ||
@@ -2465,7 +2465,7 @@ export function LauraConversation({
                           <button
                             type="button"
                             onClick={() => reviewSavedProposal(proposal)}
-                            className="mt-3 w-full rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm font-medium text-[#5B7FF0] transition-colors hover:bg-[#F5F7FF]"
+                            className="mt-2.5 w-full rounded-lg border border-[#B9C5E7] px-2.5 py-2 text-sm font-medium text-[#5B7FF0] transition-colors hover:bg-[#F5F7FF]"
                           >
                             Review{" "}
                             {proposal.status?.toUpperCase() === "PENDING"
@@ -2479,7 +2479,7 @@ export function LauraConversation({
                   {savedTasks.map((proposal) => (
                     <LauraMessage key={`saved-task-${proposal.id}`}>
                       <p>This task preview is still available for review.</p>
-                      <div className="mt-3 rounded-xl border border-[#E3E9FA] bg-white p-3 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.08)]">
+                      <div className="mt-2.5 rounded-xl border border-[#E3E9FA] bg-white p-2.5 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.08)]">
                         <div className="flex items-center justify-between gap-3">
                           <h3 className="flex items-center gap-2 text-sm font-semibold text-[#5B7FF0]">
                             <CheckSquare className="size-4" /> Task Preview
@@ -2490,7 +2490,7 @@ export function LauraConversation({
                               : proposal.status?.replace(/_/g, " ")}
                           </span>
                         </div>
-                        <dl className="mt-3 grid grid-cols-[82px_1fr] gap-y-2 text-[#555577]">
+                        <dl className="mt-2.5 grid grid-cols-[82px_1fr] gap-y-2 text-[#555577]">
                           <dt className="text-[#8B93B8]">Title</dt>
                           <dd className="font-medium text-[#252B48]">
                             {proposal.payload?.title ||
@@ -2517,7 +2517,7 @@ export function LauraConversation({
                         <button
                           type="button"
                           onClick={() => reviewSavedProposal(proposal)}
-                          className="mt-3 w-full rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm font-medium text-[#5B7FF0] transition-colors hover:bg-[#F5F7FF]"
+                          className="mt-2.5 w-full rounded-lg border border-[#B9C5E7] px-2.5 py-2 text-sm font-medium text-[#5B7FF0] transition-colors hover:bg-[#F5F7FF]"
                         >
                           Review{" "}
                           {proposal.status?.toUpperCase() === "PENDING"
@@ -2536,7 +2536,7 @@ export function LauraConversation({
                       ? "I’ve put the meeting details together. Please review the preview below, then confirm when you’re ready to add it to your calendar."
                       : "This meeting has been processed. The preview remains available for your reference."}
                   </p>
-                  <div className="mt-3 rounded-xl border border-[#E3E9FA] bg-white p-3 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.08)]">
+                  <div className="mt-2.5 rounded-xl border border-[#E3E9FA] bg-white p-2.5 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.08)]">
                     <div className="flex items-center justify-between gap-3">
                       <h3 className="flex items-center gap-2 text-sm font-semibold text-[#5B7FF0]">
                         <CalendarDays className="size-4" /> Meeting Preview
@@ -2564,7 +2564,7 @@ export function LauraConversation({
                     {isEditingMeeting && meetingEditDraft ? (
                       <form
                         onSubmit={saveMeetingEdit}
-                        className="mt-3 space-y-3 rounded-lg bg-[#F7F9FF] p-3"
+                        className="mt-2.5 space-y-3 rounded-lg bg-[#F7F9FF] p-2.5"
                       >
                         <p className="text-xs font-medium text-[#454E76]">
                           Update the details, then save your changes before
@@ -2582,7 +2582,7 @@ export function LauraConversation({
                               )
                             }
                             required
-                            className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
+                            className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-2.5 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
                           />
                         </label>
                         <div className="grid gap-3 sm:grid-cols-2">
@@ -2602,7 +2602,7 @@ export function LauraConversation({
                                 )
                               }
                               required
-                              className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
+                              className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-2.5 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
                             />
                           </label>
                           <label className="block text-xs font-medium text-[#667085]">
@@ -2623,7 +2623,7 @@ export function LauraConversation({
                                 )
                               }
                               required
-                              className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
+                              className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-2.5 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
                             />
                           </label>
                         </div>
@@ -2643,7 +2643,7 @@ export function LauraConversation({
                                 )
                               }
                               required
-                              className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
+                              className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-2.5 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
                             >
                               <option value="">Choose a platform</option>
                               <option value="GOOGLE_MEET">Google Meet</option>
@@ -2666,7 +2666,7 @@ export function LauraConversation({
                               }
                               required
                               placeholder="Asia/Dhaka"
-                              className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
+                              className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-2.5 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
                             />
                           </label>
                         </div>
@@ -2687,7 +2687,7 @@ export function LauraConversation({
                             }
                             required
                             placeholder="name@example.com, teammate@example.com"
-                            className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
+                            className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-2.5 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
                           />
                         </label>
                         {meetingEditError ? (
@@ -2703,14 +2703,14 @@ export function LauraConversation({
                             type="button"
                             onClick={cancelMeetingEdit}
                             disabled={isSavingMeetingEdit}
-                            className="rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm text-[#65719B] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+                            className="rounded-lg border border-[#B9C5E7] px-2.5 py-2 text-sm text-[#65719B] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
                           >
                             Cancel
                           </button>
                           <button
                             type="submit"
                             disabled={isSavingMeetingEdit}
-                            className="flex-1 rounded-lg bg-[#5B7FF0] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60"
+                            className="flex-1 rounded-lg bg-[#5B7FF0] px-2.5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60"
                           >
                             {isSavingMeetingEdit
                               ? "Saving changes..."
@@ -2720,7 +2720,7 @@ export function LauraConversation({
                       </form>
                     ) : (
                       <>
-                        <dl className="mt-3 grid grid-cols-[82px_1fr] gap-y-2.5 text-[#555577]">
+                        <dl className="mt-2.5 grid grid-cols-[82px_1fr] gap-y-2.5 text-[#555577]">
                           <dt className="text-[#8B93B8]">Title</dt>
                           <dd className="font-medium text-[#252B48]">
                             {readyMeeting.payload?.title ||
@@ -2757,12 +2757,12 @@ export function LauraConversation({
                           </dd>
                         </dl>
                         {isMeetingPending ? (
-                          <div className="mt-4 flex gap-2">
+                          <div className="mt-3.5 flex gap-2">
                             <button
                               type="button"
                               onClick={() => void rejectMeeting()}
                               disabled={isRejecting || isApproving}
-                              className="rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm text-[#65719B] transition-colors hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-60"
+                              className="rounded-lg border border-[#B9C5E7] px-2.5 py-2 text-sm text-[#65719B] transition-colors hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-60"
                             >
                               {isRejecting ? "Cancelling..." : "Cancel"}
                             </button>
@@ -2770,7 +2770,7 @@ export function LauraConversation({
                               type="button"
                               onClick={() => void approveMeeting()}
                               disabled={isApproving || isRejecting}
-                              className="flex-1 rounded-lg bg-[#5B7FF0] px-3 py-2 text-sm text-white transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60"
+                              className="flex-1 rounded-lg bg-[#5B7FF0] px-2.5 py-2 text-sm text-white transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60"
                             >
                               {isApproving
                                 ? "Adding to calendar..."
@@ -2778,7 +2778,7 @@ export function LauraConversation({
                             </button>
                           </div>
                         ) : (
-                          <div className="mt-4 rounded-lg bg-[#EEF2FF] px-3 py-2 text-center text-sm font-medium text-[#5B7FF0]">
+                          <div className="mt-3.5 rounded-lg bg-[#EEF2FF] px-2.5 py-2 text-center text-sm font-medium text-[#5B7FF0]">
                             {readyMeeting.status?.toUpperCase() === "EXECUTED"
                               ? "Executed"
                               : readyMeeting.status?.replace(/_/g, " ")}
@@ -2796,7 +2796,7 @@ export function LauraConversation({
                       ? "I’ve prepared this task for your approval. Review the details below, then create it when you’re ready."
                       : "This task has been processed. The preview remains available for your reference."}
                   </p>
-                  <div className="mt-3 rounded-xl border border-[#E3E9FA] bg-white p-3 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.08)]">
+                  <div className="mt-2.5 rounded-xl border border-[#E3E9FA] bg-white p-2.5 text-xs shadow-[0_4px_18px_rgba(55,78,143,0.08)]">
                     <div className="flex items-center justify-between gap-3">
                       <h3 className="flex items-center gap-2 text-sm font-semibold text-[#5B7FF0]">
                         <CheckSquare className="size-4" /> Task Preview
@@ -2824,7 +2824,7 @@ export function LauraConversation({
                     {isEditingTask && taskEditDraft ? (
                       <form
                         onSubmit={saveTaskEdit}
-                        className="mt-3 space-y-3 rounded-lg bg-[#F7F9FF] p-3"
+                        className="mt-2.5 space-y-3 rounded-lg bg-[#F7F9FF] p-2.5"
                       >
                         <p className="text-xs font-medium text-[#454E76]">
                           Update the task details, then save before confirming.
@@ -2841,7 +2841,7 @@ export function LauraConversation({
                               )
                             }
                             required
-                            className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
+                            className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-2.5 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
                           />
                         </label>
                         <label className="block text-xs font-medium text-[#667085]">
@@ -2859,7 +2859,7 @@ export function LauraConversation({
                               )
                             }
                             rows={3}
-                            className="mt-1.5 w-full resize-y rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
+                            className="mt-1.5 w-full resize-y rounded-lg border border-[#DCE3F5] bg-white px-2.5 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
                           />
                         </label>
                         <div className="grid gap-3 sm:grid-cols-2">
@@ -2877,7 +2877,7 @@ export function LauraConversation({
                                     : current,
                                 )
                               }
-                              className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
+                              className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-2.5 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
                             >
                               <option value="LOW">Low</option>
                               <option value="MEDIUM">Medium</option>
@@ -2898,7 +2898,7 @@ export function LauraConversation({
                                     : current,
                                 )
                               }
-                              className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
+                              className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-2.5 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
                             >
                               {TASK_DEPARTMENTS.map((department) => (
                                 <option key={department} value={department}>
@@ -2926,7 +2926,7 @@ export function LauraConversation({
                               )
                             }
                             placeholder="proposal, client"
-                            className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-3 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
+                            className="mt-1.5 w-full rounded-lg border border-[#DCE3F5] bg-white px-2.5 py-2 text-sm text-[#252B48] outline-none focus:border-[#5B7FF0]"
                           />
                         </label>
                         {taskEditError ? (
@@ -2942,14 +2942,14 @@ export function LauraConversation({
                             type="button"
                             onClick={cancelTaskEdit}
                             disabled={isSavingTaskEdit}
-                            className="rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm text-[#65719B] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+                            className="rounded-lg border border-[#B9C5E7] px-2.5 py-2 text-sm text-[#65719B] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
                           >
                             Cancel
                           </button>
                           <button
                             type="submit"
                             disabled={isSavingTaskEdit}
-                            className="flex-1 rounded-lg bg-[#5B7FF0] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60"
+                            className="flex-1 rounded-lg bg-[#5B7FF0] px-2.5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60"
                           >
                             {isSavingTaskEdit
                               ? "Saving changes..."
@@ -2959,7 +2959,7 @@ export function LauraConversation({
                       </form>
                     ) : (
                       <>
-                        <dl className="mt-3 grid grid-cols-[82px_1fr] gap-y-2.5 text-[#555577]">
+                        <dl className="mt-2.5 grid grid-cols-[82px_1fr] gap-y-2.5 text-[#555577]">
                           <dt className="text-[#8B93B8]">Title</dt>
                           <dd className="font-medium text-[#252B48]">
                             {readyTask.payload?.title ||
@@ -3007,12 +3007,12 @@ export function LauraConversation({
                           </dd>
                         </dl>
                         {isTaskPending ? (
-                          <div className="mt-4 flex gap-2">
+                          <div className="mt-3.5 flex gap-2">
                             <button
                               type="button"
                               onClick={() => void rejectTask()}
                               disabled={isRejecting || isApproving}
-                              className="rounded-lg border border-[#B9C5E7] px-3 py-2 text-sm text-[#65719B] transition-colors hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-60"
+                              className="rounded-lg border border-[#B9C5E7] px-2.5 py-2 text-sm text-[#65719B] transition-colors hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-60"
                             >
                               {isRejecting ? "Cancelling..." : "Cancel"}
                             </button>
@@ -3020,7 +3020,7 @@ export function LauraConversation({
                               type="button"
                               onClick={() => void approveTask()}
                               disabled={isApproving || isRejecting}
-                              className="flex-1 rounded-lg bg-[#5B7FF0] px-3 py-2 text-sm text-white transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60"
+                              className="flex-1 rounded-lg bg-[#5B7FF0] px-2.5 py-2 text-sm text-white transition-colors hover:bg-[#4C6FE0] disabled:cursor-not-allowed disabled:opacity-60"
                             >
                               {isApproving
                                 ? "Creating task..."
@@ -3028,7 +3028,7 @@ export function LauraConversation({
                             </button>
                           </div>
                         ) : (
-                          <div className="mt-4 rounded-lg bg-[#EEF2FF] px-3 py-2 text-center text-sm font-medium text-[#5B7FF0]">
+                          <div className="mt-3.5 rounded-lg bg-[#EEF2FF] px-2.5 py-2 text-center text-sm font-medium text-[#5B7FF0]">
                             {readyTask.status?.toUpperCase() === "EXECUTED"
                               ? "Executed"
                               : readyTask.status?.replace(/_/g, " ")}
@@ -3045,7 +3045,7 @@ export function LauraConversation({
       </div>
       {error ? (
         <div
-          className="flex flex-col items-stretch gap-3 rounded-xl border border-[#F6D9A9] bg-[#FFF9EE] px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between"
+          className="flex flex-col items-stretch gap-3 rounded-xl border border-[#F6D9A9] bg-[#FFF9EE] px-2.5 py-2.5 sm:flex-row sm:items-center sm:justify-between"
           role="alert"
         >
           <div className="flex min-w-0 items-start gap-2">
@@ -3079,7 +3079,7 @@ export function LauraConversation({
         </div>
       ) : null}
       {attachments.length ? (
-        <div className="rounded-xl bg-white px-4 py-3 shadow-[0_1px_2px_rgba(32,53,112,0.02)]">
+        <div className="rounded-xl bg-white px-3.5 py-2.5 shadow-[0_1px_2px_rgba(32,53,112,0.02)]">
           <div className="mb-2 flex flex-col gap-1 text-xs sm:flex-row sm:items-center sm:justify-between">
             <span className="font-medium text-[#252B48]">
               {attachments.length} file{attachments.length > 1 ? "s" : ""} ready
@@ -3130,10 +3130,10 @@ export function LauraConversation({
       ) : null}
       <form
         onSubmit={submitMessage}
-        className="flex min-h-16 items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-[0_1px_2px_rgba(32,53,112,0.03)] sm:h-20 sm:gap-4 sm:px-10 sm:py-0"
+        className="flex min-h-16 items-center gap-2 rounded-xl bg-white px-2.5 py-2 shadow-[0_1px_2px_rgba(32,53,112,0.03)] sm:h-20 sm:gap-4 sm:px-[2.25rem] sm:py-0"
       >
         {isListening ? (
-          <div className="mx-auto flex h-12 w-full max-w-2xl items-center gap-3 rounded-2xl bg-gradient-to-r from-[#5B7FF0] to-[#7792F4] px-3 shadow-[0_8px_20px_rgba(91,127,240,0.24)]">
+          <div className="mx-auto flex h-12 w-full max-w-2xl items-center gap-3 rounded-2xl bg-gradient-to-r from-[#5B7FF0] to-[#7792F4] px-2.5 shadow-[0_8px_20px_rgba(91,127,240,0.24)]">
             <button
               type="button"
               onClick={cancelVoiceInput}
@@ -3143,7 +3143,7 @@ export function LauraConversation({
             >
               <X className="size-5" strokeWidth={1.8} />
             </button>
-            <div className="flex h-9 min-w-0 flex-1 items-center gap-3 rounded-xl border border-white/25 bg-[#4C6FE0]/70 px-4">
+            <div className="flex h-9 min-w-0 flex-1 items-center gap-3 rounded-xl border border-white/25 bg-[#4C6FE0]/70 px-3.5">
               <span className="hidden shrink-0 text-xs font-medium text-white/80 sm:inline">
                 Listening
               </span>

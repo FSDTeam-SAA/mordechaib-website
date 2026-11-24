@@ -126,7 +126,7 @@ function formatDate(value?: string, includeTime = false) {
 
 function DetailSkeleton() {
   return (
-    <div className="space-y-6 p-4 sm:p-6">
+    <div className="space-y-6 p-3.5 sm:p-5">
       <div className="space-y-3">
         <Skeleton className="h-7 w-3/4 bg-[#F5F7FF]" />
         <Skeleton className="h-4 w-full bg-[#F5F7FF]" />
@@ -152,7 +152,7 @@ function InfoCard({
   value: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-[#E4EAF8] bg-[#FBFCFF] p-3">
+    <div className="rounded-xl border border-[#E4EAF8] bg-[#FBFCFF] p-2.5">
       <div className="flex items-center gap-2 text-xs text-[#8B93B8]">
         {icon}
         {label}
@@ -175,7 +175,7 @@ function Checklist({
 }) {
   return (
     <section>
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-2.5 flex items-center justify-between">
         <h3 className="font-medium text-[#0E1224]">{title}</h3>
         <span className="rounded-full bg-[#F5F7FF] px-2 py-0.5 text-xs text-[#8B93B8]">
           {items?.length ?? 0}
@@ -186,7 +186,7 @@ function Checklist({
           {items.map((item, index) => (
             <div
               key={`${item.title ?? item.name}-${index}`}
-              className="flex items-start gap-3 rounded-lg border border-[#E4EAF8] p-3"
+              className="flex items-start gap-3 rounded-lg border border-[#E4EAF8] p-2.5"
             >
               <span
                 className={cn(
@@ -217,7 +217,7 @@ function Checklist({
           ))}
         </div>
       ) : (
-        <p className="rounded-lg bg-[#F5F7FF] p-3 text-sm text-[#8B93B8]">
+        <p className="rounded-lg bg-[#F5F7FF] p-2.5 text-sm text-[#8B93B8]">
           {emptyText}
         </p>
       )}
@@ -247,9 +247,9 @@ export function TaskDetailsModal({
         overlayClassName="bg-black/30 backdrop-blur-[3px]"
         className="flex h-[calc(100dvh-24px)] max-h-[760px] w-[calc(100%-32px)] max-w-[820px] flex-col gap-0 overflow-hidden rounded-[12px] border-0 bg-white p-0 shadow-xl sm:h-[calc(100dvh-48px)]"
       >
-        <header className="flex shrink-0 items-center justify-between border-b border-[#E4EAF8] px-4 py-4 sm:px-6">
+        <header className="flex shrink-0 items-center justify-between border-b border-[#E4EAF8] px-3.5 py-3.5 sm:px-5">
           <div className="min-w-0">
-            <DialogTitle className="text-xl font-medium text-[#0E1224]">
+            <DialogTitle className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
               Task Details
             </DialogTitle>
             <DialogDescription className="mt-1 text-sm text-[#8B93B8]">
@@ -260,7 +260,7 @@ export function TaskDetailsModal({
             <button
               type="button"
               aria-label="Close task details"
-              className="ml-3 flex size-9 shrink-0 items-center justify-center rounded-full bg-[#F5F7FF] text-[#64748B] transition-colors hover:bg-[#E4EAF8] hover:text-[#0E1224]"
+              className="ml-2.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-[#F5F7FF] text-[#64748B] transition-colors hover:bg-[#E4EAF8] hover:text-[#0E1224]"
             >
               <X className="size-5" />
             </button>
@@ -274,7 +274,7 @@ export function TaskDetailsModal({
           {isLoading ? (
             <DetailSkeleton />
           ) : isError || !task ? (
-            <div className="flex min-h-[360px] flex-col items-center justify-center p-6 text-center">
+            <div className="flex min-h-[360px] flex-col items-center justify-center p-5 text-center">
               <p className="text-sm text-[#8B93B8]">
                 Unable to load task details.
               </p>
@@ -282,18 +282,18 @@ export function TaskDetailsModal({
                 type="button"
                 variant="outline"
                 onClick={onRetry}
-                className="mt-4 border-[#5B7FF0] text-[#5B7FF0]"
+                className="mt-3.5 border-[#5B7FF0] text-[#5B7FF0]"
               >
                 Try Again
               </Button>
             </div>
           ) : (
-            <div className="space-y-6 p-4 sm:p-6">
+            <div className="space-y-6 p-3.5 sm:p-5">
               <section>
                 <div className="flex flex-wrap items-center gap-2">
                   <span
                     className={cn(
-                      "rounded-full px-3 py-1 text-xs font-medium",
+                      "rounded-full px-2.5 py-1 text-xs font-medium",
                       statusStyles[status] ?? "bg-[#F5F7FF] text-[#64748B]",
                     )}
                   >
@@ -301,30 +301,30 @@ export function TaskDetailsModal({
                   </span>
                   <span
                     className={cn(
-                      "rounded-full px-3 py-1 text-xs font-medium",
+                      "rounded-full px-2.5 py-1 text-xs font-medium",
                       priorityStyles[priority] ?? "bg-[#F5F7FF] text-[#64748B]",
                     )}
                   >
                     {formatLabel(priority)} priority
                   </span>
                   {task.isOverdue && (
-                    <span className="rounded-full bg-[#EF4444]/10 px-3 py-1 text-xs font-medium text-[#EF4444]">
+                    <span className="rounded-full bg-[#EF4444]/10 px-2.5 py-1 text-xs font-medium text-[#EF4444]">
                       Overdue
                     </span>
                   )}
                 </div>
-                <h2 className="mt-4 break-words text-2xl font-semibold leading-tight text-[#0E1224] sm:text-3xl">
+                <h2 className="mt-3.5 break-words text-[1.375rem]/[2rem] font-semibold leading-tight text-[#0E1224] sm:text-[1.75rem]/[2.25rem]">
                   {task.title}
                 </h2>
                 {task.description ? (
                   <div
-                    className="mt-3 break-words text-sm leading-6 text-[#64748B] sm:text-base [&_a]:text-[#5B7FF0] [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-[#E4EAF8] [&_blockquote]:pl-4 [&_h1]:text-2xl [&_h1]:font-semibold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-semibold [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_ul]:list-disc [&_ul]:pl-6"
+                    className="mt-2.5 break-words text-sm leading-6 text-[#64748B] sm:text-[0.9375rem]/[1.5rem] [&_a]:text-[#5B7FF0] [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-[#E4EAF8] [&_blockquote]:pl-3.5 [&_h1]:text-[1.375rem]/[2rem] [&_h1]:font-semibold [&_h2]:text-[1.1875rem]/[1.75rem] [&_h2]:font-semibold [&_h3]:text-[1.0625rem]/[1.75rem] [&_h3]:font-semibold [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-2 [&_ul]:list-disc [&_ul]:pl-5"
                     dangerouslySetInnerHTML={{
                       __html: sanitizeHtml(task.description),
                     }}
                   />
                 ) : (
-                  <p className="mt-3 text-sm leading-6 text-[#64748B] sm:text-base">
+                  <p className="mt-2.5 text-sm leading-6 text-[#64748B] sm:text-[0.9375rem]/[1.5rem]">
                     No description provided.
                   </p>
                 )}
@@ -341,12 +341,12 @@ export function TaskDetailsModal({
 
               {task.tags?.length ? (
                 <section>
-                  <h3 className="mb-3 flex items-center gap-2 font-medium text-[#0E1224]">
+                  <h3 className="mb-2.5 flex items-center gap-2 font-medium text-[#0E1224]">
                     <Tag className="size-4 text-[#5B7FF0]" /> Tags
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {task.tags.map((tag) => (
-                      <span key={tag} className="rounded-lg bg-[#5B7FF0]/10 px-3 py-1.5 text-sm text-[#5B7FF0]">
+                      <span key={tag} className="rounded-lg bg-[#5B7FF0]/10 px-2.5 py-1.5 text-sm text-[#5B7FF0]">
                         {tag.startsWith("#") ? tag : `#${tag}`}
                       </span>
                     ))}
@@ -359,7 +359,7 @@ export function TaskDetailsModal({
                 <Checklist title="Subtasks" items={task.subtasks} emptyText="No subtasks added." />
                 <Checklist title="Required attachments" items={task.requiredAttachments} emptyText="No required attachments." />
                 <section>
-                  <div className="mb-3 flex items-center justify-between">
+                  <div className="mb-2.5 flex items-center justify-between">
                     <h3 className="flex items-center gap-2 font-medium text-[#0E1224]">
                       <Link2 className="size-4 text-[#5B7FF0]" /> Attachments
                     </h3>
@@ -373,26 +373,26 @@ export function TaskDetailsModal({
                         const name = typeof attachment === "string" ? attachment : attachment.name ?? `Attachment ${index + 1}`;
                         const url = typeof attachment === "string" ? attachment : attachment.url;
                         return url ? (
-                          <a key={`${name}-${index}`} href={url} target="_blank" rel="noreferrer" className="block truncate rounded-lg border border-[#E4EAF8] p-3 text-sm text-[#5B7FF0] hover:bg-[#F5F7FF]">{name}</a>
+                          <a key={`${name}-${index}`} href={url} target="_blank" rel="noreferrer" className="block truncate rounded-lg border border-[#E4EAF8] p-2.5 text-sm text-[#5B7FF0] hover:bg-[#F5F7FF]">{name}</a>
                         ) : (
-                          <p key={`${name}-${index}`} className="truncate rounded-lg border border-[#E4EAF8] p-3 text-sm text-[#0E1224]">{name}</p>
+                          <p key={`${name}-${index}`} className="truncate rounded-lg border border-[#E4EAF8] p-2.5 text-sm text-[#0E1224]">{name}</p>
                         );
                       })}
                     </div>
                   ) : (
-                    <p className="rounded-lg bg-[#F5F7FF] p-3 text-sm text-[#8B93B8]">No attachments uploaded.</p>
+                    <p className="rounded-lg bg-[#F5F7FF] p-2.5 text-sm text-[#8B93B8]">No attachments uploaded.</p>
                   )}
                 </section>
               </div>
 
-              <section className="rounded-xl border border-[#E4EAF8] p-4">
+              <section className="rounded-xl border border-[#E4EAF8] p-3.5">
                 <h3 className="flex items-center gap-2 font-medium text-[#0E1224]">
                   <Bot className="size-4 text-[#5B7FF0]" /> AI assistance
                 </h3>
                 {enabledAiOptions.length ? (
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="mt-2.5 flex flex-wrap gap-2">
                     {enabledAiOptions.map(([option]) => (
-                      <span key={option} className="rounded-lg bg-[#F5F7FF] px-3 py-1.5 text-sm text-[#64748B]">{formatLabel(option)}</span>
+                      <span key={option} className="rounded-lg bg-[#F5F7FF] px-2.5 py-1.5 text-sm text-[#64748B]">{formatLabel(option)}</span>
                     ))}
                   </div>
                 ) : (
@@ -400,7 +400,7 @@ export function TaskDetailsModal({
                 )}
               </section>
 
-              <footer className="grid gap-2 border-t border-[#E4EAF8] pt-4 text-xs text-[#8B93B8] sm:grid-cols-2">
+              <footer className="grid gap-2 border-t border-[#E4EAF8] pt-3.5 text-xs text-[#8B93B8] sm:grid-cols-2">
                 <p>Created: {formatDate(task.createdAt, true)}</p>
                 <p className="sm:text-right">Last updated: {formatDate(task.updatedAt, true)}</p>
               </footer>

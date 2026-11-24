@@ -126,17 +126,21 @@ function comparisonBadge(comparison?: Comparison) {
   };
 }
 
+const kpiGridClassName = "grid gap-3 sm:gap-4 lg:grid-cols-2 min-[1200px]:grid-cols-4";
+const kpiChartClassName =
+  "absolute bottom-4 right-4 h-[65px] w-[108px] min-[1200px]:h-[39px] min-[1200px]:w-16 2xl:h-[65px] 2xl:w-[108px]";
+
 function DashboardKpiCardsSkeleton() {
   return (
     <section
       aria-busy="true"
       aria-label="Loading dashboard summary"
-      className="grid gap-3 sm:gap-4 lg:grid-cols-2 2xl:grid-cols-4"
+      className={kpiGridClassName}
     >
       {cardStyles.map((card) => (
         <article
           key={card.label}
-          className="relative min-w-0 min-h-[148px] overflow-hidden rounded-xl bg-white p-4 sm:min-h-[156px]"
+          className="relative min-w-0 min-h-[148px] overflow-hidden rounded-xl bg-white p-3.5 sm:min-h-[156px]"
         >
           <div className="animate-pulse">
             <span className={`flex size-10 rounded-xl ${card.tint}`} />
@@ -145,7 +149,7 @@ function DashboardKpiCardsSkeleton() {
               <div className="h-4 w-28 rounded bg-[#F5F7FF]" />
               <div className="h-6 w-20 rounded-lg bg-[#F5F7FF]" />
             </div>
-            <div className="absolute bottom-4 right-4 h-[65px] w-[108px] rounded bg-[#F5F7FF]" />
+            <div className={`${kpiChartClassName} rounded bg-[#F5F7FF]`} />
           </div>
         </article>
       ))}
@@ -164,8 +168,8 @@ function DashboardKpiCardsState({
   const Icon = isError ? AlertCircle : BarChart3;
 
   return (
-    <section className="grid gap-3 sm:gap-4 lg:grid-cols-2 2xl:grid-cols-4">
-      <article className="col-span-full flex min-h-[148px] min-w-0 w-full flex-col items-center justify-center overflow-hidden rounded-xl bg-white p-4 text-center sm:min-h-[156px] sm:p-6">
+    <section className={kpiGridClassName}>
+      <article className="col-span-full flex min-h-[148px] min-w-0 w-full flex-col items-center justify-center overflow-hidden rounded-xl bg-white p-3.5 text-center sm:min-h-[156px] sm:p-5">
         <Icon
           className={`size-8 ${isError ? "text-[#EF4444]" : "text-[#8B93B8]"}`}
         />
@@ -181,7 +185,7 @@ function DashboardKpiCardsState({
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
+            className="mt-3.5 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-3.5 text-sm font-medium text-white"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -290,11 +294,11 @@ export function DashboardKpiCards() {
   ];
 
   return (
-    <section className="grid gap-3 sm:gap-4 lg:grid-cols-2 2xl:grid-cols-4">
+    <section className={kpiGridClassName}>
       {cards.map((card) => (
         <article
           key={card.label}
-          className="relative min-w-0 min-h-[148px] overflow-hidden rounded-xl bg-white p-4 sm:min-h-[156px]"
+          className="relative min-w-0 min-h-[148px] overflow-hidden rounded-xl bg-white p-3.5 sm:min-h-[156px]"
         >
           <span
             className={`flex size-10 items-center justify-center rounded-xl ${card.tint}`}
@@ -308,16 +312,16 @@ export function DashboardKpiCards() {
               className="size-5"
             />
           </span>
-          <div className="relative z-10 mt-2 max-w-[calc(100%-116px)] sm:max-w-[155px]">
-            <p className="text-2xl font-bold leading-normal text-[#0E1224]">
+          <div className="relative z-10 mt-2 min-w-0 max-w-[min(155px,calc(100%-116px))] break-words min-[1200px]:max-w-[min(155px,calc(100%-72px))] 2xl:max-w-[min(155px,calc(100%-116px))]">
+            <p className="text-[1.375rem]/[2rem] font-bold leading-normal text-[#0E1224]">
               {card.value}
             </p>
-            <p className="text-sm leading-normal text-[#8B93B8]">
+            <p className="text-xs leading-normal text-[#8B93B8] min-[1200px]:whitespace-nowrap min-[1200px]:text-[11px] 2xl:text-xs">
               {card.label}
             </p>
-            <div className="mt-[3px] flex items-center gap-0.5 whitespace-nowrap text-xs text-[#8B93B8]">
+            <div className="mt-[3px] flex items-center gap-1 whitespace-nowrap text-[11px] text-[#8B93B8]">
               <span
-                className={`flex items-center gap-1 rounded-lg px-1 py-1 text-[10px] font-bold ${card.tint}`}
+                className={`flex shrink-0 items-center gap-0.5 rounded-lg px-1 py-1 text-[10px] font-bold ${card.tint}`}
                 style={{ color: card.color }}
               >
                 {card.suffix && (
@@ -334,7 +338,7 @@ export function DashboardKpiCards() {
             width={108}
             height={65}
             unoptimized
-            className="absolute bottom-4 right-4 h-[65px] w-[108px]"
+            className={kpiChartClassName}
           />
         </article>
       ))}

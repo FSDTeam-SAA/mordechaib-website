@@ -233,8 +233,8 @@ export function CrmRecordModal({
         overlayClassName="bg-[#0E1224]/40 backdrop-blur-[4px]"
         className="flex max-h-[calc(100dvh-24px)] w-[calc(100%-24px)] max-w-[850px] flex-col gap-0 overflow-hidden !rounded-[16px] border-0 bg-white p-0 shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
       >
-        <header className="border-b border-[#E4EAF8] px-5 py-5 pr-14 sm:px-6">
-          <DialogTitle className="text-xl font-semibold text-[#0E1224]">
+        <header className="border-b border-[#E4EAF8] px-[1.125rem] py-[1.125rem] pr-12 sm:px-5">
+          <DialogTitle className="text-[1.1875rem]/[1.75rem] font-semibold text-[#0E1224]">
             {mode === "edit" ? "Edit CRM Record" : "CRM Record Details"}
           </DialogTitle>
           <DialogDescription className="mt-1 text-sm text-[#8B93B8]">
@@ -251,12 +251,12 @@ export function CrmRecordModal({
         {recordQuery.isPending ? (
           <CrmRecordModalSkeleton />
         ) : recordQuery.isError ? (
-          <div className="flex min-h-56 flex-col items-center justify-center p-6 text-center">
+          <div className="flex min-h-56 flex-col items-center justify-center p-5 text-center">
             <p className="text-sm text-[#C24152]">{recordQuery.error.message}</p>
             <button
               type="button"
               onClick={() => recordQuery.refetch()}
-              className="mt-4 rounded-[12px] border border-[#5B7FF0] px-4 py-2 text-sm font-medium text-[#5B7FF0]"
+              className="mt-3.5 rounded-[12px] border border-[#5B7FF0] px-3.5 py-2 text-sm font-medium text-[#5B7FF0]"
             >
               Try again
             </button>
@@ -264,9 +264,9 @@ export function CrmRecordModal({
         ) : mode === "edit" && schemaQuery.isPending ? (
           <CrmRecordModalSkeleton />
         ) : mode === "edit" && schemaQuery.isError ? (
-          <div className="flex min-h-56 flex-col items-center justify-center p-6 text-center">
+          <div className="flex min-h-56 flex-col items-center justify-center p-5 text-center">
             <p className="text-sm text-[#C24152]">{schemaQuery.error.message}</p>
-            <button type="button" onClick={() => schemaQuery.refetch()} className="mt-4 rounded-[12px] border border-[#5B7FF0] px-4 py-2 text-sm font-medium text-[#5B7FF0]">Try again</button>
+            <button type="button" onClick={() => schemaQuery.refetch()} className="mt-3.5 rounded-[12px] border border-[#5B7FF0] px-3.5 py-2 text-sm font-medium text-[#5B7FF0]">Try again</button>
           </div>
         ) : mode === "edit" && record ? (
           <CrmRecordEditForm
@@ -283,12 +283,12 @@ export function CrmRecordModal({
             onSubmit={(values) => updateMutation.mutate(values)}
           />
         ) : record ? (
-          <div className="space-y-6 p-5 sm:p-6">
+          <div className="space-y-6 p-[1.125rem] sm:p-5">
             <section>
-              <h3 className="mb-3 text-sm font-semibold text-[#19366F]">Record information</h3>
+              <h3 className="mb-2.5 text-sm font-semibold text-[#19366F]">Record information</h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 {metadata.map(([key, value]) => (
-                  <div key={key} className="min-w-0 rounded-[12px] border border-[#E4EAF8] bg-[#FAFCFF] p-3">
+                  <div key={key} className="min-w-0 rounded-[12px] border border-[#E4EAF8] bg-[#FAFCFF] p-2.5">
                     <p className="text-xs font-medium text-[#7187B2]">{labelOf(key)}</p>
                     <pre className="mt-1 whitespace-pre-wrap break-words font-sans text-sm text-[#17346F]">
                       {valueOf(value, key)}
@@ -298,10 +298,10 @@ export function CrmRecordModal({
               </div>
             </section>
             <section>
-              <h3 className="mb-3 text-sm font-semibold text-[#19366F]">Properties</h3>
+              <h3 className="mb-2.5 text-sm font-semibold text-[#19366F]">Properties</h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 {Object.entries(properties).map(([key, value]) => (
-                  <div key={key} className="min-w-0 rounded-[12px] border border-[#E4EAF8] p-3">
+                  <div key={key} className="min-w-0 rounded-[12px] border border-[#E4EAF8] p-2.5">
                     <p className="text-xs font-medium text-[#7187B2]">{labelOf(key)}</p>
                     {imageUrlOf(key, value) && (
                       <div

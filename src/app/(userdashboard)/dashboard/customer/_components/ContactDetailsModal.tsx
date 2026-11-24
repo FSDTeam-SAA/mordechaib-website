@@ -124,9 +124,9 @@ export function ContactDetailsModal({
         className="flex h-auto max-h-[90dvh] w-[calc(100%-24px)] max-w-[820px] flex-col gap-0 overflow-hidden !rounded-[20px] border border-[#DCE6FA] bg-[#F7F9FE] p-0 shadow-[0_24px_80px_rgba(14,18,36,0.22)]"
       >
         {/* Pinned Header */}
-        <header className="relative flex shrink-0 items-center justify-between border-b border-[#E4EAF8] bg-white px-5 py-3.5 sm:px-6">
-          <div className="min-w-0 pr-8">
-            <DialogTitle className="truncate text-base sm:text-lg font-bold text-[#0E1224]">
+        <header className="relative flex shrink-0 items-center justify-between border-b border-[#E4EAF8] bg-white px-[1.125rem] py-3 sm:px-5">
+          <div className="min-w-0 pr-7">
+            <DialogTitle className="truncate text-[0.9375rem]/[1.5rem] sm:text-[1.0625rem]/[1.75rem] font-bold text-[#0E1224]">
               Customer Details
             </DialogTitle>
             <DialogDescription className="truncate text-xs text-[#7B89AA]">
@@ -149,10 +149,10 @@ export function ContactDetailsModal({
           data-lenis-prevent
           onWheel={(e) => e.stopPropagation()}
           onTouchMove={(e) => e.stopPropagation()}
-          className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-4 text-[#0E1224] [scrollbar-color:#B8C4EE_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#B8C4EE] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+          className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain p-3.5 sm:p-5 space-y-4 text-[#0E1224] [scrollbar-color:#B8C4EE_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#B8C4EE] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
         >
           {/* Hero Profile Card */}
-          <section className="relative flex flex-col gap-5 rounded-2xl border border-[#E4EAF8] bg-white p-5 sm:p-6 shadow-xs sm:flex-row sm:items-center sm:justify-between">
+          <section className="relative flex flex-col gap-5 rounded-2xl border border-[#E4EAF8] bg-white p-[1.125rem] sm:p-5 shadow-xs sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-w-0 items-center gap-4 sm:gap-5">
               <div className="relative size-16 sm:size-20 shrink-0 overflow-hidden rounded-full border border-[#DCE6FA] bg-gradient-to-br from-[#EEF3FF] to-[#DCE6FA]">
                 {customer.avatarUrl ? (
@@ -164,7 +164,7 @@ export function ContactDetailsModal({
                     className="object-cover"
                   />
                 ) : (
-                  <span className="flex size-full items-center justify-center text-lg sm:text-xl font-bold text-[#3961DB]">
+                  <span className="flex size-full items-center justify-center text-[1.0625rem]/[1.75rem] sm:text-[1.1875rem]/[1.75rem] font-bold text-[#3961DB]">
                     {getInitials(customer.name)}
                   </span>
                 )}
@@ -172,7 +172,7 @@ export function ContactDetailsModal({
 
               <div className="min-w-0 space-y-1.5">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <h2 className="truncate text-xl sm:text-2xl font-bold text-[#0E1224]" title={customer.name}>
+                  <h2 className="truncate text-[1.1875rem]/[1.75rem] sm:text-[1.375rem]/[2rem] font-bold text-[#0E1224]" title={customer.name}>
                     {customer.name}
                   </h2>
                   {customer.leadStatus && (
@@ -209,7 +209,7 @@ export function ContactDetailsModal({
                   onClick={() =>
                     onCall ? onCall(customer) : window.open(`tel:${customer.phone}`)
                   }
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#10B981]/10 px-4 text-xs font-medium text-[#10B981] transition hover:bg-[#10B981] hover:text-white"
+                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#10B981]/10 px-3.5 text-xs font-medium text-[#10B981] transition hover:bg-[#10B981] hover:text-white"
                 >
                   <PhoneCall className="size-3.5" />
                   Call
@@ -218,7 +218,7 @@ export function ContactDetailsModal({
               {customer.email && (
                 <a
                   href={`mailto:${customer.email}`}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#DCE6FA] bg-white px-4 text-xs font-medium text-[#246BFD] transition hover:bg-[#EEF3FF]"
+                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#DCE6FA] bg-white px-3.5 text-xs font-medium text-[#246BFD] transition hover:bg-[#EEF3FF]"
                 >
                   <Mail className="size-3.5" />
                   Email
@@ -228,11 +228,11 @@ export function ContactDetailsModal({
           </section>
 
           {/* Contact Information */}
-          <section className="rounded-2xl border border-[#E4EAF8] bg-white p-5 shadow-xs">
+          <section className="rounded-2xl border border-[#E4EAF8] bg-white p-[1.125rem] shadow-xs">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-[#7B89AA]">
               Contact Information
             </h3>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="mt-3.5 grid gap-3 sm:grid-cols-2">
               <InfoItem
                 icon={Mail}
                 label="Email"
@@ -320,18 +320,18 @@ export function ContactDetailsModal({
           </section>
 
           {/* Tags Section (Removed from table, shown here) */}
-          <section className="rounded-2xl border border-[#E4EAF8] bg-white p-5 shadow-xs">
+          <section className="rounded-2xl border border-[#E4EAF8] bg-white p-[1.125rem] shadow-xs">
             <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-[#7B89AA]">
               <Tag className="size-3.5" />
               Tags
             </h3>
-            <div className="mt-3">
+            <div className="mt-2.5">
               {customer.tags && customer.tags.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {customer.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center rounded-lg border border-[#DCE6FA] bg-[#EEF3FF] px-3 py-1 text-xs font-medium text-[#246BFD]"
+                      className="inline-flex items-center rounded-lg border border-[#DCE6FA] bg-[#EEF3FF] px-2.5 py-1 text-xs font-medium text-[#246BFD]"
                     >
                       {tag}
                     </span>
@@ -344,14 +344,14 @@ export function ContactDetailsModal({
           </section>
 
           {/* Notes Section */}
-          <section className="rounded-2xl border border-[#E4EAF8] bg-white p-5 shadow-xs">
+          <section className="rounded-2xl border border-[#E4EAF8] bg-white p-[1.125rem] shadow-xs">
             <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-[#7B89AA]">
               <FileText className="size-3.5" />
               Notes
             </h3>
-            <div className="mt-3">
+            <div className="mt-2.5">
               {customer.notes ? (
-                <div className="rounded-xl border border-[#E9EFFD] bg-[#F7F9FE] p-4 text-sm leading-relaxed text-[#20263A] whitespace-pre-wrap">
+                <div className="rounded-xl border border-[#E9EFFD] bg-[#F7F9FE] p-3.5 text-sm leading-relaxed text-[#20263A] whitespace-pre-wrap">
                   {customer.notes}
                 </div>
               ) : (
@@ -361,13 +361,13 @@ export function ContactDetailsModal({
           </section>
 
           {/* System & Metadata Details */}
-          <section className="rounded-2xl border border-[#E4EAF8] bg-white p-5 shadow-xs">
+          <section className="rounded-2xl border border-[#E4EAF8] bg-white p-[1.125rem] shadow-xs">
             <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-[#7B89AA]">
               <Clock className="size-3.5" />
               System Details
             </h3>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-xl border border-[#EDF0F8] bg-[#F9FBFF] p-3">
+            <div className="mt-2.5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl border border-[#EDF0F8] bg-[#F9FBFF] p-2.5">
                 <p className="flex items-center gap-1.5 text-xs font-medium text-[#7B89AA]">
                   <Hash className="size-3.5" /> Contact ID
                 </p>
@@ -377,7 +377,7 @@ export function ContactDetailsModal({
               </div>
 
               {customer.createdByUserId && (
-                <div className="rounded-xl border border-[#EDF0F8] bg-[#F9FBFF] p-3">
+                <div className="rounded-xl border border-[#EDF0F8] bg-[#F9FBFF] p-2.5">
                   <p className="flex items-center gap-1.5 text-xs font-medium text-[#7B89AA]">
                     <User className="size-3.5" /> Created By
                   </p>
@@ -387,7 +387,7 @@ export function ContactDetailsModal({
                 </div>
               )}
 
-              <div className="rounded-xl border border-[#EDF0F8] bg-[#F9FBFF] p-3">
+              <div className="rounded-xl border border-[#EDF0F8] bg-[#F9FBFF] p-2.5">
                 <p className="flex items-center gap-1.5 text-xs font-medium text-[#7B89AA]">
                   <Calendar className="size-3.5" /> Created At
                 </p>
@@ -396,7 +396,7 @@ export function ContactDetailsModal({
                 </p>
               </div>
 
-              <div className="rounded-xl border border-[#EDF0F8] bg-[#F9FBFF] p-3">
+              <div className="rounded-xl border border-[#EDF0F8] bg-[#F9FBFF] p-2.5">
                 <p className="flex items-center gap-1.5 text-xs font-medium text-[#7B89AA]">
                   <Clock className="size-3.5" /> Last Updated
                 </p>
@@ -422,7 +422,7 @@ function InfoItem({
   value?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-[#EDF0F8] bg-[#F9FBFF] p-3">
+    <div className="rounded-xl border border-[#EDF0F8] bg-[#F9FBFF] p-2.5">
       <p className="flex items-center gap-1.5 text-xs font-medium text-[#7B89AA]">
         <Icon className="size-3.5" />
         {label}

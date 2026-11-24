@@ -237,20 +237,20 @@ export function AIAgentSettings() {
 
   return (
     <section className="overflow-hidden rounded-lg bg-white">
-      <header className="border-b border-[#E4EAF8] p-4">
-        <h2 className="text-xl font-medium text-[#0E1224]">
+      <header className="border-b border-[#E4EAF8] p-3.5">
+        <h2 className="text-base font-medium text-[#0E1224]">
           AI Agent Settings
         </h2>
       </header>
 
-      <div className="space-y-2 p-4">
+      <div className="space-y-2 p-3.5">
         {agentPreferences.map(([key, title, description]) => (
           <div
             key={key}
             className="flex min-h-[62px] items-center justify-between gap-4 py-2"
           >
             <div className="min-w-0">
-              <h3 className="text-base font-medium text-[#0E1224]">{title}</h3>
+              <h3 className="text-[0.9375rem]/[1.5rem] font-medium text-[#0E1224]">{title}</h3>
               <p className="mt-1 text-xs text-[#8B93B8]">{description}</p>
             </div>
             {isLoading ? (
@@ -278,7 +278,7 @@ export function AIAgentSettings() {
         ))}
 
         <div className="pt-2">
-          <h3 className="mb-3 text-base font-medium text-[#0E1224]">
+          <h3 className="mb-2.5 text-[0.9375rem]/[1.5rem] font-medium text-[#0E1224]">
             AI Response Style
           </h3>
           <div
@@ -300,7 +300,7 @@ export function AIAgentSettings() {
                   aria-checked={responseStyle === value}
                   onClick={() => handleResponseStyleChange(value)}
                   disabled={updateSettings.isPending}
-                  className={`flex h-12 items-center gap-2 rounded-[8px] border px-3 text-left text-sm transition-colors ${
+                  className={`flex h-12 items-center gap-2 rounded-[8px] border px-2.5 text-left text-sm transition-colors ${
                     responseStyle === value
                       ? "border-[#5B7FF0] bg-[#5B7FF0]/10 text-[#5B7FF0]"
                       : "border-transparent bg-[#F5F7FF] text-[#0E1224]"

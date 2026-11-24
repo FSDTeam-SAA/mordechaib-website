@@ -20,7 +20,7 @@ export function DashboardStatCard({
   background,
 }: DashboardStatCardProps) {
   return (
-    <article className="rounded-2xl bg-white p-4">
+    <article className="rounded-2xl bg-white p-3.5">
       <div className="flex items-start justify-between">
         <span className={`flex size-10 items-center justify-center rounded-lg ${background} ${color}`}>
           <Icon className="size-5" />
@@ -28,7 +28,7 @@ export function DashboardStatCard({
         <span className="text-xs text-[#8B93B8]">{note}</span>
       </div>
       <div className="mt-2">
-        <strong className="text-2xl font-medium text-[#0E1224]">{value}</strong>
+        <strong className="text-[1.375rem]/[2rem] font-medium text-[#0E1224]">{value}</strong>
         <p className="mt-1 text-sm text-[#8B93B8]">{label}</p>
         <div className="mt-1 flex items-center gap-1 text-xs text-[#8B93B8]">
           <span className={`rounded-full px-2 py-1 ${background} ${color}`}>{badge}</span>

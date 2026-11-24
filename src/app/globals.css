@@ -90,3 +90,23 @@ html {
 .support-quill .ql-snow button.ql-active .ql-fill {
   fill: #5b7ff0;
 }
+/* Include dashboard dialogs and menus rendered outside the layout by portals. */
+:where(html:has([data-user-dashboard]), html:has([data-user-dashboard]) *)::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+:where(html:has([data-user-dashboard]), html:has([data-user-dashboard]) *)::-webkit-scrollbar-button {
+  display: none;
+}
+
+:where(html:has([data-user-dashboard]), html:has([data-user-dashboard]) *)::-webkit-scrollbar-thumb {
+  background-color: #8b93b8;
+  border-radius: 9999px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  :where(html:has([data-user-dashboard]), html:has([data-user-dashboard]) *) {
+    scrollbar-width: thin;
+  }
+}

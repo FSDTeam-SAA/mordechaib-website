@@ -242,12 +242,12 @@ export function ChiefOfStaffDashboard() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-83px)] min-w-0 bg-[#F5F7FF] p-2 text-[#0E1224] sm:p-4">
+    <main className="min-h-[calc(100vh-83px)] min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5 bg-[#F5F7FF] text-[#0E1224]">
       <ChiefNavigation activeTab={activeTab} onTabChange={changeTab} />
       {activeTab === "ask" ? (
         <>
           <AgentStatusBar />
-          <div className="mt-3 grid min-w-0 items-start gap-3 lg:grid-cols-[348px_minmax(0,1fr)]">
+          <div className="mt-2.5 grid min-w-0 items-start gap-3 min-[1200px]:grid-cols-[minmax(230px,27%)_minmax(0,1fr)]">
             <ChiefSidebar
               conversations={conversations}
               activeConversationId={activeConversationId}

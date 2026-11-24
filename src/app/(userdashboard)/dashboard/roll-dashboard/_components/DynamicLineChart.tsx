@@ -35,7 +35,7 @@ export function DynamicLineChart({ primary, secondary, currency }: { primary: Po
   const lastValue = primary.at(-1)?.value ?? 0;
 
   return (
-    <div className="mt-4 aspect-[1.85/1] min-h-[230px] w-full">
+    <div className="mt-2.5 aspect-[1.85/1] min-h-40 w-full">
       <svg viewBox="0 0 520 280" className="size-full" role="img" aria-label="ROI trend chart">
         <defs>
           <linearGradient id="savings-fill-live" x1="0" y1="0" x2="0" y2="1">

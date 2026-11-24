@@ -1,9 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { AlertCircle, ArrowRight, ClipboardList, RefreshCw } from "lucide-react";
+import { AlertCircle, ClipboardList, RefreshCw } from "lucide-react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { DashboardSectionHeader } from "./DashboardSectionHeader";
 
 type TaskCounts = {
   total: number;
@@ -54,15 +54,15 @@ function TaskOverviewSkeleton() {
     <article
       aria-busy="true"
       aria-label="Loading task overview"
-      className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6"
+      className="min-w-0 overflow-hidden rounded-2xl bg-white p-3 sm:p-4"
     >
-      <div className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
+      <div className="flex items-center justify-between border-b border-[#E4EAF8] pb-2">
         <div className="h-7 w-36 animate-pulse rounded bg-[#F5F7FF]" />
         <div className="h-5 w-16 animate-pulse rounded bg-[#F5F7FF]" />
       </div>
-      <div className="mt-4 flex items-center justify-between gap-3 sm:gap-7">
-        <div className="size-32 shrink-0 animate-pulse rounded-full bg-[#F5F7FF] sm:size-[170px]" />
-        <div className="w-full max-w-[145px] space-y-3 sm:max-w-[126px] sm:space-y-4">
+      <div className="mt-2.5 flex flex-wrap items-center justify-center gap-3">
+        <div className="size-28 shrink-0 animate-pulse rounded-full bg-[#F5F7FF]" />
+        <div className="min-w-28 flex-1 space-y-2">
           {Array.from({ length: 4 }, (_, index) => (
             <div
               key={index}
@@ -86,24 +86,15 @@ function TaskOverviewState({
   const Icon = isError ? AlertCircle : ClipboardList;
 
   return (
-    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
-      <header className="flex items-center justify-between gap-3 border-b border-[#E4EAF8] pb-3 sm:pb-4">
-        <h2 className="text-base font-medium leading-6 text-[#0E1224] sm:text-xl sm:leading-7">
-          Task Overview
-        </h2>
-        <Link
-          href="/dashboard/tasks"
-            className="-mr-2 flex min-h-11 shrink-0 items-center gap-1.5 px-2 text-sm font-medium text-[#5B7FF0]"
-        >
-          View All
-          <ArrowRight className="size-4" />
-        </Link>
-      </header>
-      <div className="flex min-h-[200px] w-full flex-col items-center justify-center px-1 text-center">
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-3 sm:p-4">
+      <DashboardSectionHeader compact href="/dashboard/tasks">
+        Task Overview
+      </DashboardSectionHeader>
+      <div className="flex min-h-28 w-full flex-col items-center justify-center px-1 py-3 text-center">
         <Icon
           className={`size-8 ${isError ? "text-[#EF4444]" : "text-[#8B93B8]"}`}
         />
-        <p className="mt-2 max-w-full break-words text-sm font-medium text-[#0E1224]">
+        <p className="mt-2 max-w-full break-words text-[13px] font-medium text-[#0E1224]">
           {isError ? "Task overview could not be loaded" : "No tasks found"}
         </p>
         <p className="mt-1 max-w-full break-words text-sm text-[#8B93B8]">
@@ -113,7 +104,7 @@ function TaskOverviewState({
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
+            className="mt-3.5 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-3.5 text-sm font-medium text-white"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -179,39 +170,30 @@ export function TaskOverviewCard() {
   }
 
   return (
-    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
-      <header className="flex items-center justify-between gap-3 border-b border-[#E4EAF8] pb-3 sm:pb-4">
-        <h2 className="text-base font-medium leading-6 text-[#0E1224] sm:text-xl sm:leading-7">
-          Task Overview
-        </h2>
-        <Link
-          href="/dashboard/tasks"
-          className="-mr-2 flex min-h-11 shrink-0 items-center gap-1.5 px-2 text-sm font-medium text-[#5B7FF0]"
-        >
-          View All
-          <ArrowRight className="size-4" />
-        </Link>
-      </header>
-      <div className="mt-4 flex items-center justify-between gap-3 sm:gap-7">
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-3 sm:p-4">
+      <DashboardSectionHeader compact href="/dashboard/tasks">
+        Task Overview
+      </DashboardSectionHeader>
+      <div className="mt-2.5 flex flex-wrap items-center justify-center gap-3">
         <div
-          className="relative flex size-32 shrink-0 items-center justify-center rounded-full sm:size-[170px]"
+          className="relative flex size-28 shrink-0 items-center justify-center rounded-full"
           style={{ background: donutBackground(counts) }}
         >
-          <div className="flex size-[84px] flex-col items-center justify-center rounded-full bg-white text-center sm:size-[110px]">
-            <strong className="text-xl font-medium text-[#0E1224]">
+          <div className="flex size-[74px] flex-col items-center justify-center rounded-full bg-white text-center">
+            <strong className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
               {counts.total}
             </strong>
             <span className="text-xs text-[#0E1224]">Total tasks</span>
           </div>
         </div>
-        <div className="w-full max-w-[145px] space-y-3 text-sm text-[#0E1224] sm:max-w-[126px] sm:space-y-4">
+        <div className="min-w-28 flex-1 space-y-2 text-xs text-[#0E1224]">
           {taskSegments.map((segment) => (
             <p
               key={segment.key}
-              className="flex items-center gap-2 whitespace-nowrap"
+              className="flex items-baseline gap-2"
             >
               <span
-                className="size-2 shrink-0 rounded-full"
+                className="size-2 shrink-0 self-center rounded-full"
                 style={{ backgroundColor: segment.color }}
               />
               {counts[segment.key]} {segment.label}

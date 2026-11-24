@@ -30,9 +30,9 @@ const settings = [
 
 export default function VoiceAgentSettings() {
   return (
-    <section className="rounded-2xl bg-white p-4 sm:p-6">
-      <div className="flex items-center gap-3 border-b border-[#F5F7FF] pb-4">
-        <div className="relative size-16 shrink-0 overflow-hidden rounded-full border border-[#8B93B8] sm:size-20">
+    <section className="rounded-2xl bg-white p-3 sm:p-4">
+      <div className="flex items-center gap-3 border-b border-[#F5F7FF] pb-2.5">
+        <div className="relative size-12 shrink-0 overflow-hidden rounded-full border border-[#8B93B8] sm:size-14">
           <Image
             src="/call-intelligence/voice-agent.png"
             alt="Voice AI agent"
@@ -43,7 +43,7 @@ export default function VoiceAgentSettings() {
           />
         </div>
         <div className="min-w-0">
-          <h2 className="text-lg font-medium leading-normal text-[#0E1224] sm:text-xl">
+          <h2 className="text-[1.0625rem]/[1.75rem] font-medium leading-normal text-[#0E1224] sm:text-[1.1875rem]/[1.75rem]">
             Enable Voice AI Agent
           </h2>
           <p className="mt-2 text-xs leading-normal text-[#6B6B6B] sm:text-sm">

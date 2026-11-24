@@ -315,11 +315,11 @@ function SectionHeading({
 }) {
   const copy = briefingType ? FIGMA_SECTION_COPY[briefingType]?.[section.id] : undefined;
   return (
-    <div className="mb-4">
-      <h2 className="text-base font-medium leading-5 text-[#0E1224]">
+    <div className="mb-3.5">
+      <h2 className="text-[0.9375rem]/[1.5rem] font-medium leading-5 text-[#0E1224]">
         {number}. {copy?.title || section.title}
       </h2>
-      <p className="mt-4 text-sm leading-[18px] text-[#0E1224]">
+      <p className="mt-3.5 text-sm leading-[18px] text-[#0E1224]">
         {copy?.description || section.summary}
       </p>
     </div>
@@ -328,7 +328,7 @@ function SectionHeading({
 
 function NoData() {
   return (
-    <div className="rounded-xl bg-[#F3F5FF] px-3 py-3 text-[13px] text-[#8B93B8]">
+    <div className="rounded-xl bg-[#F3F5FF] px-2.5 py-2.5 text-[13px] text-[#8B93B8]">
       No data available
     </div>
   );
@@ -337,7 +337,7 @@ function NoData() {
 function DataRows({ items }: { items: BriefingItem[] }) {
   if (!items.length) return <NoData />;
   return (
-    <div className="rounded-2xl bg-white p-3">
+    <div className="rounded-2xl bg-white p-2.5">
       <div className="space-y-2">
         {items.map((item) => {
           const value = itemValue(item);
@@ -409,7 +409,7 @@ function MetricTiles({
           "bg-[rgba(18,185,129,0.10)]",
         ];
         return (
-          <article key={item.id} className="min-h-[112px] rounded-2xl bg-[#F5F7FF] p-3 text-center">
+          <article key={item.id} className="min-h-[112px] rounded-2xl bg-[#F5F7FF] p-2.5 text-center">
             <span
               className={`mx-auto flex size-10 items-center justify-center rounded-xl text-sm ${iconBackgrounds[index % iconBackgrounds.length]} ${colors[index % colors.length]}`}
             >
@@ -473,7 +473,7 @@ function ActionTiles({
               <DecisionIcon label={item.label} index={index} />
             </span>
             <p
-              className={`mt-2 text-[18px] font-bold leading-none ${colours[index % colours.length]}`}
+              className={`mt-2 text-[17px] font-bold leading-none ${colours[index % colours.length]}`}
             >
               {state?.status === "SUCCESS"
                 ? "Submitted"
@@ -499,7 +499,7 @@ function ActionTiles({
             onClick={() =>
               onAction(item.proposalRecordId!, item.proposalAction!)
             }
-            className="min-h-[124px] rounded-2xl bg-[#F5F7FF] px-2 py-4 text-center transition hover:bg-[#E8EDFF] disabled:opacity-60"
+            className="min-h-[124px] rounded-2xl bg-[#F5F7FF] px-2 py-3.5 text-center transition hover:bg-[#E8EDFF] disabled:opacity-60"
           >
             {state?.status === "LOADING" ? (
               <Loader2 className="mx-auto size-5 animate-spin text-[#5B7FF0]" />
@@ -510,7 +510,7 @@ function ActionTiles({
         ) : (
           <article
             key={item.id}
-            className="min-h-[124px] rounded-2xl bg-[#F5F7FF] px-2 py-4 text-center"
+            className="min-h-[124px] rounded-2xl bg-[#F5F7FF] px-2 py-3.5 text-center"
           >
             {body}
           </article>
@@ -533,12 +533,12 @@ function PriorityCards({ items }: { items: BriefingItem[] }) {
         const tone = tones[index % tones.length];
         const details = (item.detail || "").split(/\n|•/).map((value) => value.trim()).filter(Boolean);
         return (
-          <article key={item.id} className="flex min-h-[97px] items-start gap-2 rounded-2xl bg-[#F5F7FF] px-2 py-4">
-            <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl text-xl font-bold ${tone.surface} ${tone.text}`}>
+          <article key={item.id} className="flex min-h-[97px] items-start gap-2 rounded-2xl bg-[#F5F7FF] px-2 py-3.5">
+            <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl text-[1.1875rem]/[1.75rem] font-bold ${tone.surface} ${tone.text}`}>
               {index + 1}
             </span>
             <div className="min-w-0 space-y-[3px]">
-              <p className={`truncate text-base font-medium ${tone.text}`} title={item.label}>{item.label}</p>
+              <p className={`truncate text-[0.9375rem]/[1.5rem] font-medium ${tone.text}`} title={item.label}>{item.label}</p>
               <p className="truncate text-sm text-[#8B93B8]">{details[0] || item.status || "—"}</p>
               <p className="truncate text-sm text-[#141936]">{details[1] || itemValue(item) || ""}</p>
             </div>
@@ -558,20 +558,20 @@ function MilestoneProgress({ items }: { items: BriefingItem[] }) {
   const tones = ["text-[#10B981]", "text-[#F04438]", "text-[#D24FC7]", "text-[#264AFF]"];
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between text-sm text-[#0E1224]">
+      <div className="mb-3.5 flex items-center justify-between text-sm text-[#0E1224]">
         <span className="font-medium">Milestones Completed</span>
         <span>{completed}/{total}</span>
       </div>
       <div className="h-2 rounded-full bg-[#F5F7FF]">
         <div className="h-full rounded-full bg-[#5B7FF0]" style={{ width: `${progress}%` }} />
       </div>
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="mt-3.5 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {labels.map((label, index) => {
           const item = items[index];
           return (
-            <article key={label} className="min-h-[58px] rounded-2xl bg-[#F5F7FF] p-3 text-center">
+            <article key={label} className="min-h-[58px] rounded-2xl bg-[#F5F7FF] p-2.5 text-center">
               <p className={`text-sm ${tones[index]}`}>{label}</p>
-              <p className={`mt-1 text-base font-medium ${tones[index]}`}>
+              <p className={`mt-1 text-[0.9375rem]/[1.5rem] font-medium ${tones[index]}`}>
                 {itemValue(item || { id: label, label }) || "—"}
               </p>
             </article>
@@ -612,7 +612,7 @@ function ActionRows({
               <DecisionIcon label={item.label} index={index} />
             </span>
             <div className="min-w-0 flex-1 text-left">
-              <p className={`truncate text-[18px] font-bold leading-[23px] ${color}`}>
+              <p className={`truncate text-[17px] font-bold leading-[23px] ${color}`}>
                 {state?.status === "SUCCESS"
                   ? "Submitted"
                   : item.status
@@ -668,7 +668,7 @@ function AgentCards({ items }: { items: BriefingItem[] }) {
         return (
         <article
           key={item.id}
-          className={`min-h-[166px] rounded-2xl border-x border-b border-t-4 bg-white p-3 ${borderColors[index % borderColors.length]}`}
+          className={`min-h-[166px] rounded-2xl border-x border-b border-t-4 bg-white p-2.5 ${borderColors[index % borderColors.length]}`}
         >
           <div className="flex items-center gap-3">
             <span className={`relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-[#F5F7FF] ${borderColors[index % borderColors.length]}`}>
@@ -695,13 +695,13 @@ function AgentCards({ items }: { items: BriefingItem[] }) {
               )}
             </span>
             <div className="min-w-0">
-              <h3 className="truncate text-xl font-medium">{item.label}</h3>
-              <p className="truncate text-base text-[#1D2338]">
+              <h3 className="truncate text-[1.1875rem]/[1.75rem] font-medium">{item.label}</h3>
+              <p className="truncate text-[0.9375rem]/[1.5rem] text-[#1D2338]">
                 {item.status ? labelOf(item.status) : "Agent update"}
               </p>
             </div>
           </div>
-          <ul className="mt-4 list-disc space-y-1 pl-4 text-base leading-5 text-[#0E1224]">
+          <ul className="mt-3.5 list-disc space-y-1 pl-3.5 text-[0.9375rem]/[1.5rem] leading-5 text-[#0E1224]">
             {updates.slice(0, 3).map((update) => <li key={update}>{update}</li>)}
           </ul>
         </article>
@@ -722,7 +722,7 @@ function Funnel({ items }: { items: BriefingItem[] }) {
           style={{ width: `${Math.max(56, 86 - index * 7)}%` }}
         >
           <span
-            className="flex h-full flex-1 items-center justify-center px-3 text-sm text-white"
+            className="flex h-full flex-1 items-center justify-center px-2.5 text-sm text-white"
             style={{
               backgroundColor: colors[index],
               clipPath: "polygon(0 0, 100% 0, 94% 100%, 6% 100%)",
@@ -731,7 +731,7 @@ function Funnel({ items }: { items: BriefingItem[] }) {
             {item.label}
           </span>
           <span
-            className="flex h-full w-[30%] items-center justify-center bg-[#F5F7FF] px-3 text-sm text-[#0E1224]"
+            className="flex h-full w-[30%] items-center justify-center bg-[#F5F7FF] px-2.5 text-sm text-[#0E1224]"
             style={{ clipPath: "polygon(5% 0, 100% 0, 94% 100%, 0 100%)" }}
           >
             {itemValue(item) || "—"}
@@ -759,7 +759,7 @@ function Donut({ items }: { items: BriefingItem[] }) {
     { parts: [] as string[], cursor: 0 },
   ).parts.join(", ");
   return (
-    <div className="flex flex-wrap items-center gap-6 px-6 py-2">
+    <div className="flex flex-wrap items-center gap-6 px-5 py-2">
       <div
         className="flex size-40 items-center justify-center rounded-full"
         style={{
@@ -767,7 +767,7 @@ function Donut({ items }: { items: BriefingItem[] }) {
         }}
       >
         <div className="flex size-[132px] flex-col items-center justify-center rounded-full bg-white">
-          <span className="text-2xl font-medium">{total || "—"}</span>
+          <span className="text-[1.375rem]/[2rem] font-medium">{total || "—"}</span>
           <span className="text-[11px] text-[#667085]">Total</span>
         </div>
       </div>
@@ -790,7 +790,7 @@ function Donut({ items }: { items: BriefingItem[] }) {
 function ExecutiveNote({ section }: { section: BriefingSection }) {
   const note = section.items[0]?.detail || section.items[0]?.label || section.summary;
   return (
-    <div className="flex min-h-[104px] items-center gap-2 rounded-2xl bg-[#F5F7FF] p-3">
+    <div className="flex min-h-[104px] items-center gap-2 rounded-2xl bg-[#F5F7FF] p-2.5">
       <Image
         src="/executive-briefings/today-laura.png"
         alt="Laura"
@@ -850,7 +850,7 @@ function TodayLayout({
   return (
     <div className="space-y-4">
       {section("primary_focus", 1, (data) => (
-        <div className="rounded-xl bg-[#F3F5FF] px-3 py-1.5 text-[13px]">
+        <div className="rounded-xl bg-[#F3F5FF] px-2.5 py-1.5 text-[13px]">
           {data.items[0]?.label || "No data available"}
         </div>
       ))}
@@ -1033,7 +1033,7 @@ function WeeklyLayout({
         number={1}
         briefingType="WEEKLY_REVIEW"
       >
-        <div className="rounded-2xl bg-[#F5F7FF] p-6">
+        <div className="rounded-2xl bg-[#F5F7FF] p-5">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <span className="flex size-9 items-center justify-center rounded-[10px] bg-[rgba(91,156,213,0.08)]">
@@ -1057,13 +1057,13 @@ function WeeklyLayout({
               />
             </span>
           </div>
-          <p className="mt-3 text-sm text-[#667085]">{content.summary}</p>
+          <p className="mt-2.5 text-sm text-[#667085]">{content.summary}</p>
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="mt-2.5 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {content.headlineMetrics.slice(0, 4).map((metric) => (
             <div
               key={metric.key}
-              className="min-h-[58px] rounded-2xl bg-[#F5F7FF] p-3 text-center"
+              className="min-h-[58px] rounded-2xl bg-[#F5F7FF] p-2.5 text-center"
             >
               <p className="text-xs text-[#667085]">{metric.label}</p>
               <p className="mt-1 font-semibold text-[#5B7FF0]">
@@ -1432,18 +1432,18 @@ export function ExecutiveBriefings() {
     active.briefing?.status === "READY" ? active.briefing.content : undefined;
   return (
     <>
-      <section className="rounded-xl bg-white p-3">
-        <h2 className="border-b border-[#E4EAF8] pb-4 text-base font-medium">
+      <section className="rounded-xl bg-white p-2.5">
+        <h2 className="border-b border-[#E4EAF8] pb-3.5 text-[0.9375rem]/[1.5rem] font-medium">
           Quick Actions
         </h2>
-        <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        <div className="mt-3.5 grid gap-2 sm:grid-cols-3">
           {briefingOptions.map((option) => (
             <button
               key={option.type}
               type="button"
               onClick={() => selectBriefing(option.type)}
               disabled={!canManageBriefings || briefings[option.type].loading}
-              className={`flex h-8 items-center pr-3 text-left text-sm disabled:cursor-not-allowed disabled:opacity-60 ${activeType === option.type ? "bg-[#F5F7FF] before:mr-3 before:h-6 before:w-1 before:rounded-r-full before:bg-[#5B7FF0]" : "px-3"}`}
+              className={`flex h-8 items-center pr-2.5 text-left text-sm disabled:cursor-not-allowed disabled:opacity-60 ${activeType === option.type ? "bg-[#F5F7FF] before:mr-2.5 before:h-6 before:w-1 before:rounded-r-full before:bg-[#5B7FF0]" : "px-2.5"}`}
             >
               {option.label}
             </button>
@@ -1451,16 +1451,16 @@ export function ExecutiveBriefings() {
         </div>
       </section>
 
-      <div className="mt-4 rounded-2xl bg-white p-4">
+      <div className="mt-3.5 rounded-2xl bg-white p-3.5">
         {sessionStatus === "loading" || active.loading ? (
           <div className="flex min-h-72 flex-col items-center justify-center text-center">
             <Loader2 className="size-8 animate-spin text-[#5B7FF0]" />
-            <p className="mt-3 font-medium">Loading executive briefing…</p>
+            <p className="mt-2.5 font-medium">Loading executive briefing…</p>
           </div>
         ) : !canManageBriefings ? (
           <div className="flex min-h-72 flex-col items-center justify-center text-center">
             <AlertCircle className="size-8 text-[#B54708]" />
-            <p className="mt-3 font-medium">
+            <p className="mt-2.5 font-medium">
               Executive briefings are restricted
             </p>
             <p className="mt-1 max-w-lg text-sm text-[#8B93B8]">
@@ -1471,14 +1471,14 @@ export function ExecutiveBriefings() {
         ) : active.error ? (
           <div className="flex min-h-72 flex-col items-center justify-center text-center">
             <AlertCircle className="size-8 text-[#EF4444]" />
-            <p className="mt-3 font-medium">Briefing could not be loaded</p>
+            <p className="mt-2.5 font-medium">Briefing could not be loaded</p>
             <p className="mt-1 max-w-lg text-sm text-[#8B93B8]">
               {active.error}
             </p>
             <button
               type="button"
               onClick={() => void loadLatest(activeType)}
-              className="mt-4 inline-flex rounded-lg bg-[#5B7FF0] px-4 py-2 text-sm font-medium text-white"
+              className="mt-3.5 inline-flex rounded-lg bg-[#5B7FF0] px-3.5 py-2 text-sm font-medium text-white"
             >
               Try again
             </button>
@@ -1486,7 +1486,7 @@ export function ExecutiveBriefings() {
         ) : isWaiting ? (
           <div className="flex min-h-72 flex-col items-center justify-center text-center">
             <Clock3 className="size-8 text-[#5B7FF0]" />
-            <p className="mt-3 font-medium">Your briefing is being prepared</p>
+            <p className="mt-2.5 font-medium">Your briefing is being prepared</p>
             <p className="mt-1 max-w-lg text-sm text-[#8B93B8]">
               We&apos;ll refresh this page automatically when it is ready.
             </p>
@@ -1494,7 +1494,7 @@ export function ExecutiveBriefings() {
         ) : !content ? (
           <div className="flex min-h-72 flex-col items-center justify-center text-center">
             <FileText className="size-8 text-[#8B93B8]" />
-            <p className="mt-3 font-medium">No briefing is available yet</p>
+            <p className="mt-2.5 font-medium">No briefing is available yet</p>
             <p className="mt-1 max-w-lg text-sm text-[#8B93B8]">
               Generate the latest briefing for this view to see grounded
               updates.
@@ -1502,7 +1502,7 @@ export function ExecutiveBriefings() {
             <button
               type="button"
               onClick={() => void generate(activeType)}
-              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 py-2 text-sm font-medium text-white"
+              className="mt-3.5 inline-flex items-center gap-2 rounded-lg bg-[#5B7FF0] px-3.5 py-2 text-sm font-medium text-white"
             >
               <Sparkles className="size-4" /> Generate briefing
             </button>

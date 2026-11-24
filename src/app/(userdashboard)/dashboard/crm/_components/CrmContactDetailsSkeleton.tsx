@@ -1,8 +1,8 @@
 export function CrmContactDetailsSkeleton() {
   return (
-    <main className="min-h-[calc(100vh-83px)] animate-pulse space-y-4 p-4 text-[#0E1224]">
+    <main className="min-h-[calc(100vh-83px)] animate-pulse space-y-4 p-3.5 text-[#0E1224]">
       {/* Header Profile Skeleton */}
-      <section className="flex flex-col gap-6 rounded-xl bg-white p-4 sm:p-6 xl:flex-row xl:items-start xl:justify-between">
+      <section className="flex flex-col gap-6 rounded-xl bg-white p-3.5 sm:p-5 xl:flex-row xl:items-start xl:justify-between">
         <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
           <div className="size-[96px] shrink-0 rounded-full bg-slate-200 sm:size-[120px]" />
           <div className="min-w-0 flex-1 space-y-4">
@@ -36,7 +36,7 @@ export function CrmContactDetailsSkeleton() {
             {Array.from({ length: 4 }).map((_, index) => (
               <article
                 key={index}
-                className="flex min-h-[82px] flex-col items-center justify-center gap-2 rounded-lg bg-white p-3 text-center"
+                className="flex min-h-[82px] flex-col items-center justify-center gap-2 rounded-lg bg-white p-2.5 text-center"
               >
                 <div className="h-3.5 w-24 rounded bg-slate-100" />
                 <div className="h-6 w-16 rounded bg-slate-200" />
@@ -44,9 +44,9 @@ export function CrmContactDetailsSkeleton() {
             ))}
           </section>
 
-          <section className="min-h-[520px] rounded-2xl bg-white p-4">
+          <section className="min-h-[520px] rounded-2xl bg-white p-3.5">
             <div className="h-6 w-36 rounded bg-slate-200" />
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-2">
               {Array.from({ length: 6 }).map((_, index) => (
                 <div
                   key={index}
@@ -67,13 +67,13 @@ export function CrmContactDetailsSkeleton() {
         {/* Right Column: Ai Insight, Open Task, Files */}
         <aside className="flex min-w-0 flex-col gap-4">
           {/* Ai Insight */}
-          <section className="rounded-2xl bg-white p-4">
+          <section className="rounded-2xl bg-white p-3.5">
             <div className="h-6 w-28 rounded bg-slate-200" />
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-2">
               {Array.from({ length: 5 }).map((_, index) => (
                 <div
                   key={index}
-                  className="flex min-h-10 items-center justify-between rounded-[10px] bg-[#F5F7FF] px-3 py-2"
+                  className="flex min-h-10 items-center justify-between rounded-[10px] bg-[#F5F7FF] px-2.5 py-2"
                 >
                   <div className="h-4 w-24 rounded bg-slate-100" />
                   <div className="h-5 w-28 rounded bg-slate-200" />
@@ -83,13 +83,13 @@ export function CrmContactDetailsSkeleton() {
           </section>
 
           {/* Open Task */}
-          <section className="rounded-2xl bg-white p-4">
+          <section className="rounded-2xl bg-white p-3.5">
             <div className="h-6 w-24 rounded bg-slate-200" />
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-2">
               {Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={index}
-                  className="flex min-h-10 items-center justify-between rounded-[10px] bg-[#F5F7FF] px-3 py-2"
+                  className="flex min-h-10 items-center justify-between rounded-[10px] bg-[#F5F7FF] px-2.5 py-2"
                 >
                   <div className="flex items-center gap-2">
                     <div className="size-4 rounded border border-slate-300 bg-slate-200" />
@@ -102,13 +102,13 @@ export function CrmContactDetailsSkeleton() {
           </section>
 
           {/* Files */}
-          <section className="rounded-2xl bg-white p-4">
+          <section className="rounded-2xl bg-white p-3.5">
             <div className="h-6 w-16 rounded bg-slate-200" />
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-2">
               {Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={index}
-                  className="flex min-h-10 items-center gap-2.5 rounded-[10px] bg-[#F5F7FF] px-3 py-2"
+                  className="flex min-h-10 items-center gap-2.5 rounded-[10px] bg-[#F5F7FF] px-2.5 py-2"
                 >
                   <div className="size-4 rounded bg-slate-200" />
                   <div className="h-4 w-40 rounded bg-slate-100" />
@@ -120,12 +120,12 @@ export function CrmContactDetailsSkeleton() {
       </div>
 
       {/* Notes Section Skeleton */}
-      <section className="rounded-2xl bg-white p-4">
+      <section className="rounded-2xl bg-white p-3.5">
         <div className="h-6 w-20 rounded bg-slate-200" />
-        <div className="mt-4 rounded-lg bg-[#F4F5FE] p-4 space-y-3">
+        <div className="mt-3.5 rounded-lg bg-[#F4F5FE] p-3.5 space-y-3">
           <div className="h-4 w-full rounded bg-slate-200/60" />
           <div className="h-4 w-4/5 rounded bg-slate-200/60" />
-          <div className="mt-3 flex items-center gap-3">
+          <div className="mt-2.5 flex items-center gap-3">
             <div className="h-5 w-16 rounded-full bg-slate-200" />
             <div className="h-4 w-1/2 rounded bg-slate-200/60" />
           </div>

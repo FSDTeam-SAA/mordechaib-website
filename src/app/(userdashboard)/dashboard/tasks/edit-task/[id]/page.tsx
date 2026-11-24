@@ -57,10 +57,10 @@ export default function EditTaskPage({ params }: { params: { id: string } }) {
 
   if (sessionStatus === "loading" || taskQuery.isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-white p-6">
+      <div className="flex min-h-[40vh] items-center justify-center bg-white p-5">
         <div className="text-center text-[#8B93B8]">
           <LoaderCircle className="mx-auto size-8 animate-spin text-[#5B7FF0]" />
-          <p className="mt-3 text-sm">Loading task...</p>
+          <p className="mt-2.5 text-sm">Loading task...</p>
         </div>
       </div>
     );
@@ -68,10 +68,10 @@ export default function EditTaskPage({ params }: { params: { id: string } }) {
 
   if (taskQuery.isError || !taskQuery.data) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-white p-6">
-        <div className="w-full max-w-md rounded-2xl border border-[#E4EAF8] p-6 text-center">
+      <div className="flex min-h-[40vh] items-center justify-center bg-white p-5">
+        <div className="w-full max-w-md rounded-2xl border border-[#E4EAF8] p-5 text-center">
           <CircleAlert className="mx-auto size-9 text-[#EF4444]" />
-          <h1 className="mt-3 text-xl font-medium text-[#0E1224]">
+          <h1 className="mt-2.5 text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
             Unable to load task
           </h1>
           <p className="mt-2 text-sm text-[#8B93B8]">
@@ -79,7 +79,7 @@ export default function EditTaskPage({ params }: { params: { id: string } }) {
               ? taskQuery.error.message
               : "Please try again."}
           </p>
-          <div className="mt-5 flex justify-center gap-3">
+          <div className="mt-[1.125rem] flex justify-center gap-3">
             <Button type="button" variant="outline" onClick={goToTasks}>
               Back
             </Button>

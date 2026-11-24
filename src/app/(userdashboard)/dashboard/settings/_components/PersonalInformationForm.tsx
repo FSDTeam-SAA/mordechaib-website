@@ -248,10 +248,10 @@ export function PersonalInformationForm() {
   return (
     <form onSubmit={submit} className="space-y-4">
       <section className="overflow-hidden rounded-lg bg-white">
-        <header className="border-b border-[#E4EAF8] p-4">
-          <h2 className="text-xl font-medium text-[#0E1224]">Profile Photo</h2>
+        <header className="border-b border-[#E4EAF8] p-3.5">
+          <h2 className="text-base font-medium text-[#0E1224]">Profile Photo</h2>
         </header>
-        <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-4 p-3.5 sm:flex-row sm:items-center">
           {isLoading ? (
             <Skeleton className="size-20 shrink-0 rounded-full bg-[#F5F7FF]" />
           ) : (
@@ -264,7 +264,7 @@ export function PersonalInformationForm() {
                 }
                 className="object-cover"
               />
-              <AvatarFallback className="bg-[#F5F7FF] text-lg font-medium text-[#5B7FF0]">
+              <AvatarFallback className="bg-[#F5F7FF] text-[1.0625rem]/[1.75rem] font-medium text-[#5B7FF0]">
                 {initials}
               </AvatarFallback>
             </Avatar>
@@ -274,7 +274,7 @@ export function PersonalInformationForm() {
             <div className="flex flex-wrap items-center gap-2">
               <label
                 htmlFor="avatar"
-                className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-[12px] bg-[#5B7FF0] px-4 text-sm font-medium text-white transition hover:bg-[#4E6FDE]"
+                className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-[12px] bg-[#5B7FF0] px-3.5 text-sm font-medium text-white transition hover:bg-[#4E6FDE]"
               >
                 <Camera className="size-4" />
                 Choose photo
@@ -309,15 +309,15 @@ export function PersonalInformationForm() {
       </section>
 
       <section className="overflow-hidden rounded-lg bg-white">
-        <header className="border-b border-[#E4EAF8] p-4">
-          <h2 className="text-xl font-medium text-[#0E1224]">
+        <header className="border-b border-[#E4EAF8] p-3.5">
+          <h2 className="text-base font-medium text-[#0E1224]">
             Personal Information
           </h2>
         </header>
-        <div className="grid gap-4 p-4 sm:grid-cols-2">
+        <div className="grid gap-4 p-3.5 sm:grid-cols-2">
           {fields.map(([name, label, placeholder, type, readOnly]) => (
             <label key={name} className="min-w-0">
-              <span className="mb-2 block text-base leading-[1.2] text-[#8B93B8]">
+              <span className="mb-2 block text-[0.9375rem]/[1.5rem] leading-[1.2] text-[#8B93B8]">
                 {label}
               </span>
               {isLoading ? (
@@ -337,11 +337,11 @@ export function PersonalInformationForm() {
             </label>
           ))}
         </div>
-        <footer className="border-t border-[#E4EAF8] p-4">
+        <footer className="border-t border-[#E4EAF8] p-3.5">
           <Button
             type="submit"
             disabled={isLoading || updateProfile.isPending || !hasChanges}
-            className="h-[51px] w-full rounded-[12px] bg-[#5B7FF0] px-8 text-sm font-normal text-white shadow-none hover:bg-[#4E6FDE] sm:w-auto"
+            className="h-[51px] w-full rounded-[12px] bg-[#5B7FF0] px-7 text-sm font-normal text-white shadow-none hover:bg-[#4E6FDE] sm:w-auto"
           >
             {updateProfile.isPending ? "Saving..." : "Save Changes"}
           </Button>

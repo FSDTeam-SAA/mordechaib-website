@@ -619,10 +619,10 @@ export function IntegrationsPanel() {
 
   return (
     <section className="overflow-hidden rounded-[10px] bg-white">
-      <header className="border-b border-[#E4EAF8] p-4">
-        <h2 className="text-xl font-medium text-[#0E1224]">Integrations</h2>
+      <header className="border-b border-[#E4EAF8] p-3.5">
+        <h2 className="text-base font-medium text-[#0E1224]">Integrations</h2>
       </header>
-      <div className="grid gap-4 p-4 md:grid-cols-2">
+      <div className="grid gap-4 p-3.5 md:grid-cols-2">
         {integrations.map(([name, description, icon, connected]) => {
           const isFacebook = name === "Facebook";
           const isInstagram = name === "Instagram";
@@ -737,19 +737,19 @@ export function IntegrationsPanel() {
       >
         <DialogContent
           overlayClassName="bg-[#0E1224]/40 backdrop-blur-[4px]"
-          className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-6 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
+          className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-5 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
         >
           <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#EF4444]/10 text-[#EF4444]">
             <Unplug className="size-5" />
           </span>
-          <DialogTitle className="mt-4 text-xl font-semibold text-[#0E1224]">
+          <DialogTitle className="mt-3.5 text-[1.1875rem]/[1.75rem] font-semibold text-[#0E1224]">
             Disconnect {metaProviderToDisconnect}?
           </DialogTitle>
           <DialogDescription className="mt-2 text-sm leading-6 text-[#73809B]">
             This will disconnect your Meta connection, including Facebook and
             Instagram. Are you sure you want to continue?
           </DialogDescription>
-          <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="mt-5 grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => setMetaProviderToDisconnect(null)}
@@ -780,19 +780,19 @@ export function IntegrationsPanel() {
       >
         <DialogContent
           overlayClassName="bg-[#0E1224]/40 backdrop-blur-[4px]"
-          className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-6 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
+          className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-5 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
         >
           <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#EF4444]/10 text-[#EF4444]">
             <Unplug className="size-5" />
           </span>
-          <DialogTitle className="mt-4 text-xl font-semibold text-[#0E1224]">
+          <DialogTitle className="mt-3.5 text-[1.1875rem]/[1.75rem] font-semibold text-[#0E1224]">
             Disconnect Outlook Calendar?
           </DialogTitle>
           <DialogDescription className="mt-2 text-sm leading-6 text-[#73809B]">
             Outlook Calendar meetings will no longer sync with your account.
             Are you sure you want to disconnect it?
           </DialogDescription>
-          <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="mt-5 grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => setIsOutlookDisconnectModalOpen(false)}
@@ -823,19 +823,19 @@ export function IntegrationsPanel() {
       >
         <DialogContent
           overlayClassName="bg-[#0E1224]/40 backdrop-blur-[4px]"
-          className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-6 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
+          className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-5 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
         >
           <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#EF4444]/10 text-[#EF4444]">
             <Unplug className="size-5" />
           </span>
-          <DialogTitle className="mt-4 text-xl font-semibold text-[#0E1224]">
+          <DialogTitle className="mt-3.5 text-[1.1875rem]/[1.75rem] font-semibold text-[#0E1224]">
             Disconnect Google Account?
           </DialogTitle>
           <DialogDescription className="mt-2 text-sm leading-6 text-[#73809B]">
             Google Calendar meetings will no longer sync with your account. Are
             you sure you want to disconnect it?
           </DialogDescription>
-          <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="mt-5 grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => setIsGoogleDisconnectModalOpen(false)}
@@ -868,12 +868,12 @@ export function IntegrationsPanel() {
       >
         <DialogContent
           overlayClassName="bg-[#0E1224]/40 backdrop-blur-[4px]"
-          className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-6 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
+          className="w-[calc(100%-24px)] max-w-[420px] gap-0 !rounded-[16px] border-0 bg-white p-5 text-center shadow-[0_24px_80px_rgba(14,18,36,0.24)]"
         >
           <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#EF4444]/10 text-[#EF4444]">
             <Unplug className="size-5" />
           </span>
-          <DialogTitle className="mt-4 text-xl font-semibold text-[#0E1224]">
+          <DialogTitle className="mt-3.5 text-[1.1875rem]/[1.75rem] font-semibold text-[#0E1224]">
             Disconnect {crmProviderToDisconnect === "HUBSPOT"
               ? "HubSpot CRM"
               : "Salesforce"}
@@ -883,7 +883,7 @@ export function IntegrationsPanel() {
             This integration will stop syncing with your account. Are you sure
             you want to disconnect it?
           </DialogDescription>
-          <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="mt-5 grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => setCrmProviderToDisconnect(null)}

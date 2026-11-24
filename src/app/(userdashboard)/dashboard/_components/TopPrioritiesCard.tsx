@@ -53,13 +53,13 @@ function TopPrioritiesSkeleton() {
     <article
       aria-busy="true"
       aria-label="Loading top priorities"
-      className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6"
+      className="min-w-0 overflow-hidden rounded-2xl bg-white p-3 sm:p-4"
     >
-      <div className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
+      <div className="flex items-center justify-between border-b border-[#E4EAF8] pb-2">
         <div className="h-7 w-32 animate-pulse rounded bg-[#F5F7FF]" />
         <div className="h-5 w-16 animate-pulse rounded bg-[#F5F7FF]" />
       </div>
-      <div className="mt-4 space-y-4">
+      <div className="mt-2.5 space-y-3">
         {Array.from({ length: 4 }, (_, index) => (
           <div key={index} className="flex animate-pulse gap-2">
             <div className="size-5 shrink-0 rounded-full bg-[#F5F7FF]" />
@@ -85,15 +85,15 @@ function TopPrioritiesState({
   const Icon = isError ? AlertCircle : ListTodo;
 
   return (
-    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
-      <DashboardSectionHeader href="/dashboard/call-intelligence">
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-3 sm:p-4">
+      <DashboardSectionHeader compact href="/dashboard/call-intelligence">
         Top Priorities
       </DashboardSectionHeader>
-      <div className="flex min-h-[214px] w-full flex-col items-center justify-center px-1 text-center">
+      <div className="flex min-h-28 w-full flex-col items-center justify-center px-1 py-3 text-center">
         <Icon
           className={`size-8 ${isError ? "text-[#EF4444]" : "text-[#8B93B8]"}`}
         />
-        <p className="mt-2 max-w-full break-words text-sm font-medium text-[#0E1224]">
+        <p className="mt-2 max-w-full break-words text-[13px] font-medium text-[#0E1224]">
           {isError
             ? "Top priorities could not be loaded"
             : "No top priorities found"}
@@ -105,7 +105,7 @@ function TopPrioritiesState({
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
+            className="mt-3.5 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-3.5 text-sm font-medium text-white"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -171,11 +171,11 @@ export function TopPrioritiesCard() {
   }
 
   return (
-    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
-      <DashboardSectionHeader href="/dashboard/call-intelligence">
+    <article className="min-w-0 overflow-hidden rounded-2xl bg-white p-3 sm:p-4">
+      <DashboardSectionHeader compact href="/dashboard/call-intelligence">
         Top Priorities
       </DashboardSectionHeader>
-      <div className="mt-4 space-y-4">
+      <div className="mt-2.5 space-y-3">
         {priorities.map((task) => {
           const isCompleted = task.status === "COMPLETED";
           const isHighPriority = task.priority === "HIGH";
@@ -190,18 +190,18 @@ export function TopPrioritiesCard() {
                   className={
                     isCompleted
                       ? "truncate text-sm text-[#8B93B8] line-through"
-                      : "truncate text-sm font-medium text-[#0E1224]"
+                      : "truncate text-[13px] font-medium text-[#0E1224]"
                   }
                 >
                   {task.title}
                 </p>
-                <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 text-[#8B93B8]">
+                <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-4 text-[#8B93B8]">
                   <span
                     className={`size-1.5 rounded ${isHighPriority ? "bg-[#EF4444]" : "bg-[#8B93B8]"}`}
                   />
                   {taskOwner(task)}
                   <span
-                    className={`rounded-full px-2 py-1 ${isHighPriority ? "bg-[#EF4444]/10 text-[#EF4444]" : "bg-[#E4EAF8]"}`}
+                    className={`rounded-full px-2 py-0.5 ${isHighPriority ? "bg-[#EF4444]/10 text-[#EF4444]" : "bg-[#E4EAF8]"}`}
                   >
                     {formatLabel(task.priority)}
                   </span>

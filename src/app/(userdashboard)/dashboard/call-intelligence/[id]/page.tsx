@@ -36,7 +36,7 @@ const waveform = [
 
 function CardTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="border-b border-[#E4EAF8] pb-4 text-xl font-medium text-[#0E1224]">
+    <h2 className="border-b border-[#E4EAF8] pb-3.5 text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
       {children}
     </h2>
   );
@@ -405,14 +405,14 @@ function CallDetailsContent() {
   };
 
   if (sessionStatus === "loading" || (Boolean(sourceType) && detailsQuery.isPending)) return <CallDetailsSkeleton />;
-  if (!sourceType || detailsQuery.isError || !details) return <main className="min-h-[calc(100vh-83px)] p-4"><div className="flex min-h-[360px] flex-col items-center justify-center rounded-xl bg-white p-6 text-center"><AlertCircle className="size-10 text-[#EF4444]"/><h2 className="mt-3 text-lg font-semibold">Call details could not be loaded</h2><p className="mt-1 text-sm text-[#8B93B8]">{!sourceType ? "sourceType is missing from the URL." : detailsQuery.error instanceof Error ? detailsQuery.error.message : "Please try again."}</p>{sourceType && <button onClick={() => void detailsQuery.refetch()} className="mt-5 flex h-10 items-center gap-2 rounded-lg bg-[#5B7FF0] px-5 text-sm text-white"><RefreshCw className="size-4"/>Try again</button>}</div></main>;
+  if (!sourceType || detailsQuery.isError || !details) return <main className="min-h-[calc(100vh-83px)] min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5"><div className="flex min-h-56 flex-col items-center justify-center min-w-0 rounded-xl bg-white p-3 sm:p-4 text-center"><AlertCircle className="size-10 text-[#EF4444]"/><h2 className="mt-2.5 text-[1.0625rem]/[1.75rem] font-semibold">Call details could not be loaded</h2><p className="mt-1 text-sm text-[#8B93B8]">{!sourceType ? "sourceType is missing from the URL." : detailsQuery.error instanceof Error ? detailsQuery.error.message : "Please try again."}</p>{sourceType && <button onClick={() => void detailsQuery.refetch()} className="mt-[1.125rem] flex h-10 items-center gap-2 rounded-lg bg-[#5B7FF0] px-[1.125rem] text-sm text-white"><RefreshCw className="size-4"/>Try again</button>}</div></main>;
 
   return (
-    <main className="min-h-[calc(100vh-83px)] p-4 text-[#0E1224]">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <main className="min-h-[calc(100vh-83px)] min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5 text-[#0E1224]">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <Link
           href="/dashboard/call-intelligence"
-          className="inline-flex h-10 items-center gap-2 text-base font-medium"
+          className="inline-flex h-10 items-center gap-2 text-[0.9375rem]/[1.5rem] font-medium"
         >
           <span className="flex size-10 items-center justify-center rounded-lg bg-white">
             <ArrowLeft className="size-5" />
@@ -420,7 +420,7 @@ function CallDetailsContent() {
           Return to Overview
         </Link>
         <div className="flex flex-wrap gap-3">
-          <button className="inline-flex h-10 items-center gap-2 rounded-[10px] bg-white px-4 text-sm font-medium">
+          <button className="inline-flex h-10 items-center gap-2 rounded-[10px] bg-white px-3.5 text-sm font-medium">
             <Mail className="size-5" />
             Send Email
           </button>
@@ -428,7 +428,7 @@ function CallDetailsContent() {
             type="button"
             onClick={() => void downloadReport()}
             disabled={isDownloadingReport}
-            className="inline-flex h-10 items-center gap-2 rounded-[10px] bg-[#5B7FF0] px-4 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-10 items-center gap-2 rounded-[10px] bg-[#5B7FF0] px-3.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isDownloadingReport ? <Loader2 className="size-5 animate-spin" /> : <Download className="size-5" />}
             {isDownloadingReport ? "Downloading..." : "Download Report"}
@@ -438,7 +438,7 @@ function CallDetailsContent() {
 
       <div className="space-y-4">
         <section className="grid gap-4 xl:grid-cols-2">
-          <article className="rounded-2xl bg-white p-6">
+          <article className="min-w-0 rounded-2xl bg-white p-3 sm:p-4">
             <div className="flex items-center gap-4">
               <span className="flex size-9 items-center justify-center rounded-[10px] bg-[#5B9CD5]/10">
                 <Image
@@ -449,17 +449,17 @@ function CallDetailsContent() {
                   className="size-6 object-contain"
                 />
               </span>
-              <h2 className="flex-1 text-xl font-medium">Chat Summary</h2>
+              <h2 className="flex-1 text-[1.1875rem]/[1.75rem] font-medium">Chat Summary</h2>
               <span className="flex size-9 items-center justify-center rounded-[10px] bg-[#F4BE5E]/15 text-[#F59E0B]">
                 <TriangleAlert className="size-5" />
               </span>
             </div>
-            <p className="mt-4 whitespace-pre-wrap text-justify text-base leading-[1.45] text-[#6B6B6B]">{details.analysis?.summary || "AI summary is not available for this call."}</p>
+            <p className="mt-3.5 whitespace-pre-wrap text-justify text-[0.9375rem]/[1.5rem] leading-[1.45] text-[#6B6B6B]">{details.analysis?.summary || "AI summary is not available for this call."}</p>
           </article>
-          <article className="rounded-2xl bg-white p-6">
+          <article className="min-w-0 rounded-2xl bg-white p-3 sm:p-4">
             <CardTitle>{isMeeting ? "Meeting Transcript" : "Call Transcript"}</CardTitle>
             {isAudioCall && (
-              <div className="mt-4 rounded-lg p-2.5 shadow-[0_0_4px_rgba(0,0,0,0.1)]">
+              <div className="mt-3.5 rounded-lg p-2.5 shadow-[0_0_4px_rgba(0,0,0,0.1)]">
                 <div className="flex items-center justify-between border-b border-[#F5F7FF] pb-2">
                   <div>
                     <p className="font-medium text-[#0E1224]">Recorded Call Audio</p>
@@ -544,7 +544,7 @@ function CallDetailsContent() {
                 />
               </div>
             )}
-            <label className="mt-4 flex h-11 items-center gap-2 rounded-lg border border-[#8B93B8]/10 px-3">
+            <label className="mt-3.5 flex h-11 items-center gap-2 rounded-lg border border-[#8B93B8]/10 px-2.5">
               <Search className="size-5 text-[#8B93B8]" />
               <input
                 value={query}
@@ -556,21 +556,21 @@ function CallDetailsContent() {
                 ⌘K
               </kbd>
             </label>
-            <div className="mt-4 flex overflow-x-auto rounded-[10px] bg-[#F5F7FF] p-1">
+            <div className="mt-3.5 flex overflow-x-auto rounded-[10px] bg-[#F5F7FF] p-1">
               {["All", "Objections", "Commitments", "Action Item"].map(
                 (item) => (
                   <button
                     key={item}
                     onClick={() => setTab(item)}
-                    className={`min-w-max flex-1 rounded-[10px] px-4 py-2 text-sm ${tab === item ? "bg-[#5B7FF0] text-white" : "text-[#8B93B8]"}`}
+                    className={`min-w-max flex-1 rounded-[10px] px-3.5 py-2 text-sm ${tab === item ? "bg-[#5B7FF0] text-white" : "text-[#8B93B8]"}`}
                   >
                     {item}<span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${tab === item ? "bg-white/20 text-white" : "bg-white text-[#8B93B8]"}`}>{item === "All" ? transcript.length : transcript.filter((segment) => segment.type === item).length}</span>
                   </button>
                 ),
               )}
             </div>
-            <div className="mt-4 max-h-[250px] space-y-6 overflow-y-auto pr-2">
-              {filteredTranscript.length === 0 ? <p className="rounded-lg bg-[#F5F7FF] p-4 text-center text-sm text-[#8B93B8]">No {tab === "All" ? "classified transcript segments" : tab.toLowerCase()} found.</p> : filteredTranscript.map((item) => (
+            <div className="mt-3.5 max-h-[250px] space-y-6 overflow-y-auto pr-2">
+              {filteredTranscript.length === 0 ? <p className="rounded-lg bg-[#F5F7FF] p-3.5 text-center text-sm text-[#8B93B8]">No {tab === "All" ? "classified transcript segments" : tab.toLowerCase()} found.</p> : filteredTranscript.map((item) => (
                 <div key={item.id}>
                   <div className="flex items-center gap-3">
                     <Image
@@ -586,20 +586,20 @@ function CallDetailsContent() {
                     {item.type !== "All" && <span className={`rounded-full px-2 py-1 text-[10px] font-medium ${item.type === "Commitments" ? "bg-[#10B981]/10 text-[#10B981]" : item.type === "Action Item" ? "bg-[#5B7FF0]/10 text-[#5B7FF0]" : "bg-[#F59E0B]/10 text-[#F59E0B]"}`}>{item.type}</span>}
                     <span className="text-xs text-[#8B93B8]">{item.time}</span>
                   </div>
-                  <p className="mt-3 text-sm text-[#6B6B6B]">{item.text}</p>
+                  <p className="mt-2.5 text-sm text-[#6B6B6B]">{item.text}</p>
                 </div>
               ))}
             </div>
           </article>
         </section>
 
-        <section className="grid gap-4 lg:grid-cols-3">
-          <article className="rounded-xl bg-white p-6">
+        <section className="grid gap-3 xl:grid-cols-3">
+          <article className="min-w-0 rounded-xl bg-white p-3 sm:p-4">
             <CardTitle>Sentiment analysis</CardTitle>
-            <div className="mt-7 flex flex-col items-center justify-center gap-8 sm:flex-row lg:flex-col 2xl:flex-row">
+            <div className="mt-6 flex flex-col items-center justify-center gap-8 sm:flex-row lg:flex-col 2xl:flex-row">
               <div className="flex size-[170px] items-center justify-center rounded-full" style={{background:`conic-gradient(#10B981 0 ${positive}%, #F59E0B ${positive}% ${positive + neutral}%, #EF4444 ${positive + neutral}% 100%)`}}>
                 <div className="flex size-[112px] flex-col items-center justify-center rounded-full bg-white">
-                  <strong className="text-xl">{positive}%</strong>
+                  <strong className="text-[1.1875rem]/[1.75rem]">{positive}%</strong>
                   <span className="text-xs">Positive</span>
                 </div>
               </div>
@@ -618,14 +618,14 @@ function CallDetailsContent() {
                 </p>
               </div>
             </div>
-            <div className="mt-7 flex justify-between border-t border-[#E4EAF8] pt-4">
+            <div className="mt-6 flex justify-between border-t border-[#E4EAF8] pt-3.5">
               <span>Confidence Score</span>
-              <strong className="text-xl text-[#10B981]">{confidence}%</strong>
+              <strong className="text-[1.1875rem]/[1.75rem] text-[#10B981]">{confidence}%</strong>
             </div>
           </article>
-          <article className="rounded-xl bg-white p-6">
+          <article className="min-w-0 rounded-xl bg-white p-3 sm:p-4">
             <CardTitle>Revenue Impact</CardTitle>
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-2">
               {revenueImpactItems.map(([label, value, color]) => (
                 <div
                   key={label}
@@ -634,7 +634,7 @@ function CallDetailsContent() {
                   <i className="mr-2 h-5 w-1 rounded-full bg-[#10B981]" />
                   <span className="flex-1 text-[#8B93B8]">{label}</span>
                   <strong className={color}>{value}</strong>
-                  <span className="ml-4 flex items-end gap-px">
+                  <span className="ml-3.5 flex items-end gap-px">
                     {[3, 5, 4, 8, 6, 11].map((h, i) => (
                       <i
                         key={i}
@@ -647,19 +647,19 @@ function CallDetailsContent() {
               ))}
             </div>
           </article>
-          <article className="rounded-xl bg-white p-6">
+          <article className="min-w-0 rounded-xl bg-white p-3 sm:p-4">
             <CardTitle>Clarification Questions</CardTitle>
-            <div className="mt-4 space-y-2">
-              {clarificationQuestions.length === 0 ? <p className="rounded-lg bg-[#F5F7FF] p-4 text-center text-sm text-[#8B93B8]">No clarification questions are required.</p> : clarificationQuestions.map((item, index) => (
+            <div className="mt-3.5 space-y-2">
+              {clarificationQuestions.length === 0 ? <p className="rounded-lg bg-[#F5F7FF] p-3.5 text-center text-sm text-[#8B93B8]">No clarification questions are required.</p> : clarificationQuestions.map((item, index) => (
                 <div
                   key={`${item.proposalId}-${item.question.id || index}`}
-                  className="flex items-start gap-3 rounded-lg bg-[#F5F7FF] p-3"
+                  className="flex items-start gap-3 rounded-lg bg-[#F5F7FF] p-2.5"
                 >
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#5B7FF0] text-xs font-semibold text-white">{index + 1}</span>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium leading-5 text-[#0E1224]">{item.question.question}</p>
                   </div>
-                  <button type="button" disabled={item.answered} onClick={() => setSelectedClarification({ proposalId: item.proposalId, question: item.question })} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[10px] bg-[#5B7FF0] px-4 text-xs font-medium text-white transition-colors hover:bg-[#4E6FDE] disabled:cursor-not-allowed disabled:bg-[#10B981]/10 disabled:text-[#10B981]">
+                  <button type="button" disabled={item.answered} onClick={() => setSelectedClarification({ proposalId: item.proposalId, question: item.question })} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[10px] bg-[#5B7FF0] px-3.5 text-xs font-medium text-white transition-colors hover:bg-[#4E6FDE] disabled:cursor-not-allowed disabled:bg-[#10B981]/10 disabled:text-[#10B981]">
                     {item.answered && <Check className="size-3.5" />}{item.answered ? "Answered" : "Answer"}
                   </button>
                 </div>
@@ -669,9 +669,9 @@ function CallDetailsContent() {
         </section>
 
         <section className="grid gap-4 xl:grid-cols-2">
-          <article className="rounded-2xl bg-white p-6">
-            <h2 className="text-xl font-medium">Customer Intelligence</h2>
-            <div className="mt-4 flex items-center gap-3">
+          <article className="min-w-0 rounded-2xl bg-white p-3 sm:p-4">
+            <h2 className="text-[1.1875rem]/[1.75rem] font-medium">Customer Intelligence</h2>
+            <div className="mt-3.5 flex items-center gap-3">
               <Image
                 src="/call-intelligence/details/avatar-2.png"
                 alt="Call participant"
@@ -687,7 +687,7 @@ function CallDetailsContent() {
                 {details.metadata.status?.replaceAll("_", " ") || "Available"}
               </span>
             </div>
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-2">
               {[
                 ["Health Score", `${details.analysis?.customerIntelligence?.healthScore ?? 0}%`],
                 ["Risk Level", details.analysis?.customerIntelligence?.riskLevel || "Not available"],
@@ -711,18 +711,18 @@ function CallDetailsContent() {
               ))}
             </div>
           </article>
-          <article className="rounded-2xl bg-white p-6">
-            <h2 className="text-xl font-medium">Pattern Detecting</h2>
-            <p className="mt-2 border-b border-[#E4EAF8] pb-4 text-xs text-[#8B93B8]">
+          <article className="min-w-0 rounded-2xl bg-white p-3 sm:p-4">
+            <h2 className="text-[1.1875rem]/[1.75rem] font-medium">Pattern Detecting</h2>
+            <p className="mt-2 border-b border-[#E4EAF8] pb-3.5 text-xs text-[#8B93B8]">
               AI-detected conversation patterns
             </p>
-            <div className="mt-4 space-y-4">
+            <div className="mt-3.5 space-y-4">
               {patterns.map(([label, value]) => (
                 <div
                   key={label}
                   className="flex h-9 items-center rounded-lg bg-[#F5F7FF] pr-2 text-sm"
                 >
-                  <i className="mr-4 h-5 w-1 rounded-full bg-[#10B981]" />
+                  <i className="mr-3.5 h-5 w-1 rounded-full bg-[#10B981]" />
                   <span className="flex-1">{label}</span>
                   <span className="text-[#5B7FF0]">{value}</span>
                 </div>
@@ -732,14 +732,14 @@ function CallDetailsContent() {
         </section>
 
         <section className="grid gap-4 xl:grid-cols-2">
-          <article className="rounded-2xl bg-white p-6">
-            <div className="flex items-center gap-2 border-b border-[#E4EAF8] pb-4">
+          <article className="min-w-0 rounded-2xl bg-white p-3 sm:p-4">
+            <div className="flex items-center gap-2 border-b border-[#E4EAF8] pb-3.5">
               <span className="flex size-9 items-center justify-center rounded-[10px] bg-[#5B9CD5]/10 text-[#5B9CD5]">
                 <SquareCheckBig className="size-5" />
               </span>
-              <h2 className="text-xl font-medium">Priority task</h2>
+              <h2 className="text-[1.1875rem]/[1.75rem] font-medium">Priority task</h2>
             </div>
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-2">
               {priorityTasks.map(([proposalId, title, date, risk, style, status]) => (
                 <div
                   key={proposalId}
@@ -759,7 +759,7 @@ function CallDetailsContent() {
                   <button
                     type="button"
                     onClick={() => setSelectedProposalId(proposalId)}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-[10px] bg-[#5B7FF0] px-3 text-xs font-medium text-white transition-colors hover:bg-[#4A6EE0]"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-[10px] bg-[#5B7FF0] px-2.5 text-xs font-medium text-white transition-colors hover:bg-[#4A6EE0]"
                   >
                     <Eye className="size-3.5" /> View Details
                   </button>
@@ -767,14 +767,14 @@ function CallDetailsContent() {
               ))}
             </div>
           </article>
-          <article className="rounded-2xl bg-white p-6">
-            <div className="flex items-center gap-2 border-b border-[#E4EAF8] pb-4">
+          <article className="min-w-0 rounded-2xl bg-white p-3 sm:p-4">
+            <div className="flex items-center gap-2 border-b border-[#E4EAF8] pb-3.5">
               <span className="flex size-9 items-center justify-center rounded-[10px] bg-[#10B981]/10 text-[#10B981]">
                 <CalendarCheck2 className="size-5" />
               </span>
-              <h2 className="text-xl font-medium">Meeting Schedule</h2>
+              <h2 className="text-[1.1875rem]/[1.75rem] font-medium">Meeting Schedule</h2>
             </div>
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-2">
               {schedule.map(([proposalId, title, date, status]) => (
                 <div
                   key={proposalId}
@@ -786,7 +786,7 @@ function CallDetailsContent() {
                     <p className="mt-1 text-xs text-[#8B93B8]">{date}</p>
                   </div>
                   <span className={`rounded-full px-2 py-1 text-xs font-medium ${status === "APPROVED" ? "bg-[#10B981]/10 text-[#10B981]" : status === "REJECTED" || status === "FAILED" ? "bg-[#EF4444]/10 text-[#EF4444]" : "bg-[#F59E0B]/15 text-[#F59E0B]"}`}>{status.replaceAll("_", " ")}</span>
-                  <button type="button" onClick={() => setSelectedProposalId(proposalId)} className="inline-flex h-8 items-center gap-1.5 rounded-[10px] bg-[#5B7FF0] px-3 text-xs font-medium text-white transition-colors hover:bg-[#4A6EE0]"><Eye className="size-3.5" /> View Details</button>
+                  <button type="button" onClick={() => setSelectedProposalId(proposalId)} className="inline-flex h-8 items-center gap-1.5 rounded-[10px] bg-[#5B7FF0] px-2.5 text-xs font-medium text-white transition-colors hover:bg-[#4A6EE0]"><Eye className="size-3.5" /> View Details</button>
                 </div>
               ))}
             </div>

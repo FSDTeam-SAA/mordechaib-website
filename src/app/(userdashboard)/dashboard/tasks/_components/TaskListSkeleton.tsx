@@ -4,8 +4,8 @@ export function TaskListSkeleton() {
   return (
     <div className="space-y-4">
       {Array.from({ length: 3 }, (_, cardIndex) => (
-        <section key={cardIndex} className="rounded-xl bg-white p-6">
-          <header className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
+        <section key={cardIndex} className="rounded-xl bg-white p-5">
+          <header className="flex items-center justify-between border-b border-[#E4EAF8] pb-3.5">
             <div className="flex items-center gap-2">
               <Skeleton className="h-7 w-1 rounded-full bg-[#F5F7FF]" />
               <Skeleton className="h-6 w-28 bg-[#F5F7FF]" />
@@ -13,7 +13,7 @@ export function TaskListSkeleton() {
             </div>
             <Skeleton className="hidden h-4 w-32 bg-[#F5F7FF] sm:block" />
           </header>
-          <div className="mt-4 space-y-4">
+          <div className="mt-3.5 space-y-4">
             {Array.from({ length: 2 }, (_, rowIndex) => (
               <div key={rowIndex} className="flex gap-4">
                 <Skeleton className="mt-1 size-5 shrink-0 rounded-full bg-[#F5F7FF]" />

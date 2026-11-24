@@ -224,9 +224,9 @@ export function TwilioNumberModal({
         overlayClassName="bg-[#0E1224]/45 backdrop-blur-[3px]"
         className="max-h-[calc(100dvh-24px)] w-[calc(100%-24px)] max-w-[460px] gap-0 overflow-hidden !rounded-[18px] border border-[#E2E6F0] bg-white p-0 shadow-[0_24px_70px_rgba(21,25,54,0.22)] sm:w-full"
       >
-        <div className="px-4 pb-5 pt-6 sm:px-7 sm:pb-7 sm:pt-7">
-          <header className="px-7 text-center">
-            <DialogTitle className="text-[20px] font-semibold leading-7 text-[#15192C] sm:text-[22px]">
+        <div className="px-3.5 pb-[1.125rem] pt-5 sm:px-6 sm:pb-6 sm:pt-6">
+          <header className="px-6 text-center">
+            <DialogTitle className="text-[19px] font-semibold leading-7 text-[#15192C] sm:text-[21px]">
               Choose Your Business Number
             </DialogTitle>
             <DialogDescription className="mt-1.5 text-sm text-[#626A87]">
@@ -234,18 +234,18 @@ export function TwilioNumberModal({
             </DialogDescription>
           </header>
 
-          <div className="mt-5 overflow-hidden rounded-[10px] border border-[#DCE1EA] bg-white shadow-[0_1px_4px_rgba(19,27,61,0.06)]">
+          <div className="mt-[1.125rem] overflow-hidden rounded-[10px] border border-[#DCE1EA] bg-white shadow-[0_1px_4px_rgba(19,27,61,0.06)]">
             <div className="grid grid-cols-[minmax(0,1fr)_48px] border-b border-[#E4E7EE]">
               <label className="relative flex h-12 min-w-0 items-center">
                 <span
-                  className="pointer-events-none absolute left-3.5 text-lg"
+                  className="pointer-events-none absolute left-3.5 text-[1.0625rem]/[1.75rem]"
                   aria-hidden="true"
                 >
                   {selectedCountry.flag}
                 </span>
                 <select
                   aria-label="Country"
-                  className="h-full w-full appearance-none bg-transparent pl-11 pr-8 text-sm font-medium text-[#343A52] outline-none"
+                  className="h-full w-full appearance-none bg-transparent pl-11 pr-7 text-sm font-medium text-[#343A52] outline-none"
                   value={country}
                   onChange={(event) =>
                     setCountry(event.target.value as CountryCode)
@@ -280,12 +280,12 @@ export function TwilioNumberModal({
                   Loading available numbers...
                 </div>
               ) : error ? (
-                <div className="flex min-h-40 flex-col items-center justify-center gap-3 px-4 text-center">
+                <div className="flex min-h-40 flex-col items-center justify-center gap-3 px-3.5 text-center">
                   <p className="text-sm text-[#C24152]">{error}</p>
                   <button
                     type="button"
                     onClick={() => setRequestKey((key) => key + 1)}
-                    className="rounded-md border border-[#6538EB] px-3 py-1.5 text-sm font-medium text-[#6538EB] hover:bg-[#F8F7FF]"
+                    className="rounded-md border border-[#6538EB] px-2.5 py-1.5 text-sm font-medium text-[#6538EB] hover:bg-[#F8F7FF]"
                   >
                     Try again
                   </button>
@@ -336,16 +336,16 @@ export function TwilioNumberModal({
                   })}
                 </div>
               ) : (
-                <p className="px-3 py-8 text-center text-sm text-[#7B849E]">
+                <p className="px-2.5 py-7 text-center text-sm text-[#7B849E]">
                   No available numbers found for {selectedCountry.name}.
                 </p>
               )}
             </div>
           </div>
 
-          <div className="mt-5 flex min-h-8 items-center justify-center gap-2 text-center text-sm text-[#4D556F]">
+          <div className="mt-[1.125rem] flex min-h-8 items-center justify-center gap-2 text-center text-sm text-[#4D556F]">
             <span>Selected:</span>
-            <strong className="text-base font-semibold text-[#20253A]">
+            <strong className="text-[0.9375rem]/[1.5rem] font-semibold text-[#20253A]">
               {selected
                 ? formatNumber(selected, selectedCountry.callingCode)
                 : "None"}
@@ -359,7 +359,7 @@ export function TwilioNumberModal({
             type="button"
             onClick={openPurchaseModal}
             disabled={!selected}
-            className="mt-4 flex h-12 w-full items-center justify-center gap-2.5 rounded-[8px] bg-gradient-to-r from-[#5E2BE5] to-[#6938EF] px-5 text-[15px] font-medium text-white shadow-[0_8px_20px_rgba(99,52,234,0.25)] transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6636EC] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-3.5 flex h-12 w-full items-center justify-center gap-2.5 rounded-[8px] bg-gradient-to-r from-[#5E2BE5] to-[#6938EF] px-[1.125rem] text-[15px] font-medium text-white shadow-[0_8px_20px_rgba(99,52,234,0.25)] transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6636EC] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <ShoppingCart className="size-[19px]" aria-hidden="true" />
             Purchase Number
@@ -379,9 +379,9 @@ export function TwilioNumberModal({
           className="w-[calc(100%-24px)] max-w-[430px] gap-0 overflow-hidden !rounded-[18px] border border-[#E2E6F0] bg-white p-0 shadow-[0_24px_70px_rgba(21,25,54,0.22)]"
           showClose={!isPurchasing}
         >
-          <form onSubmit={purchaseNumber} className="px-5 py-6 sm:px-7 sm:py-7">
-            <header className="pr-7">
-              <DialogTitle className="text-xl font-semibold text-[#15192C]">
+          <form onSubmit={purchaseNumber} className="px-[1.125rem] py-5 sm:px-6 sm:py-6">
+            <header className="pr-6">
+              <DialogTitle className="text-[1.1875rem]/[1.75rem] font-semibold text-[#15192C]">
                 Complete Number Purchase
               </DialogTitle>
               <DialogDescription className="mt-1.5 text-sm leading-5 text-[#626A87]">
@@ -389,7 +389,7 @@ export function TwilioNumberModal({
               </DialogDescription>
             </header>
 
-            <div className="mt-5 grid gap-4">
+            <div className="mt-[1.125rem] grid gap-4">
               <label className="grid gap-1.5">
                 <span className="text-sm font-medium text-[#343A52]">
                   Selected phone number
@@ -401,7 +401,7 @@ export function TwilioNumberModal({
                       : ""
                   }
                   readOnly
-                  className="h-11 rounded-lg border border-[#DCE1EA] bg-[#F7F8FB] px-3 text-sm text-[#596079] outline-none"
+                  className="h-11 rounded-lg border border-[#DCE1EA] bg-[#F7F8FB] px-2.5 text-sm text-[#596079] outline-none"
                 />
               </label>
 
@@ -410,7 +410,7 @@ export function TwilioNumberModal({
                 <input
                   value={`${selectedCountry.name} (${country})`}
                   readOnly
-                  className="h-11 rounded-lg border border-[#DCE1EA] bg-[#F7F8FB] px-3 text-sm text-[#596079] outline-none"
+                  className="h-11 rounded-lg border border-[#DCE1EA] bg-[#F7F8FB] px-2.5 text-sm text-[#596079] outline-none"
                 />
               </label>
 
@@ -426,18 +426,18 @@ export function TwilioNumberModal({
                   required
                   autoFocus
                   disabled={isPurchasing}
-                  className="h-11 rounded-lg border border-[#DCE1EA] bg-white px-3 text-sm text-[#252A40] outline-none transition placeholder:text-[#A0A7B9] focus:border-[#6538EB] focus:ring-2 focus:ring-[#6538EB]/15 disabled:bg-[#F7F8FB]"
+                  className="h-11 rounded-lg border border-[#DCE1EA] bg-white px-2.5 text-sm text-[#252A40] outline-none transition placeholder:text-[#A0A7B9] focus:border-[#6538EB] focus:ring-2 focus:ring-[#6538EB]/15 disabled:bg-[#F7F8FB]"
                 />
               </label>
             </div>
 
             {purchaseError && (
-              <p className="mt-3 text-sm text-[#C24152]" role="alert">
+              <p className="mt-2.5 text-sm text-[#C24152]" role="alert">
                 {purchaseError}
               </p>
             )}
 
-            <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className="mt-5 grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={closePurchaseModal}
@@ -449,7 +449,7 @@ export function TwilioNumberModal({
               <button
                 type="submit"
                 disabled={isPurchasing || !forwardingNumber.trim()}
-                className="flex h-11 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#5E2BE5] to-[#6938EF] px-4 text-sm font-medium text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex h-11 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#5E2BE5] to-[#6938EF] px-3.5 text-sm font-medium text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPurchasing && (
                   <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />

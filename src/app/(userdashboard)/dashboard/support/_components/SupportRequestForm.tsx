@@ -53,7 +53,7 @@ function hasEditorContent(value: string) {
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <span className="mb-2 block text-base font-normal leading-[1.2] text-[#8B93B8]">
+    <span className="mb-2 block text-[0.9375rem]/[1.5rem] font-normal leading-[1.2] text-[#8B93B8]">
       {children}
     </span>
   );
@@ -185,15 +185,15 @@ export function SupportRequestForm() {
 
   return (
     <section className="overflow-hidden rounded-lg bg-white">
-      <header className="border-b border-[#E4EAF8] p-4">
-        <h2 className="text-xl font-medium text-[#0E1224]">
+      <header className="border-b border-[#E4EAF8] p-3.5">
+        <h2 className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
           Submit a Support Request
         </h2>
       </header>
 
       <form ref={formRef} onSubmit={submit}>
-        <div className="space-y-4 p-4">
-          <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-4 p-3.5">
+          <div className="grid gap-3 md:grid-cols-2">
             <label className="min-w-0">
               <FieldLabel>Category</FieldLabel>
               <span className="relative block">
@@ -230,7 +230,7 @@ export function SupportRequestForm() {
           <div>
             <label
               htmlFor="support-description"
-              className="mb-2 block text-base font-medium text-[#0E1224]"
+              className="mb-2 block text-[0.9375rem]/[1.5rem] font-medium text-[#0E1224]"
             >
               Description
             </label>
@@ -248,10 +248,10 @@ export function SupportRequestForm() {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-xl font-medium text-[#0E1224]">
+            <h3 className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
               Attachments &amp; Links
             </h3>
-            <label className="flex min-h-[140px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl bg-[#F5F7FF] p-4 text-center text-base leading-[1.2] text-[#8B93B8] transition-colors hover:bg-[#EEF2FF]">
+            <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl bg-[#F5F7FF] p-3.5 text-center text-[0.9375rem]/[1.5rem] leading-[1.2] text-[#8B93B8] transition-colors hover:bg-[#EEF2FF]">
               <input
                 type="file"
                 multiple
@@ -281,7 +281,7 @@ export function SupportRequestForm() {
                 {attachments.map((file) => (
                   <li
                     key={`${file.name}-${file.size}-${file.lastModified}`}
-                    className="flex min-w-0 items-center gap-2 rounded-lg bg-[#F5F7FF] px-3 py-2"
+                    className="flex min-w-0 items-center gap-2 rounded-lg bg-[#F5F7FF] px-2.5 py-2"
                   >
                     <span className="min-w-0 flex-1 truncate text-sm text-[#0E1224]">
                       {file.name}
@@ -302,11 +302,11 @@ export function SupportRequestForm() {
           </div>
         </div>
 
-        <footer className="border-t border-[#E4EAF8] p-4">
+        <footer className="border-t border-[#E4EAF8] p-3.5">
           <Button
             type="submit"
             disabled={createRequest.isPending}
-            className="h-11 w-full rounded-[8px] bg-[#5B7FF0] px-8 text-sm font-normal text-white shadow-none hover:bg-[#4E6FDE] sm:w-auto sm:min-w-[150px]"
+            className="h-11 w-full rounded-[8px] bg-[#5B7FF0] px-7 text-sm font-normal text-white shadow-none hover:bg-[#4E6FDE] sm:w-auto sm:min-w-[150px]"
           >
             {createRequest.isPending ? "Submitting..." : "Submit Request"}
           </Button>

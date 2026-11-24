@@ -37,7 +37,7 @@ export function TaskStatCard({
     .join(" ");
 
   return (
-    <article className="relative min-h-[156px] overflow-hidden rounded-lg bg-white p-4">
+    <article className="relative min-h-32 overflow-hidden rounded-lg bg-white p-3">
       <span
         className={`flex size-10 items-center justify-center rounded-xl ${background}`}
       >
@@ -51,12 +51,12 @@ export function TaskStatCard({
         />
       </span>
 
-      <div className="relative z-10 mt-2 max-w-[155px]">
-        <p className="text-2xl font-bold leading-normal text-[#0E1224]">
+      <div className="relative z-10 mt-2 max-w-[min(155px,calc(100%-66px))]">
+        <p className="text-[1.375rem]/[2rem] font-bold leading-normal text-[#0E1224]">
           {value}
         </p>
         <p className="text-sm leading-normal text-[#8B93B8]">{label}</p>
-        <div className="mt-[3px] flex items-center gap-0.5 whitespace-nowrap text-xs text-[#8B93B8]">
+        <div className="mt-[3px] flex items-center flex-wrap gap-1 text-[11px] text-[#8B93B8]">
           <span
             className={`flex items-center gap-1 rounded-lg px-1 py-1 text-[10px] font-bold ${background} ${color}`}
           >
@@ -70,7 +70,7 @@ export function TaskStatCard({
       <svg
         viewBox="0 0 108 65"
         aria-hidden="true"
-        className="absolute bottom-4 right-4 h-[65px] w-[108px]"
+        className="absolute bottom-4 right-4 h-9 w-[60px]"
       >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">

@@ -316,18 +316,18 @@ export function AddCrmRecordModal({
         overlayClassName="bg-[#E9EEF6]/65 backdrop-blur-[5px]"
         className="flex max-h-[calc(100dvh-24px)] w-[calc(100%-24px)] max-w-[820px] flex-col gap-0 overflow-hidden !rounded-[14px] border-0 bg-white p-0 shadow-[0_24px_70px_rgba(27,49,91,0.22)] [&>button]:right-4 [&>button]:top-3.5 [&>button]:flex [&>button]:size-7 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-[7px] [&>button]:bg-[#F1F4FA] [&>button]:text-[#7183AA] [&>button]:opacity-100 [&>button_svg]:size-4 sm:[&>button]:right-5 sm:[&>button]:top-4"
       >
-        <header className="shrink-0 px-5 pb-3 pt-5 sm:px-7 sm:pb-4">
-          <DialogTitle className="pr-10 text-left text-xl font-semibold leading-7 text-[#101C39]">
+        <header className="shrink-0 px-[1.125rem] pb-2.5 pt-[1.125rem] sm:px-6 sm:pb-3.5">
+          <DialogTitle className="pr-[2.25rem] text-left text-[1.1875rem]/[1.75rem] font-semibold leading-7 text-[#101C39]">
             Add New Record
           </DialogTitle>
           <DialogDescription className="sr-only">
             Choose a CRM record type and enter its details.
           </DialogDescription>
 
-          <div className="mx-auto mt-4 flex max-w-[405px] items-center" aria-label="Add record progress">
+          <div className="mx-auto mt-3.5 flex max-w-[405px] items-center" aria-label="Add record progress">
             <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#3F68F5] text-xs font-medium text-white">1</span>
             <span className="ml-2 whitespace-nowrap text-xs font-medium text-[#3964F4]">Choose record type</span>
-            <span className="mx-3 h-px min-w-5 flex-1 bg-[#D9E1F0]" />
+            <span className="mx-2.5 h-px min-w-5 flex-1 bg-[#D9E1F0]" />
             <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#F0F3F9] text-xs font-medium text-[#63769D]">2</span>
             <span className="ml-2 whitespace-nowrap text-xs text-[#8A99B8]">Add details</span>
           </div>
@@ -339,15 +339,15 @@ export function AddCrmRecordModal({
           noValidate
           data-lenis-prevent
           onSubmit={handleSubmit}
-          className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5 pb-5 [scrollbar-color:#B8C4EE_transparent] [scrollbar-width:thin] sm:px-7 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#B8C4EE] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+          className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-[1.125rem] pb-[1.125rem] [scrollbar-color:#B8C4EE_transparent] [scrollbar-width:thin] sm:px-6 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#B8C4EE] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
         >
           <div className="grid gap-6 md:grid-cols-[270px_minmax(0,1fr)] md:gap-7">
-            <section className="min-w-0 md:border-r md:border-[#DDE5F2] md:pr-5">
+            <section className="min-w-0 md:border-r md:border-[#DDE5F2] md:pr-[1.125rem]">
               <h3 className="text-sm font-medium text-[#172849]">Record type</h3>
               <p className="mt-0.5 text-xs text-[#8292B2]">Choose what you want to add.</p>
 
-              <div className="mt-3 overflow-hidden rounded-[8px] border border-[#DDE5F2] bg-white shadow-[0_6px_18px_rgba(42,67,112,0.11)]">
-                <div className="flex h-10 items-center gap-3 border-b border-[#E7ECF5] px-4 text-sm font-medium text-[#172849] ring-1 ring-inset ring-[#4B72FA]">
+              <div className="mt-2.5 overflow-hidden rounded-[8px] border border-[#DDE5F2] bg-white shadow-[0_6px_18px_rgba(42,67,112,0.11)]">
+                <div className="flex h-10 items-center gap-3 border-b border-[#E7ECF5] px-3.5 text-sm font-medium text-[#172849] ring-1 ring-inset ring-[#4B72FA]">
                   {selectedObject && (() => {
                     const SelectedIcon = objectIcon(selectedObject.objectType);
                     return <SelectedIcon className="size-5 text-[#3264F5]" />;
@@ -368,7 +368,7 @@ export function AddCrmRecordModal({
                           setOptionalOpen(false);
                         }}
                         className={cn(
-                          "flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-sm transition",
+                          "flex h-9 w-full items-center gap-3 rounded-[6px] px-2.5 text-left text-sm transition",
                           selected ? "bg-[#EFF3FF] text-[#3264F5]" : "text-[#293A5D] hover:bg-[#F7F9FD]",
                         )}
                       >
@@ -379,7 +379,7 @@ export function AddCrmRecordModal({
                     );
                   })}
                   {createableObjects.length === 0 && (
-                    <p className="px-3 py-4 text-center text-xs text-[#8292B2]">
+                    <p className="px-2.5 py-3.5 text-center text-xs text-[#8292B2]">
                       No CRM record types are available.
                     </p>
                   )}
@@ -388,13 +388,13 @@ export function AddCrmRecordModal({
             </section>
 
             <section className="min-w-0">
-              <h3 className="text-lg font-semibold leading-6 text-[#172849]">{recordLabel} details</h3>
+              <h3 className="text-[1.0625rem]/[1.75rem] font-semibold leading-6 text-[#172849]">{recordLabel} details</h3>
               <p className="mt-0.5 text-xs text-[#8292B2]">Fields are based on your connected CRM.</p>
 
               {schemaQuery.isPending ? (
                 <AddRecordFieldsSkeleton />
               ) : schemaQuery.isError ? (
-                <div className="mt-4 rounded-[8px] border border-red-100 bg-red-50 p-4 text-center">
+                <div className="mt-3.5 rounded-[8px] border border-red-100 bg-red-50 p-3.5 text-center">
                   <p className="text-xs text-red-600">{schemaQuery.error.message}</p>
                   <button
                     type="button"
@@ -405,7 +405,7 @@ export function AddCrmRecordModal({
                   </button>
                 </div>
               ) : (
-                <div className="mt-4 space-y-3">
+                <div className="mt-3.5 space-y-3">
                   {initialFields.map((field) => (
                     <SchemaFormField key={field.name ?? field.fieldName} field={field} />
                   ))}
@@ -420,7 +420,7 @@ export function AddCrmRecordModal({
                         type="button"
                         onClick={() => setOptionalOpen((value) => !value)}
                         aria-expanded={optionalOpen}
-                        className="flex h-10 w-full items-center justify-between rounded-[8px] border border-[#E3EAF7] bg-[#F6F8FD] px-3 text-sm text-[#53698F] transition hover:bg-[#F1F5FC] sm:h-11"
+                        className="flex h-10 w-full items-center justify-between rounded-[8px] border border-[#E3EAF7] bg-[#F6F8FD] px-2.5 text-sm text-[#53698F] transition hover:bg-[#F1F5FC] sm:h-11"
                       >
                         <span>
                           More fields
@@ -449,7 +449,7 @@ export function AddCrmRecordModal({
                                     : [...current, name],
                                 )}
                                 className={cn(
-                                  "flex w-full items-center gap-2 rounded-[6px] px-3 py-2 text-left text-xs transition",
+                                  "flex w-full items-center gap-2 rounded-[6px] px-2.5 py-2 text-left text-xs transition",
                                   selected
                                     ? "bg-[#EFF3FF] text-[#3264F5]"
                                     : "text-[#445779] hover:bg-[#F7F9FD]",
@@ -475,7 +475,7 @@ export function AddCrmRecordModal({
                   )}
 
                   {schemaFields.length === 0 && (
-                    <p className="rounded-[8px] border border-[#E3EAF7] p-4 text-center text-xs text-[#8292B2]">
+                    <p className="rounded-[8px] border border-[#E3EAF7] p-3.5 text-center text-xs text-[#8292B2]">
                       No createable fields are available for this record type.
                     </p>
                   )}
@@ -485,9 +485,9 @@ export function AddCrmRecordModal({
           </div>
         </form>
 
-        <footer className="flex shrink-0 flex-col-reverse gap-2 border-t border-[#DDE5F2] px-5 py-3 sm:flex-row sm:justify-end sm:px-7">
-          <button type="button" onClick={() => setOpen(false)} disabled={createRecordMutation.isPending} className="h-9 rounded-[7px] border border-[#5277F5] bg-white px-7 text-sm font-medium text-[#3E68F1] transition hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-50">Cancel</button>
-          <button type="submit" form="add-record-form" disabled={schemaQuery.isPending || schemaQuery.isError || schemaFields.length === 0 || createRecordMutation.isPending} className="h-9 rounded-[7px] bg-[#4169F3] px-7 text-sm font-medium text-white shadow-[0_4px_10px_rgba(65,105,243,0.25)] transition hover:bg-[#345BE2] disabled:cursor-not-allowed disabled:opacity-50">{createRecordMutation.isPending ? "Creating..." : "Create Record"}</button>
+        <footer className="flex shrink-0 flex-col-reverse gap-2 border-t border-[#DDE5F2] px-[1.125rem] py-2.5 sm:flex-row sm:justify-end sm:px-6">
+          <button type="button" onClick={() => setOpen(false)} disabled={createRecordMutation.isPending} className="h-9 rounded-[7px] border border-[#5277F5] bg-white px-6 text-sm font-medium text-[#3E68F1] transition hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-50">Cancel</button>
+          <button type="submit" form="add-record-form" disabled={schemaQuery.isPending || schemaQuery.isError || schemaFields.length === 0 || createRecordMutation.isPending} className="h-9 rounded-[7px] bg-[#4169F3] px-6 text-sm font-medium text-white shadow-[0_4px_10px_rgba(65,105,243,0.25)] transition hover:bg-[#345BE2] disabled:cursor-not-allowed disabled:opacity-50">{createRecordMutation.isPending ? "Creating..." : "Create Record"}</button>
         </footer>
       </DialogContent>
     </Dialog>
@@ -558,7 +558,7 @@ function SchemaFormField({ field }: { field: SchemaField }) {
   if (/TEXTAREA|MULTILINE|RICHTEXT|LONGTEXT/.test(type)) {
     return (
       <FormField label={label} required={field.required}>
-        <textarea name={name} required={field.required} placeholder={placeholder} className={`${inputClassName} min-h-24 resize-y py-3`} />
+        <textarea name={name} required={field.required} placeholder={placeholder} className={`${inputClassName} min-h-24 resize-y py-2.5`} />
       </FormField>
     );
   }

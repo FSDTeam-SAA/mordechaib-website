@@ -10,11 +10,11 @@ export function AgentQuickActions({
   agents: AgentDashboardItem[];
 }) {
   return (
-    <aside className="rounded-2xl bg-white p-3">
-      <h2 className="border-b border-[#E4EAF8] pb-4 text-base font-medium">
+    <aside className="rounded-2xl bg-white p-2.5">
+      <h2 className="border-b border-[#E4EAF8] pb-3.5 text-[0.9375rem]/[1.5rem] font-medium">
         Quick Actions
       </h2>
-      <div className="mt-4 space-y-4">
+      <div className="mt-3.5 space-y-4">
         {agents.map((agent) => {
           const active = agent.id === activeAgentId;
           const enabled = agent.organizationSettings.enabled;
@@ -22,7 +22,7 @@ export function AgentQuickActions({
             <Link
               href={`/dashboard/agents/${agent.id}`}
               key={agent.id}
-              className={`relative flex min-h-[60px] items-center overflow-hidden rounded-sm ${active ? "gap-3 bg-[#F5F7FF] py-1 pl-4 pr-3 before:absolute before:left-0 before:h-6 before:w-1 before:rounded-r-full before:bg-[#5B7FF0]" : "gap-4 pr-2"}`}
+              className={`relative flex min-h-[60px] items-center overflow-hidden rounded-sm ${active ? "gap-3 bg-[#F5F7FF] py-1 pl-3.5 pr-2.5 before:absolute before:left-0 before:h-6 before:w-1 before:rounded-r-full before:bg-[#5B7FF0]" : "gap-4 pr-2"}`}
             >
               <Image
                 src={agent.imageUrl}
@@ -32,7 +32,7 @@ export function AgentQuickActions({
                 className="size-[60px] shrink-0 rounded-lg object-cover"
               />
               <span className="min-w-0 flex-1">
-                <strong className="block text-base font-medium">
+                <strong className="block text-[0.9375rem]/[1.5rem] font-medium">
                   {agent.name}
                 </strong>
               </span>

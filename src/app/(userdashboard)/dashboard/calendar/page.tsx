@@ -229,7 +229,7 @@ function CalendarContent() {
 
   if (status === "loading" || dashboardQuery.isPending || connectionsQuery.isPending) {
     return (
-      <div className="p-4 pb-10">
+      <div className="min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5">
         <CalendarDashboardSkeleton />
         {isRedirectModalOpen && (
           <NewMeetingModal
@@ -249,17 +249,17 @@ function CalendarContent() {
 
   if (dashboardQuery.isError || !dashboardQuery.data) {
     return (
-      <div className="p-4 pb-10">
-        <div className="flex min-h-[360px] flex-col items-center justify-center rounded-[12px] bg-white p-6 text-center">
+      <div className="min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5">
+        <div className="flex min-h-56 flex-col items-center justify-center rounded-[12px] bg-white p-5 text-center">
           <AlertCircle className="size-10 text-[#EF4444]" />
-          <h2 className="mt-3 text-lg font-semibold">Calendar could not be loaded</h2>
+          <h2 className="mt-2.5 text-[1.0625rem]/[1.75rem] font-semibold">Calendar could not be loaded</h2>
           <p className="mt-1 max-w-md text-sm text-[#8B93B8]">
             {dashboardQuery.error instanceof Error ? dashboardQuery.error.message : "Please try again."}
           </p>
           <button
             type="button"
             onClick={() => void dashboardQuery.refetch()}
-            className="mt-5 flex h-10 items-center gap-2 rounded-[8px] bg-[#5B7FF0] px-5 text-sm text-white"
+            className="mt-[1.125rem] flex h-10 items-center gap-2 rounded-[8px] bg-[#5B7FF0] px-[1.125rem] text-sm text-white"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -286,7 +286,7 @@ function CalendarContent() {
   };
 
   return (
-    <div className="space-y-4 p-4 pb-10">
+    <div className="min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5 space-y-3 sm:space-y-4">
       <CalendarStats summary={providerSummary} />
       <section className="grid grid-cols-12 items-start gap-4">
         <div className="col-span-12 xl:col-span-9">
@@ -355,7 +355,7 @@ export default function CalendarPage() {
   return (
     <Suspense
       fallback={
-        <div className="p-4 pb-10">
+        <div className="min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5">
           <CalendarDashboardSkeleton />
         </div>
       }

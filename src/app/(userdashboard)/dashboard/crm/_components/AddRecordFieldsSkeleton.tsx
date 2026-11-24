@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function AddRecordFieldsSkeleton() {
   return (
-    <div className="mt-4 space-y-3" role="status" aria-label="Loading CRM fields">
+    <div className="mt-3.5 space-y-3" role="status" aria-label="Loading CRM fields">
       <span className="sr-only">Loading CRM fields...</span>
       {Array.from({ length: 5 }, (_, index) => (
         <div key={index} className="space-y-1.5">

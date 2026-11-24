@@ -61,16 +61,16 @@ export function CalendarSidebar({
 
   return (
     <aside className="space-y-4">
-      <section className="rounded-[8px] bg-white p-3">
-        <h2 className="border-b border-[#E4EAF8] pb-3 text-base font-medium">
+      <section className="rounded-[8px] bg-white p-2.5">
+        <h2 className="border-b border-[#E4EAF8] pb-2.5 text-[0.9375rem]/[1.5rem] font-medium">
           Quick Actions
         </h2>
-        <div className="mt-3 space-y-2">
+        <div className="mt-2.5 space-y-2">
           <button
             type="button"
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="flex h-8 w-full items-center gap-2 rounded-[8px] bg-[#F5F7FF] px-3 text-xs disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex h-8 w-full items-center gap-2 rounded-[8px] bg-[#F5F7FF] px-2.5 text-xs disabled:cursor-not-allowed disabled:opacity-60"
           >
             <RefreshCw
               className={cn("size-4", isRefreshing && "animate-spin")}
@@ -78,15 +78,15 @@ export function CalendarSidebar({
             {isRefreshing ? "Syncing Calendar..." : "Sync Calendar"}
           </button>
           <NewMeetingModal>
-            <button className="flex h-8 w-full items-center gap-2 rounded-[8px] bg-[#F5F7FF] px-3 text-xs">
+            <button className="flex h-8 w-full items-center gap-2 rounded-[8px] bg-[#F5F7FF] px-2.5 text-xs">
               <CalendarDays className="size-4" />
               Schedule Meeting
             </button>
           </NewMeetingModal>
         </div>
       </section>
-      <section className="rounded-[8px] bg-white p-3">
-        <h2 className="text-base font-medium">
+      <section className="rounded-[8px] bg-white p-2.5">
+        <h2 className="text-[0.9375rem]/[1.5rem] font-medium">
           {selectedDate.toLocaleDateString("en-US", {
             month: "long",
             day: "numeric",
@@ -96,14 +96,14 @@ export function CalendarSidebar({
         <p className="mt-1 text-xs text-[#8B93B8]">
           {selectedEvents.length} event{selectedEvents.length === 1 ? "" : "s"}
         </p>
-        <div className="mt-4 max-h-[280px] space-y-2 overflow-y-auto">
+        <div className="mt-3.5 max-h-[280px] space-y-2 overflow-y-auto">
           {selectedEvents.length === 0 ? (
-            <p className="py-3 text-sm text-[#8B93B8]">No events on this day</p>
+            <p className="py-2.5 text-sm text-[#8B93B8]">No events on this day</p>
           ) : (
             selectedEvents.map((meeting) => (
               <div
                 key={meeting.id}
-                className="border-l-4 p-3"
+                className="border-l-4 p-2.5"
                 style={{
                   borderColor: color(meeting.status),
                   backgroundColor: `${color(meeting.status)}12`,
@@ -112,7 +112,7 @@ export function CalendarSidebar({
                 <p className="truncate text-sm font-medium">{meeting.title}</p>
                 <p className="mt-2 text-sm text-[#8B93B8]">
                   {meetingTime(meeting.startsAt)}
-                  <span className="mx-3">•</span>
+                  <span className="mx-2.5">•</span>
                   {meeting.durationMinutes}min
                 </p>
                 <p className="mt-2 flex items-center gap-4 truncate text-sm text-[#8B93B8]">
@@ -123,10 +123,10 @@ export function CalendarSidebar({
             ))
           )}
         </div>
-        <div className="mt-4 border-t border-[#E4EAF8] pt-4">
-          <h3 className="text-xl text-[#8B93B8]">Upcoming</h3>
+        <div className="mt-3.5 border-t border-[#E4EAF8] pt-3.5">
+          <h3 className="text-[1.1875rem]/[1.75rem] text-[#8B93B8]">Upcoming</h3>
           {nextMeeting ? (
-            <div className="mt-3 border-l-[6px] border-[#D24FC7] pl-2">
+            <div className="mt-2.5 border-l-[6px] border-[#D24FC7] pl-2">
               <p className="truncate text-sm font-medium">
                 {nextMeeting.title}
               </p>
@@ -139,12 +139,12 @@ export function CalendarSidebar({
               </p>
             </div>
           ) : (
-            <p className="mt-3 text-sm text-[#8B93B8]">No upcoming meetings</p>
+            <p className="mt-2.5 text-sm text-[#8B93B8]">No upcoming meetings</p>
           )}
         </div>
       </section>
-      <section className="rounded-[8px] bg-white p-3">
-        <h2 className="border-b border-[#E4EAF8] pb-3 text-base font-medium">
+      <section className="rounded-[8px] bg-white p-2.5">
+        <h2 className="border-b border-[#E4EAF8] pb-2.5 text-[0.9375rem]/[1.5rem] font-medium">
           Meeting Types
         </h2>
         <div className="mt-2 flex items-center gap-3">

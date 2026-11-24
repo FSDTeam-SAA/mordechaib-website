@@ -160,9 +160,9 @@ export default function Header({ sidebarCollapsed }: HeaderProps) {
                 : "Dashboard";
 
   return (
-    <header className={`fixed left-0 right-0 top-0 z-30 flex h-[83px] items-center justify-between bg-white px-4 transition-[left] duration-300 md:px-6 ${sidebarCollapsed ? "md:left-[88px]" : "md:left-[280px]"}`}>
-      <div className="ml-12 min-w-0 md:ml-0">
-        <h1 className="text-xl font-medium leading-normal text-[#0E1224] sm:text-2xl">
+    <header className={`fixed left-0 right-0 top-0 z-30 flex h-[83px] items-center justify-between bg-white px-3.5 transition-[left] duration-300 md:px-5 ${sidebarCollapsed ? "md:left-[88px]" : "md:left-[280px]"}`}>
+      <div className="ml-10 min-w-0 md:ml-0">
+        <h1 className="text-[1.1875rem]/[1.75rem] font-medium leading-normal text-[#0E1224] sm:text-[1.375rem]/[2rem]">
           {title}
         </h1>
         {isCallIntelligencePage ||
@@ -265,7 +265,7 @@ export default function Header({ sidebarCollapsed }: HeaderProps) {
 
           {isProfileMenuOpen && (
             <div role="menu" className="absolute right-0 top-[calc(100%+10px)] z-50 w-[280px] overflow-hidden rounded-xl border border-[#E4EAF8] bg-white shadow-[0_16px_40px_rgba(14,18,36,0.14)]">
-              <div className="flex items-center gap-3 border-b border-[#E4EAF8] p-4">
+              <div className="flex items-center gap-3 border-b border-[#E4EAF8] p-3.5">
                 <Avatar className="size-11 border border-[#E4EAF8]">
                   <AvatarImage src={avatar} alt={fullName} className="object-cover" />
                   <AvatarFallback className="bg-[#E9EEFF] text-sm font-semibold text-[#5B7FF0]">{initials || "U"}</AvatarFallback>
@@ -277,10 +277,10 @@ export default function Header({ sidebarCollapsed }: HeaderProps) {
                 </div>
               </div>
               <div className="p-2">
-                <Link role="menuitem" href="/dashboard/settings" className="flex h-11 items-center gap-3 rounded-lg px-3 text-sm text-[#30384F] transition hover:bg-[#F5F7FF]">
+                <Link role="menuitem" href="/dashboard/settings" className="flex h-11 items-center gap-3 rounded-lg px-2.5 text-sm text-[#30384F] transition hover:bg-[#F5F7FF]">
                   <UserRound className="size-4 text-[#5B7FF0]" /> Profile settings
                 </Link>
-                <button type="button" role="menuitem" onClick={() => { setIsProfileMenuOpen(false); setIsLogoutModalOpen(true); }} className="flex h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-sm text-[#EF4444] transition hover:bg-red-50">
+                <button type="button" role="menuitem" onClick={() => { setIsProfileMenuOpen(false); setIsLogoutModalOpen(true); }} className="flex h-11 w-full items-center gap-3 rounded-lg px-2.5 text-left text-sm text-[#EF4444] transition hover:bg-red-50">
                   <LogOut className="size-4" /> Log out
                 </button>
               </div>
@@ -295,13 +295,13 @@ export default function Header({ sidebarCollapsed }: HeaderProps) {
       />
       <Dialog open={isLogoutModalOpen} onOpenChange={(open) => { if (!isSigningOut) setIsLogoutModalOpen(open); }}>
         <DialogContent showClose={false} overlayClassName="bg-black/30 backdrop-blur-[3px]" className="w-[calc(100%-32px)] max-w-[480px] gap-0 overflow-hidden rounded-2xl border-0 bg-white p-0 shadow-xl">
-          <div className="flex items-center gap-3 border-b border-[#E4EAF8] p-5">
+          <div className="flex items-center gap-3 border-b border-[#E4EAF8] p-[1.125rem]">
             <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#EF4444]/10 text-[#EF4444]"><LogOut className="size-5" /></span>
-            <DialogTitle className="text-xl font-medium text-[#0E1224]">Confirm Logout</DialogTitle>
+            <DialogTitle className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">Confirm Logout</DialogTitle>
           </div>
-          <div className="p-5 sm:p-6">
-            <DialogDescription className="text-base leading-6 text-[#64748B]">Are you sure you want to log out of your account?</DialogDescription>
-            <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="p-[1.125rem] sm:p-5">
+            <DialogDescription className="text-[0.9375rem]/[1.5rem] leading-6 text-[#64748B]">Are you sure you want to log out of your account?</DialogDescription>
+            <div className="mt-5 grid grid-cols-2 gap-3">
               <DialogClose asChild><Button type="button" variant="outline" disabled={isSigningOut} className="h-11 border-[#5B7FF0] text-[#5B7FF0] hover:bg-[#F5F7FF] hover:text-[#5B7FF0]">Cancel</Button></DialogClose>
               <Button type="button" onClick={() => void handleLogout()} disabled={isSigningOut} className="h-11 bg-[#EF4444] text-white hover:bg-[#DC2626]">
                 {isSigningOut ? <><Loader2 className="mr-2 size-4 animate-spin" /> Logging out...</> : "Log out"}

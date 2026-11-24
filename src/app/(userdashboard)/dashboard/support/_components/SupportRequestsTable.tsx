@@ -157,7 +157,7 @@ function LoadingRows() {
   return Array.from({ length: 5 }, (_, index) => (
     <TableRow key={index} className="border-0 hover:bg-transparent">
       {Array.from({ length: 5 }, (_, cellIndex) => (
-        <TableCell key={cellIndex} className="px-2 py-3">
+        <TableCell key={cellIndex} className="px-2 py-2.5">
           <span className="block h-8 animate-pulse rounded bg-[#F5F7FF]" />
         </TableCell>
       ))}
@@ -268,29 +268,29 @@ export function SupportRequestsTable() {
   return (
     <>
       <section className="overflow-hidden rounded-lg bg-white">
-        <header className="border-b border-[#E4EAF8] p-4">
-          <h2 className="text-xl font-medium text-[#0E1224]">
+        <header className="border-b border-[#E4EAF8] p-3.5">
+          <h2 className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
             Recent Support Requests
           </h2>
         </header>
 
-        <div className="p-4">
+        <div className="p-3.5">
           <Table className="min-w-[760px]">
             <TableHeader>
               <TableRow className="border-b border-[#F5F7FF] hover:bg-transparent">
-                <TableHead className="h-10 px-0 pb-4 pt-0 text-sm font-normal text-[#0E1224]">
+                <TableHead className="h-10 px-0 pb-3.5 pt-0 text-sm font-normal text-[#0E1224]">
                   Ticket ID
                 </TableHead>
-                <TableHead className="h-10 px-0 pb-4 pt-0 text-sm font-normal text-[#0E1224]">
+                <TableHead className="h-10 px-0 pb-3.5 pt-0 text-sm font-normal text-[#0E1224]">
                   Subject
                 </TableHead>
-                <TableHead className="h-10 px-0 pb-4 pt-0 text-center text-sm font-normal text-[#0E1224]">
+                <TableHead className="h-10 px-0 pb-3.5 pt-0 text-center text-sm font-normal text-[#0E1224]">
                   Status
                 </TableHead>
-                <TableHead className="h-10 px-0 pb-4 pt-0 text-center text-sm font-normal text-[#0E1224]">
+                <TableHead className="h-10 px-0 pb-3.5 pt-0 text-center text-sm font-normal text-[#0E1224]">
                   Updated
                 </TableHead>
-                <TableHead className="h-10 px-0 pb-4 pt-0 text-center text-sm font-normal text-[#0E1224]">
+                <TableHead className="h-10 px-0 pb-3.5 pt-0 text-center text-sm font-normal text-[#0E1224]">
                   Action
                 </TableHead>
               </TableRow>
@@ -330,7 +330,7 @@ export function SupportRequestsTable() {
                         <button
                           type="button"
                           onClick={() => setDetailsRequest(request)}
-                          className="inline-flex h-[29px] items-center gap-[5px] rounded-[11px] border border-[#5B7FF0] bg-[#5B9CD5]/10 px-3 text-[10px] font-normal text-[#5B7FF0] underline underline-offset-2"
+                          className="inline-flex h-[29px] items-center gap-[5px] rounded-[11px] border border-[#5B7FF0] bg-[#5B9CD5]/10 px-2.5 text-[10px] font-normal text-[#5B7FF0] underline underline-offset-2"
                         >
                           <Image
                             src="/support-eye.svg"
@@ -384,7 +384,7 @@ export function SupportRequestsTable() {
                       type="button"
                       variant="outline"
                       onClick={() => requestsQuery.refetch()}
-                      className="mt-3 h-9 border-[#5B7FF0] text-[#5B7FF0]"
+                      className="mt-2.5 h-9 border-[#5B7FF0] text-[#5B7FF0]"
                     >
                       Try Again
                     </Button>

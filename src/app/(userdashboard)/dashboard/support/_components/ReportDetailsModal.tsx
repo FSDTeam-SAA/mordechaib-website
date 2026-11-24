@@ -152,7 +152,7 @@ function getAttachmentName(attachment: SupportAttachment, index: number) {
 
 function DetailsLoading() {
   return (
-    <div className="space-y-4 p-4 sm:p-10">
+    <div className="space-y-4 p-3.5 sm:p-[2.25rem]">
       <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2">
         <div className="h-[74px] animate-pulse rounded-xl bg-[#F5F7FF]" />
         <div className="h-[74px] animate-pulse rounded-xl bg-[#F5F7FF]" />
@@ -204,7 +204,7 @@ function AttachmentPreview({
         </div>
       )}
 
-      <div className="flex min-h-14 items-center gap-3 px-4 py-2 text-sm">
+      <div className="flex min-h-14 items-center gap-3 px-3.5 py-2 text-sm">
         <Image
           src="/support-view-file.svg"
           alt=""
@@ -282,9 +282,9 @@ export function ReportDetailsModal({
         overlayClassName="bg-black/10 backdrop-blur-[5px]"
         className="max-h-[calc(100dvh-32px)] w-[calc(100%-32px)] max-w-[511px] gap-0 overflow-y-auto rounded-2xl border-0 bg-white p-0 shadow-[0_1px_4px_rgba(107,107,107,0.7)] sm:rounded-2xl"
       >
-        <div className="flex items-center justify-between rounded-t-2xl bg-white p-4 shadow-[0_1px_4px_rgba(107,107,107,0.7)] sm:p-6">
+        <div className="flex items-center justify-between rounded-t-2xl bg-white p-3.5 shadow-[0_1px_4px_rgba(107,107,107,0.7)] sm:p-5">
           <div className="min-w-0">
-            <DialogTitle className="text-xl font-medium leading-normal text-[#0E1224]">
+            <DialogTitle className="text-[1.1875rem]/[1.75rem] font-medium leading-normal text-[#0E1224]">
               Request Details
             </DialogTitle>
             {details?.ticketId && (
@@ -312,7 +312,7 @@ export function ReportDetailsModal({
         {detailsQuery.isLoading ? (
           <DetailsLoading />
         ) : detailsQuery.isError ? (
-          <div className="flex min-h-64 flex-col items-center justify-center p-6 text-center">
+          <div className="flex min-h-64 flex-col items-center justify-center p-5 text-center">
             <p className="text-sm text-[#8B93B8]">
               Unable to load request details.
             </p>
@@ -320,14 +320,14 @@ export function ReportDetailsModal({
               type="button"
               variant="outline"
               onClick={() => detailsQuery.refetch()}
-              className="mt-4 h-10 border-[#5B7FF0] text-[#5B7FF0]"
+              className="mt-3.5 h-10 border-[#5B7FF0] text-[#5B7FF0]"
             >
               Try Again
             </Button>
           </div>
         ) : (
-          <div className="p-4 sm:p-6">
-            <div className="space-y-4 sm:p-4">
+          <div className="p-3.5 sm:p-5">
+            <div className="space-y-4 sm:p-3.5">
               <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2">
                 <DetailField
                   label="Category"
@@ -337,16 +337,16 @@ export function ReportDetailsModal({
               </div>
 
               <div>
-                <p className="mb-2 text-base font-medium leading-none text-[#0E1224]">
+                <p className="mb-2 text-[0.9375rem]/[1.5rem] font-medium leading-none text-[#0E1224]">
                   Description
                 </p>
-                <div className="min-h-[140px] whitespace-pre-wrap break-words rounded-2xl border border-[#F5F7FF] bg-[#F5F7FF] p-4 text-base leading-normal text-[#0E1224] sm:min-h-[160px]">
+                <div className="min-h-[140px] whitespace-pre-wrap break-words rounded-2xl border border-[#F5F7FF] bg-[#F5F7FF] p-3.5 text-[0.9375rem]/[1.5rem] leading-normal text-[#0E1224] sm:min-h-[160px]">
                   {descriptionToText(details?.description)}
                 </div>
               </div>
 
               <div>
-                <p className="mb-4 text-xl font-medium leading-none text-[#0E1224]">
+                <p className="mb-3.5 text-[1.1875rem]/[1.75rem] font-medium leading-none text-[#0E1224]">
                   Attachments &amp; Links
                 </p>
                 {attachments.length > 0 ? (
@@ -360,7 +360,7 @@ export function ReportDetailsModal({
                     ))}
                   </div>
                 ) : (
-                  <div className="flex min-h-[88px] items-center justify-center rounded-xl bg-[#F5F7FF] p-4 text-sm text-[#8B93B8] sm:min-h-[120px]">
+                  <div className="flex min-h-[88px] items-center justify-center rounded-xl bg-[#F5F7FF] p-3.5 text-sm text-[#8B93B8] sm:min-h-[120px]">
                     No attachments added.
                   </div>
                 )}
@@ -376,8 +376,8 @@ export function ReportDetailsModal({
 function DetailField({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <p className="mb-2 text-base leading-[1.2] text-[#8B93B8]">{label}</p>
-      <div className="truncate rounded-xl bg-[#F5F7FF] p-4 text-base leading-[1.2] text-[#0E1224]">
+      <p className="mb-2 text-[0.9375rem]/[1.5rem] leading-[1.2] text-[#8B93B8]">{label}</p>
+      <div className="truncate rounded-xl bg-[#F5F7FF] p-3.5 text-[0.9375rem]/[1.5rem] leading-[1.2] text-[#0E1224]">
         {value}
       </div>
     </div>

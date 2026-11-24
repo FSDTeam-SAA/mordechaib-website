@@ -16,9 +16,9 @@ export default function SettingToggle({
   const [checked, setChecked] = useState(defaultChecked);
 
   return (
-    <div className="flex min-h-[68px] items-center gap-4 rounded-2xl px-0 py-3 sm:px-4">
+    <div className="flex min-h-[68px] items-center gap-4 rounded-2xl px-0 py-2.5 sm:px-3.5">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium leading-normal text-[#0E1224] sm:text-base">
+        <p className="text-sm font-medium leading-normal text-[#0E1224] sm:text-[0.9375rem]/[1.5rem]">
           {title}
         </p>
         <p className="mt-2 text-[11px] leading-normal text-[#6B6B6B] sm:text-xs">

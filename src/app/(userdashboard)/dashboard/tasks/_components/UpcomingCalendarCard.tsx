@@ -31,9 +31,9 @@ export function UpcomingCalendarCard({
   onRetry?: () => void;
 }) {
   return (
-    <section className="rounded-xl bg-white p-6">
-      <header className="flex items-center justify-between border-b border-[#E4EAF8] pb-4">
-        <h2 className="text-xl font-medium text-[#0E1224]">
+    <section className="rounded-xl bg-white p-5">
+      <header className="flex items-center justify-between border-b border-[#E4EAF8] pb-3.5">
+        <h2 className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
           Calendar (Upcoming)
         </h2>
         <Link
@@ -53,7 +53,7 @@ export function UpcomingCalendarCard({
           <button
             type="button"
             onClick={onRetry}
-            className="mt-3 flex items-center gap-1.5 text-sm font-medium text-[#5B7FF0]"
+            className="mt-2.5 flex items-center gap-1.5 text-sm font-medium text-[#5B7FF0]"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -65,7 +65,7 @@ export function UpcomingCalendarCard({
           <p className="mt-2 text-sm text-[#8B93B8]">No upcoming meetings.</p>
         </div>
       ) : (
-        <div className="mt-4 max-h-[310px] space-y-4 overflow-y-auto pr-1 [scrollbar-color:#B8C4EE_transparent] [scrollbar-width:thin]">
+        <div className="mt-3.5 max-h-[310px] space-y-4 overflow-y-auto pr-1 [scrollbar-color:#B8C4EE_transparent] [scrollbar-width:thin]">
           {meetings.map((meeting, index) => {
             const startsAt = new Date(meeting.startsAt);
             return (
@@ -100,7 +100,7 @@ export function UpcomingCalendarCard({
                       minute: "2-digit",
                       timeZone: meeting.timezone,
                     })}
-                    <span className="mx-3">•</span>
+                    <span className="mx-2.5">•</span>
                     {meeting.durationMinutes} min
                   </p>
                   <p className="mt-1 truncate text-[11px] text-[#A0A7C2]">

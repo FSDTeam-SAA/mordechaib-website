@@ -8,7 +8,7 @@ import { UpcomingMeetingsCard } from "./_components/UpcomingMeetingsCard";
 
 export default function DashboardPage() {
   return (
-    <div className="w-full min-w-0 space-y-3 p-3 pb-8 sm:space-y-4 sm:p-4 sm:pb-10 lg:p-6">
+    <div className="w-full min-w-0 space-y-3 p-2.5 pb-7 sm:space-y-4 sm:p-3.5 sm:pb-[2.25rem] lg:p-5">
       <DashboardKpiCards />
       <AiWorkforceCard />
 

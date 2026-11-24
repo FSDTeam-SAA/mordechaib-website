@@ -21,14 +21,14 @@ export function AgentWorkflow({ agents }: { agents: AgentDashboardItem[] }) {
   }
 
   return (
-    <section className="overflow-hidden rounded-2xl bg-white p-4">
-      <h2 className="text-center text-xl font-medium">
+    <section className="overflow-hidden rounded-2xl bg-white p-3.5">
+      <h2 className="text-center text-[1.1875rem]/[1.75rem] font-medium">
         Agent‑to‑Agent Workflow Orchestration
       </h2>
-      <div className="mt-4 flex flex-col items-center">
-        <div className="relative z-10 flex w-[125px] flex-col items-center px-4 pb-4">
+      <div className="mt-3.5 flex flex-col items-center">
+        <div className="relative z-10 flex w-[125px] flex-col items-center px-3.5 pb-3.5">
           <Image src="/laura.png" alt="Laura" width={1000} height={1000} className="size-[93px] rounded-full border border-[#8B93B8] object-cover" />
-          <span className="-mt-5 w-full rounded-[12px] bg-[#5B7FF0] px-4 py-2 text-center text-sm font-medium text-white">Laura</span>
+          <span className="-mt-5 w-full rounded-[12px] bg-[#5B7FF0] px-3.5 py-2 text-center text-sm font-medium text-white">Laura</span>
           <span className="mt-[5px] whitespace-nowrap text-xs font-medium">Chief of Staff</span>
         </div>
         <div className="relative -mt-[76px] hidden h-[92px] w-full max-w-[704px] lg:block" aria-hidden="true">
@@ -39,7 +39,7 @@ export function AgentWorkflow({ agents }: { agents: AgentDashboardItem[] }) {
           <Image src="/agents/arrow-outer-left.svg" alt="" width={258} height={7} className="absolute left-[-100px] top-[7px] w-[450px] rotate-[161.74deg]" />
           <Image src="/agents/arrow-outer-right.svg" alt="" width={256} height={7} className="absolute left-[357px] top-[10px] w-[450px] rotate-[18.47deg]" />
         </div>
-        <div className="mt-6 grid w-full grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 lg:mt-0 lg:grid-cols-6 lg:gap-4">
+        <div className="mt-5 grid w-full grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 lg:mt-0 lg:grid-cols-6 lg:gap-4">
           {workflowAgents.map((agent) => (
             <article
               key={agent.id}
@@ -53,7 +53,7 @@ export function AgentWorkflow({ agents }: { agents: AgentDashboardItem[] }) {
                 className="mx-auto w-[80px] h-[70px] rounded-[12px] object-cover"
               />
               <p className="mt-2 font-medium">{agent.name}</p>
-              <div className="mt-4 px-1 text-sm">
+              <div className="mt-3.5 px-1 text-sm">
                 <p className="mx-auto max-w-[90px] leading-[18px]">
                   Task
                   <br />

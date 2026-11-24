@@ -151,13 +151,13 @@ export function MeetingsTable({
 
   return (
     <section>
-      <div className="mb-4 flex max-w-[480px] overflow-x-auto rounded-[8px] bg-white p-2">
+      <div className="mb-3.5 flex max-w-[480px] overflow-x-auto rounded-[8px] bg-white p-2">
         {tabs.map((item) => (
           <button
             key={item}
             onClick={() => setFilter(item)}
             className={cn(
-              "min-w-[110px] rounded-[6px] px-2 py-1 text-base",
+              "min-w-[110px] rounded-[6px] px-2 py-1 text-[0.9375rem]/[1.5rem]",
               filter === item ? "bg-[#5B7FF0] text-white" : "text-[#0E1224]",
             )}
           >
@@ -165,7 +165,7 @@ export function MeetingsTable({
           </button>
         ))}
       </div>
-      <div className="overflow-x-auto rounded-[8px] bg-white">
+      <div data-lenis-prevent className="overflow-x-auto overscroll-x-contain rounded-[8px] bg-white">
         <table className="w-full min-w-[900px] table-fixed text-sm">
           <colgroup>
             <col className="w-[17%]" />
@@ -176,11 +176,11 @@ export function MeetingsTable({
           </colgroup>
           <thead>
             <tr className="border-b border-[#E4EAF8] text-left text-[#0E1224]">
-              <th className="h-[52px] px-5 font-normal">Date</th>
-              <th className="h-[52px] px-5 font-normal">Meeting</th>
-              <th className="h-[52px] px-5 font-normal">Participant Email</th>
-              <th className="h-[52px] px-5 text-center font-normal">Status</th>
-              <th className="h-[52px] px-5 text-center font-normal">Action</th>
+              <th className="h-[52px] px-[1.125rem] font-normal">Date</th>
+              <th className="h-[52px] px-[1.125rem] font-normal">Meeting</th>
+              <th className="h-[52px] px-[1.125rem] font-normal">Participant Email</th>
+              <th className="h-[52px] px-[1.125rem] text-center font-normal">Status</th>
+              <th className="h-[52px] px-[1.125rem] text-center font-normal">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -199,7 +199,7 @@ export function MeetingsTable({
                     index < rows.length - 1 && "border-b border-[#E4EAF8]/50",
                   )}
                 >
-                  <td className="px-5 py-4 align-middle">
+                  <td className="px-[1.125rem] py-3.5 align-middle">
                     <p className="font-medium">
                       {meetingDate(row.startsAt, timezone)}
                     </p>
@@ -208,7 +208,7 @@ export function MeetingsTable({
                       {row.durationMinutes} min
                     </p>
                   </td>
-                  <td className="px-5 py-4 align-middle">
+                  <td className="px-[1.125rem] py-3.5 align-middle">
                     <p
                       className="truncate font-medium text-[#0E1224]"
                       title={row.title}
@@ -219,7 +219,7 @@ export function MeetingsTable({
                       {row.provider?.replaceAll("_", " ") || "—"}
                     </p>
                   </td>
-                  <td className="px-5 py-4 align-middle">
+                  <td className="px-[1.125rem] py-3.5 align-middle">
                     <p
                       className="truncate text-[#44506F]"
                       title={row.participantEmails.join(", ")}
@@ -231,7 +231,7 @@ export function MeetingsTable({
                       {row.participantEmails.length === 1 ? "" : "s"}
                     </p>
                   </td>
-                  <td className="px-5 py-4 text-center align-middle">
+                  <td className="px-[1.125rem] py-3.5 text-center align-middle">
                     <span
                       className={cn(
                         "inline-flex rounded-full px-2.5 py-1 text-xs font-medium",
@@ -241,7 +241,7 @@ export function MeetingsTable({
                       {statusLabel(row.status)}
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-center align-middle">
+                  <td className="px-[1.125rem] py-3.5 text-center align-middle">
                     <div className="flex items-center justify-center gap-2">
                       <button
                         type="button"
@@ -295,13 +295,13 @@ export function MeetingsTable({
         >
           {selectedMeeting && (
             <>
-              <div className="border-b border-[#E4EAF8] px-6 py-5 pr-14">
+              <div className="border-b border-[#E4EAF8] px-5 py-[1.125rem] pr-12">
                 <div className="flex items-start gap-3">
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-[12px] bg-[#5B7FF0]/10 text-[#5B7FF0]">
                     <Video className="size-5" />
                   </span>
                   <div className="min-w-0">
-                    <DialogTitle className="truncate text-xl leading-7 text-[#0E1224]">
+                    <DialogTitle className="truncate text-[1.1875rem]/[1.75rem] leading-7 text-[#0E1224]">
                       {selectedMeeting.title}
                     </DialogTitle>
                     <DialogDescription className="mt-1 text-sm text-[#8B93B8]">
@@ -310,12 +310,12 @@ export function MeetingsTable({
                   </div>
                 </div>
               </div>
-              <div className="max-h-[65vh] space-y-5 overflow-y-auto px-6 py-5">
+              <div className="max-h-[65vh] space-y-5 overflow-y-auto px-5 py-[1.125rem]">
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-sm text-[#8B93B8]">Status</span>
                   <span
                     className={cn(
-                      "rounded-full px-3 py-1 text-xs font-medium",
+                      "rounded-full px-2.5 py-1 text-xs font-medium",
                       statusClass[selectedMeeting.status] || "bg-gray-100",
                     )}
                   >
@@ -323,7 +323,7 @@ export function MeetingsTable({
                   </span>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="flex items-center gap-3 rounded-[10px] bg-[#F5F7FF] p-3">
+                  <div className="flex items-center gap-3 rounded-[10px] bg-[#F5F7FF] p-2.5">
                     <CalendarDays className="size-5 shrink-0 text-[#5B7FF0]" />
                     <div>
                       <p className="text-xs text-[#8B93B8]">Date</p>
@@ -332,7 +332,7 @@ export function MeetingsTable({
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 rounded-[10px] bg-[#F5F7FF] p-3">
+                  <div className="flex items-center gap-3 rounded-[10px] bg-[#F5F7FF] p-2.5">
                     <Clock3 className="size-5 shrink-0 text-[#5B7FF0]" />
                     <div>
                       <p className="text-xs text-[#8B93B8]">
@@ -349,7 +349,7 @@ export function MeetingsTable({
                   <p className="mb-2 text-sm font-medium text-[#0E1224]">
                     Description
                   </p>
-                  <p className="rounded-[10px] bg-[#F5F7FF] p-3 text-sm leading-6 text-[#44506F]">
+                  <p className="rounded-[10px] bg-[#F5F7FF] p-2.5 text-sm leading-6 text-[#44506F]">
                     {selectedMeeting.description || "No description provided."}
                   </p>
                 </div>
@@ -363,26 +363,26 @@ export function MeetingsTable({
                       selectedMeeting.participantEmails.map((email) => (
                         <div
                           key={email}
-                          className="flex items-center gap-2 rounded-[9px] bg-[#F5F7FF] px-3 py-2 text-sm text-[#44506F]"
+                          className="flex items-center gap-2 rounded-[9px] bg-[#F5F7FF] px-2.5 py-2 text-sm text-[#44506F]"
                         >
                           <Mail className="size-4 shrink-0 text-[#8B93B8]" />
                           <span className="truncate">{email}</span>
                         </div>
                       ))
                     ) : (
-                      <p className="rounded-[9px] bg-[#F5F7FF] px-3 py-2 text-sm text-[#8B93B8]">
+                      <p className="rounded-[9px] bg-[#F5F7FF] px-2.5 py-2 text-sm text-[#8B93B8]">
                         No participants
                       </p>
                     )}
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-3 border-t border-[#E4EAF8] pt-5">
+                <div className="flex flex-wrap gap-3 border-t border-[#E4EAF8] pt-[1.125rem]">
                   {selectedMeeting.eventUrl && (
                     <a
                       href={selectedMeeting.eventUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex h-10 items-center gap-2 rounded-[8px] border border-[#5B7FF0] px-4 text-sm font-medium text-[#5B7FF0] hover:bg-[#5B7FF0]/5"
+                      className="inline-flex h-10 items-center gap-2 rounded-[8px] border border-[#5B7FF0] px-3.5 text-sm font-medium text-[#5B7FF0] hover:bg-[#5B7FF0]/5"
                     >
                       Calendar Event <ExternalLink className="size-4" />
                     </a>
@@ -393,7 +393,7 @@ export function MeetingsTable({
                         href={selectedMeeting.joinUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#5B7FF0] px-4 text-sm font-medium text-white hover:bg-[#4E6FDE]"
+                        className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#5B7FF0] px-3.5 text-sm font-medium text-white hover:bg-[#4E6FDE]"
                       >
                         Join Meeting <ExternalLink className="size-4" />
                       </a>

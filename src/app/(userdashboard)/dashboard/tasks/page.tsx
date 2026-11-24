@@ -583,7 +583,7 @@ export default function TaskPage() {
   };
 
   return (
-    <div className="space-y-4 p-4 pb-10">
+    <div className="min-w-0 p-2.5 pb-7 sm:p-3.5 sm:pb-9 lg:px-5 lg:pt-5 space-y-3 sm:space-y-4">
       {isOverviewLoading ? (
         <TaskStatsSkeleton />
       ) : !overview ? (
@@ -592,7 +592,7 @@ export default function TaskPage() {
           className="w-full"
         />
       ) : (
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-3 sm:grid-cols-2 min-[1200px]:grid-cols-4">
           {statCards.map(({ dataKey, ...stat }) => (
             <TaskStatCard
               key={stat.label}
@@ -606,7 +606,7 @@ export default function TaskPage() {
       )}
 
       <section className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-        <label className="flex h-11 w-full max-w-[320px] items-center gap-2 rounded-[12px] border border-[#8B93B8]/10 bg-white px-3">
+        <label className="flex h-11 w-full max-w-[320px] items-center gap-2 rounded-[12px] border border-[#8B93B8]/10 bg-white px-2.5">
           <Search className="size-5 text-[#8B93B8]" />
           <input
             value={query}
@@ -615,13 +615,13 @@ export default function TaskPage() {
             className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[#8B93B8]"
           />
         </label>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <div className="flex items-center overflow-x-auto rounded-[12px] bg-white p-1">
             {tabs.map((tab) => (
               <button
                 type="button"
                 onClick={() => changeTab(tab)}
-                className={`whitespace-nowrap rounded-[12px] px-3 py-2 text-sm transition-colors ${activeTab === tab ? "bg-[#5B7FF0]/10 text-[#5B7FF0]" : "text-[#8B93B8] hover:text-[#5B7FF0]"}`}
+                className={`whitespace-nowrap rounded-[12px] px-2.5 py-2 text-sm transition-colors ${activeTab === tab ? "bg-[#5B7FF0]/10 text-[#5B7FF0]" : "text-[#8B93B8] hover:text-[#5B7FF0]"}`}
                 key={tab}
               >
                 {tab}
@@ -631,14 +631,14 @@ export default function TaskPage() {
           <button
             type="button"
             onClick={() => setShowFilters((current) => !current)}
-            className="flex h-11 items-center justify-center gap-2 rounded-[12px] border border-[#E4EAF8] bg-white px-4 text-sm text-[#0E1224]"
+            className="flex h-11 items-center justify-center gap-2 rounded-[12px] border border-[#E4EAF8] bg-white px-3.5 text-sm text-[#0E1224]"
           >
             <SlidersHorizontal className="size-4" /> Filters
           </button>
           <button
             type="button"
             onClick={() => router.push("/dashboard/tasks/add-task")}
-            className="flex h-11 items-center justify-center gap-2 rounded-[12px] bg-[#5B7FF0] px-6 text-sm font-medium text-white hover:bg-[#4E6FDE]"
+            className="flex h-11 items-center justify-center gap-2 rounded-[12px] bg-[#5B7FF0] px-5 text-sm font-medium text-white hover:bg-[#4E6FDE]"
           >
             <Plus className="size-5" /> Add New Task
           </button>
@@ -646,8 +646,8 @@ export default function TaskPage() {
       </section>
 
       {showFilters && (
-        <section className="rounded-xl bg-white p-4">
-          <div className="mb-4 flex items-center justify-between">
+        <section className="rounded-xl bg-white p-3.5">
+          <div className="mb-3.5 flex items-center justify-between">
             <h2 className="font-medium text-[#0E1224]">Filter tasks</h2>
             <button
               type="button"
@@ -658,7 +658,7 @@ export default function TaskPage() {
               <X className="size-5" />
             </button>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 min-[1400px]:grid-cols-6">
             <FilterSelect
               label="Status group"
               value={filters.statusGroup}
@@ -719,14 +719,14 @@ export default function TaskPage() {
           <button
             type="button"
             onClick={resetFilters}
-            className="mt-4 text-sm font-medium text-[#5B7FF0]"
+            className="mt-3.5 text-sm font-medium text-[#5B7FF0]"
           >
             Reset filters
           </button>
         </section>
       )}
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(270px,1fr)]">
         <div>
           {isTasksLoading ? (
             <TaskListSkeleton />

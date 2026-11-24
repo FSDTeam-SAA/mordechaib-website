@@ -36,31 +36,31 @@ export function SummaryDonutCard({
   legend: Legend[];
 }) {
   return (
-    <section className="rounded-xl bg-white p-6">
-      <header className="flex items-center justify-between gap-3 border-b border-[#E4EAF8] pb-4">
-        <h2 className="text-xl font-medium text-[#0E1224]">{title}</h2>
+    <section className="rounded-xl bg-white p-3 sm:p-4">
+      <header className="flex items-center justify-between gap-3 border-b border-[#E4EAF8] pb-3.5">
+        <h2 className="text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">{title}</h2>
         <span className="shrink-0 text-sm font-medium text-[#5B7FF0]">
           {periodLabel}
         </span>
       </header>
-      <div className="mt-4 flex flex-col items-center gap-4 min-[420px]:flex-row">
+      <div className="mt-2.5 flex flex-wrap items-center justify-center gap-3">
         <div
-          className="flex size-40 shrink-0 items-center justify-center rounded-full"
+          className="flex size-28 shrink-0 items-center justify-center rounded-full"
           style={{ background: createDonutGradient(legend) }}
         >
-          <div className="flex size-[124px] flex-col items-center justify-center rounded-full bg-white text-center">
-            <p className="text-3xl font-medium text-[#0E1224]">{score}</p>
+          <div className="flex size-20 flex-col items-center justify-center rounded-full bg-white text-center">
+            <p className="text-[1.75rem]/[2.25rem] font-medium text-[#0E1224]">{score}</p>
             <p className="px-2 text-sm text-[#8B93B8]">{scoreLabel}</p>
           </div>
         </div>
-        <div className="w-full min-w-0 flex-1 space-y-2">
+        <div className="min-w-28 flex-1 space-y-2">
           {legend.map((item) => (
-            <div className="flex items-center gap-2 text-sm" key={item.label}>
+            <div className="flex items-center gap-2 text-xs" key={item.label}>
               <i
                 className="size-2 shrink-0 rounded-full"
                 style={{ background: item.color }}
               />
-              <span className="min-w-0 flex-1 truncate text-[#0E1224]">
+              <span className="min-w-0 flex-1 break-words text-[#0E1224]">
                 {item.label}
               </span>
               <strong style={{ color: item.color }}>{item.value}</strong>

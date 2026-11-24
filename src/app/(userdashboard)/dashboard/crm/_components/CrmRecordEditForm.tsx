@@ -54,7 +54,7 @@ export function CrmRecordEditForm({ properties, fields, isSaving, error, onCance
     onSubmit(values);
   }
 
-  return <form onSubmit={submit} noValidate className="p-5 sm:p-6">
+  return <form onSubmit={submit} noValidate className="p-[1.125rem] sm:p-5">
     <div className="grid gap-4 sm:grid-cols-2">
       {fields.map((field) => {
         const name = nameOf(field); const label = field.label || name.replaceAll("_", " "); const type = typeOf(field); const value = form[name] ?? "";
@@ -69,7 +69,7 @@ export function CrmRecordEditForm({ properties, fields, isSaving, error, onCance
       })}
     </div>
     {fields.length === 0 && <p className="text-sm text-[#7187B2]">This record has no updateable properties.</p>}
-    {error && <p className="mt-4 text-sm text-[#C24152]">{error}</p>}
-    <div className="mt-6 flex flex-col-reverse gap-3 border-t border-[#E4EAF8] pt-5 sm:flex-row sm:justify-end"><button type="button" onClick={onCancel} disabled={isSaving} className="h-11 rounded-[12px] border border-[#DCE1EA] px-5 text-sm font-medium text-[#596079] disabled:opacity-60">Cancel</button><button type="submit" disabled={isSaving || fields.length === 0} className="inline-flex h-11 items-center justify-center gap-2 rounded-[12px] bg-[#5B7FF0] px-5 text-sm font-medium text-white disabled:opacity-60">{isSaving && <LoaderCircle className="size-4 animate-spin" />}{isSaving ? "Saving..." : "Save Changes"}</button></div>
+    {error && <p className="mt-3.5 text-sm text-[#C24152]">{error}</p>}
+    <div className="mt-5 flex flex-col-reverse gap-3 border-t border-[#E4EAF8] pt-[1.125rem] sm:flex-row sm:justify-end"><button type="button" onClick={onCancel} disabled={isSaving} className="h-11 rounded-[12px] border border-[#DCE1EA] px-[1.125rem] text-sm font-medium text-[#596079] disabled:opacity-60">Cancel</button><button type="submit" disabled={isSaving || fields.length === 0} className="inline-flex h-11 items-center justify-center gap-2 rounded-[12px] bg-[#5B7FF0] px-[1.125rem] text-sm font-medium text-white disabled:opacity-60">{isSaving && <LoaderCircle className="size-4 animate-spin" />}{isSaving ? "Saving..." : "Save Changes"}</button></div>
   </form>;
 }

@@ -48,12 +48,18 @@ function statusLabel(status: string) {
     .join(" ");
 }
 
+const workforcePreviewLimit = 5;
+const workforceGridClassName =
+  "mt-3.5 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 min-[1200px]:grid-cols-5 min-[1200px]:gap-3 2xl:gap-4";
+const workforceAvatarClassName =
+  "size-[60px] shrink-0 rounded-[12px] min-[1200px]:size-10 2xl:size-[60px]";
+
 function AiWorkforceCardSkeleton() {
   return (
     <section
       aria-busy="true"
       aria-label="Loading AI workforce"
-      className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6"
+      className="min-w-0 overflow-hidden rounded-2xl bg-white p-3.5 sm:p-5"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -62,14 +68,14 @@ function AiWorkforceCardSkeleton() {
         </div>
         <div className="h-5 w-24 animate-pulse rounded bg-[#F5F7FF]" />
       </div>
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
-        {Array.from({ length: 6 }, (_, index) => (
+      <div className={workforceGridClassName}>
+        {Array.from({ length: workforcePreviewLimit }, (_, index) => (
           <div key={index} className="flex animate-pulse items-center gap-2">
-            <div className="size-[60px] shrink-0 rounded-[12px] bg-[#F5F7FF]" />
+            <div className={`${workforceAvatarClassName} bg-[#F5F7FF]`} />
             <div className="min-w-0 flex-1 space-y-2">
-              <div className="h-4 w-16 rounded bg-[#F5F7FF]" />
-              <div className="h-3 w-20 rounded bg-[#F5F7FF]" />
-              <div className="h-5 w-14 rounded-full bg-[#F5F7FF]" />
+              <div className="h-4 w-16 max-w-full rounded bg-[#F5F7FF]" />
+              <div className="h-3 w-20 max-w-full rounded bg-[#F5F7FF]" />
+              <div className="h-5 w-14 max-w-full rounded-full bg-[#F5F7FF]" />
             </div>
           </div>
         ))}
@@ -89,10 +95,10 @@ function AiWorkforceCardState({
   const Icon = isError ? AlertCircle : UsersRound;
 
   return (
-    <section className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
+    <section className="min-w-0 overflow-hidden rounded-2xl bg-white p-3.5 sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-base font-medium text-[#0E1224] sm:text-xl">Ai Workforce</h2>
+          <h2 className="text-[0.9375rem]/[1.5rem] font-medium text-[#0E1224] sm:text-[1.1875rem]/[1.75rem]">Ai Workforce</h2>
           <p className="mt-1 text-sm text-[#8B93B8]">
             Your specialist AI agents working.
           </p>
@@ -119,7 +125,7 @@ function AiWorkforceCardState({
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-4 text-sm font-medium text-white"
+            className="mt-3.5 flex min-h-11 items-center gap-2 rounded-lg bg-[#5B7FF0] px-3.5 text-sm font-medium text-white"
           >
             <RefreshCw className="size-4" />
             Try again
@@ -190,10 +196,10 @@ export function AiWorkforceCard() {
   }
 
   return (
-    <section className="min-w-0 overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
+    <section className="min-w-0 overflow-hidden rounded-2xl bg-white p-3.5 sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-base font-medium text-[#0E1224] sm:text-xl">AI Workforce</h2>
+          <h2 className="text-[0.9375rem]/[1.5rem] font-medium text-[#0E1224] sm:text-[1.1875rem]/[1.75rem]">AI Workforce</h2>
           <p className="mt-1 text-sm text-[#8B93B8]">
             Your specialist AI agents working.
           </p>
@@ -206,8 +212,8 @@ export function AiWorkforceCard() {
           <ArrowRight className="size-4" />
         </Link>
       </div>
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
-        {agents?.slice(0, 6)?.map((agent) => {
+      <div className={workforceGridClassName}>
+        {agents.slice(0, workforcePreviewLimit).map((agent) => {
           const isActive =
             agent.runtimeStatus === "ACTIVE" ||
             agent.runtimeStatus === "WORKING";
@@ -220,11 +226,11 @@ export function AiWorkforceCard() {
                 width={60}
                 height={60}
                 unoptimized
-                className="size-[60px] shrink-0 rounded-[12px] object-contain border"
+                className={`${workforceAvatarClassName} border object-contain`}
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium text-[#0E1224]">{agent.name}</p>
-                <p className="truncate text-xs text-[#8B93B8]">
+                <p className="truncate font-medium text-[#0E1224] min-[1200px]:text-sm 2xl:text-base">{agent.name}</p>
+                <p className="truncate text-xs text-[#8B93B8] min-[1200px]:whitespace-normal min-[1200px]:break-words">
                   {roleLabel(agent.type)}
                 </p>
                 <span
