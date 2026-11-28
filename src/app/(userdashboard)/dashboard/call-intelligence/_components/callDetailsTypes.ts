@@ -83,7 +83,11 @@ export type CallDetails = {
   metadata: { kind?: string; platform?: string; status?: string; title?: string; occurredAt?: string; startsAt?: string; durationSeconds?: number; durationMinutes?: number; botName?: string };
   audio: { available?: boolean; downloadPath?: string | null };
   transcript: { available?: boolean; included?: boolean; text?: string; segments?: TranscriptSegment[] };
-  analysis: null | { summary?: string; overallConfidence?: number; sentimentAnalysis?: { score?: { positive?: number; neutral?: number; negative?: number } }; customerIntelligence?: { healthScore?: number; riskLevel?: string }; patternDetection?: Record<string, number | undefined>; classifiedSegments?: TranscriptSegment[] };
+  analysis: null | { summary?: CallAnalysisSummary | null; overallConfidence?: number; sentimentAnalysis?: { score?: { positive?: number; neutral?: number; negative?: number } }; customerIntelligence?: { healthScore?: number; riskLevel?: string }; patternDetection?: Record<string, number | undefined>; classifiedSegments?: TranscriptSegment[] };
   actions: { priorityTasks?: ActionItem[]; meetingSchedules?: ActionItem[] };
   extensions?: { crm?: CrmExtension };
+};
+export type CallAnalysisSummary = string | {
+  text_summary?: string | null;
+  bullet_point?: string[] | null;
 };
