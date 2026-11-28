@@ -26,7 +26,7 @@ import {
 import { CallDetailsSkeleton } from "../_components/CallDetailsSkeleton";
 import { PriorityTaskDetailsModal } from "../_components/PriorityTaskDetailsModal";
 import { ClarificationAnswerModal } from "../_components/ClarificationAnswerModal";
-import type { CallDetails, ClarificationQuestion } from "../_components/callDetailsTypes";
+import type { CallAnalysisSummary, CallDetails, ClarificationQuestion } from "../_components/callDetailsTypes";
 import { getCallDetailsSourceType } from "../_components/types";
 
 const waveform = [
@@ -39,6 +39,25 @@ function CardTitle({ children }: { children: React.ReactNode }) {
     <h2 className="border-b border-[#E4EAF8] pb-3.5 text-[1.1875rem]/[1.75rem] font-medium text-[#0E1224]">
       {children}
     </h2>
+  );
+}
+
+function CallSummary({ summary }: { summary?: CallAnalysisSummary | null }) {
+  const text = (typeof summary === "string" ? summary : summary?.text_summary)?.trim();
+  const bullets = typeof summary === "object"
+    ? summary?.bullet_point?.map((point) => point.trim()).filter(Boolean) ?? []
+    : [];
+
+  return (
+    <div className="mt-3.5 space-y-3 break-words text-[0.9375rem]/[1.5rem] leading-[1.45] text-[#6B6B6B]">
+      {text && <p className="whitespace-pre-wrap">{text}</p>}
+      {bullets.length > 0 && (
+        <ul className="list-disc space-y-1 pl-5 font-bold">
+          {bullets.map((point, index) => <li key={index}>{point}</li>)}
+        </ul>
+      )}
+      {!text && bullets.length === 0 && <p>AI summary is not available for this call.</p>}
+    </div>
   );
 }
 
@@ -101,10 +120,10 @@ function CallDetailsContent() {
   const detailsQuery = useQuery({
     queryKey: ["call-intelligence-details", sourceId, sourceType],
     enabled: sessionStatus === "authenticated" && Boolean(accessToken) && Boolean(sourceId) && Boolean(sourceType),
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!accessToken || !sourceId || !sourceType) throw new Error("Call source information is missing.");
-      const query = new URLSearchParams({ sourceType, includeTranscript: "true" });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/call-intelligence/${encodeURIComponent(sourceId)}/details?${query}`, { headers: { Authorization: `Bearer ${accessToken}` } });
+      const query = new URLSearchParams({ sourceType, taskLimit: "4", meetingLimit: "4", includeTranscript: "true" });
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/call-intelligence/${encodeURIComponent(sourceId)}/details?${query}`, { headers: { Authorization: `Bearer ${accessToken}` }, signal });
       const result = (await response.json().catch(() => ({}))) as { success?: boolean; message?: string | string[]; data?: CallDetails };
       if (!response.ok || !result.success || !result.data) { const message = Array.isArray(result.message) ? result.message.join(", ") : result.message; throw new Error(message || "Unable to load call details."); }
       return result.data;
@@ -454,7 +473,7 @@ function CallDetailsContent() {
                 <TriangleAlert className="size-5" />
               </span>
             </div>
-            <p className="mt-3.5 whitespace-pre-wrap text-justify text-[0.9375rem]/[1.5rem] leading-[1.45] text-[#6B6B6B]">{details.analysis?.summary || "AI summary is not available for this call."}</p>
+            <CallSummary summary={details.analysis?.summary} />
           </article>
           <article className="min-w-0 rounded-2xl bg-white p-3 sm:p-4">
             <CardTitle>{isMeeting ? "Meeting Transcript" : "Call Transcript"}</CardTitle>
